@@ -608,60 +608,59 @@
 
     // Updated addDevice function to include device type
     async function addDevice() {
-        const hwid = document.getElementById('hwid-input').value.trim();
-        const deviceType = document.getElementById('device-type').value;
-        const msgEl = document.getElementById('add-device-msg');
+    const hwid = document.getElementById('hwid-input').value.trim();
+    const deviceType = document.getElementById('device-type').value;
+    const msgEl = document.getElementById('add-device-msg');
 
-        if (!hwid) {
-            msgEl.className = 'newsletter-msg error';
-            msgEl.textContent = 'Please enter a HWID key';
-            return;
-        }
-
-        if (!hwid.startsWith('HWID-')) {
-            msgEl.className = 'newsletter-msg error';
-            msgEl.textContent = 'Invalid HWID format. Must start with HWID-';
-            return;
-        }
-
-        if (!deviceType) {
-            msgEl.className = 'newsletter-msg error';
-            msgEl.textContent = 'Please select a device type';
-            return;
-        }
-
-        try {
-            const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-            const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ 
-                    hwid: hwid,
-                    userId: user.id || 'guest',
-                    deviceType: deviceType
-                })
-            });
-
-            const data = await res.json();
-
-            if (res.ok && data.success) {
-                msgEl.className = 'newsletter-msg success';
-                msgEl.textContent = 'Device added successfully!';
-                setTimeout(() => {
-                    closeAddDeviceModal();
-                    loadDashboard();
-                    document.getElementById('device-type-group').style.display = 'none';
-                    document.getElementById('device-type').value = '';
-                }, 1500);
-            } else {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = data.error || 'Failed to add device';
-            }
-        } catch (err) {
-            msgEl.className = 'newsletter-msg error';
-            msgEl.textContent = 'Network error. Please try again.';
-        }
+    if (!hwid) {
+        msgEl.className = 'newsletter-msg error';
+        msgEl.textContent = 'Please enter a HWID key';
+        return;
     }
+
+    if (!hwid.startsWith('HWID-')) {
+        msgEl.className = 'newsletter-msg error';
+        msgEl.textContent = 'Invalid HWID format. Must start with HWID-';
+        return;
+    }
+
+    if (!deviceType) {
+        msgEl.className = 'newsletter-msg error';
+        msgEl.textContent = 'Please select a device type';
+        return;
+    }
+
+    try {
+        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+        const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                hwid: hwid,
+                deviceType: deviceType,
+                userId: user.id || 'guest'
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            msgEl.className = 'newsletter-msg success';
+            msgEl.textContent = 'Device added successfully!';
+            setTimeout(() => {
+                closeAddDeviceModal();
+                loadDashboard();
+            }, 1500);
+        } else {
+            msgEl.className = 'newsletter-msg error';
+            msgEl.textContent = data.error || 'Failed to add device';
+        }
+    } catch (err) {
+        msgEl.className = 'newsletter-msg error';
+        msgEl.textContent = 'Network error. Please try again.';
+    }
+}
+
         async function loadDashboard() {
     const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
     const userId = user.id;
@@ -859,4 +858,5 @@
     </script>
 </body>
 </html>
+
 
