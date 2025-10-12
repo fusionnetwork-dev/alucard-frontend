@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-     <script src="js/config.js"></script>
+    <script src="js/config.js"></script>
    
     <title>alucard - dashboard</title>
    
@@ -341,6 +341,111 @@
             transform: translateY(-2px);
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: #ff3333;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: #ff3333;
+        }
+
+        .modal-body p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-primary {
+            background: #ff3333;
+            color: white;
+        }
+
+        .modal-btn-primary:hover {
+            background: #ff0000;
+            transform: translateY(-2px);
+        }
+
+        .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .modal-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         @media (max-width: 1024px) {
             .section-grid {
                 grid-template-columns: 1fr;
@@ -362,6 +467,10 @@
 
             .action-buttons {
                 flex-direction: column;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
             }
         }
     </style>
@@ -421,7 +530,7 @@
                     </div>
                 </div>
                 <div class="action-buttons">
-                    <a href="unlock.html" class="action-btn">+ add new device</a>
+                    <button class="action-btn" onclick="showAddDeviceModal()">+ add new device</button>
                 </div>
             </div>
 
@@ -436,6 +545,28 @@
                 </div>
                 <button class="subscribe-btn" onclick="subscribeNewsletter()">subscribe</button>
                 <div class="newsletter-msg" id="newsletter-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Device Modal -->
+    <div class="modal" id="add-device-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Device</h2>
+                <button class="close-modal" onclick="closeAddDeviceModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Enter your HWID key to whitelist a new device. You can get your HWID from the unlock page.</p>
+                <div class="input-group">
+                    <label>HWID Key</label>
+                    <input type="text" id="hwid-input" placeholder="HWID-XXXXXXXXX">
+                </div>
+                <div class="newsletter-msg" id="add-device-msg"></div>
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-primary" onclick="addDevice()">Add Device</button>
+                    <button class="modal-btn modal-btn-secondary" onclick="goToUnlock()">Go to Unlock Page</button>
+                </div>
             </div>
         </div>
     </div>
@@ -523,6 +654,66 @@
             }
         }
 
+        function showAddDeviceModal() {
+            document.getElementById('add-device-modal').classList.add('show');
+            document.getElementById('hwid-input').value = '';
+            document.getElementById('add-device-msg').style.display = 'none';
+        }
+
+        function closeAddDeviceModal() {
+            document.getElementById('add-device-modal').classList.remove('show');
+        }
+
+        function goToUnlock() {
+            window.location.href = 'unlock.html';
+        }
+
+        async function addDevice() {
+            const hwid = document.getElementById('hwid-input').value.trim();
+            const msgEl = document.getElementById('add-device-msg');
+
+            if (!hwid) {
+                msgEl.className = 'newsletter-msg error';
+                msgEl.textContent = 'Please enter a HWID key';
+                return;
+            }
+
+            if (!hwid.startsWith('HWID-')) {
+                msgEl.className = 'newsletter-msg error';
+                msgEl.textContent = 'Invalid HWID format. Must start with HWID-';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+                const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        hwid: hwid,
+                        userId: user.id || 'guest'
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    msgEl.className = 'newsletter-msg success';
+                    msgEl.textContent = 'Device added successfully!';
+                    setTimeout(() => {
+                        closeAddDeviceModal();
+                        loadDashboard();
+                    }, 1500);
+                } else {
+                    msgEl.className = 'newsletter-msg error';
+                    msgEl.textContent = data.error || 'Failed to add device';
+                }
+            } catch (err) {
+                msgEl.className = 'newsletter-msg error';
+                msgEl.textContent = 'Network error. Please try again.';
+            }
+        }
+
         async function subscribeNewsletter() {
             const email = document.getElementById('newsletter-email').value;
             const msgEl = document.getElementById('newsletter-msg');
@@ -562,11 +753,15 @@
             window.location.href = 'auth.html';
         }
 
+        // Close modal when clicking outside
+        document.getElementById('add-device-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'add-device-modal') {
+                closeAddDeviceModal();
+            }
+        });
+
         // Load dashboard on page load
         loadDashboard();
     </script>
 </body>
 </html>
-
-
-
