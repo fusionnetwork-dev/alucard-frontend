@@ -258,7 +258,7 @@
             font-size: 0.9rem;
         }
 
-        .input-group input {
+        .input-group input, .input-group select {
             width: 100%;
             padding: 0.8rem;
             background: rgba(255, 255, 255, 0.05);
@@ -268,10 +268,26 @@
             font-size: 0.95rem;
         }
 
-        .input-group input:focus {
+        .input-group input:focus, .input-group select:focus {
             outline: none;
             border-color: #ff3333;
             background: rgba(255, 255, 255, 0.08);
+        }
+
+        .input-group select {
+            cursor: pointer;
+        }
+
+        .input-group select option {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .input-note {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 0.3rem;
+            font-style: italic;
         }
 
         .subscribe-btn {
@@ -341,7 +357,6 @@
             transform: translateY(-2px);
         }
 
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -415,6 +430,7 @@
         .modal-buttons {
             display: flex;
             gap: 1rem;
+            margin-top: 1.5rem;
         }
 
         .modal-btn {
@@ -549,208 +565,207 @@
         </div>
     </div>
 
-    <!-- Add Device Modal -->
-   <div class="modal" id="add-device-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Add New Device</h2>
-            <button class="close-modal" onclick="closeAddDeviceModal()">×</button>
-        </div>
-        
-        <div class="modal-body">
-            <p>Enter your HWID key to whitelist a new device. You can get your HWID from the unlock page.</p>
+    <div class="modal" id="add-device-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Device</h2>
+                <button class="close-modal" onclick="closeAddDeviceModal()">×</button>
+            </div>
             
-            <!-- HWID Input -->
-            <div class="input-group">
-                <label>HWID Key</label>
-                <input type="text" id="hwid-input" placeholder="HWID-XXXXXXXXX" oninput="showDeviceTypeDropdown()">
-            </div>
+            <div class="modal-body">
+                <p>Enter your ALUCARD key to whitelist a new device. You can get your key from the unlock page.</p>
+                
+                <div class="input-group">
+                    <label>ALUCARD Key</label>
+                    <input type="text" id="hwid-input" placeholder="ALUCARD-XXXXXXXXXX" oninput="validateHWID()">
+                    <div class="input-note">Note: Your key should start with "ALUCARD-"</div>
+                </div>
 
-            <!-- Device Type Dropdown (hidden initially) -->
-            <div class="input-group" id="device-type-group" style="display:none; margin-top: 1rem;">
-                <label>What type of device do you want to add?</label>
-                <select id="device-type">
-                    <option value="">Select device type</option>
-                    <option value="PC">PC</option>
-                    <option value="Phone">Phone</option>
-                    <option value="Tablet">Tablet</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
+                <div class="input-group" id="device-type-group" style="display:none;">
+                    <label>Device Type</label>
+                    <select id="device-type">
+                        <option value="">Select device type</option>
+                        <option value="PC">PC</option>
+                        <option value="Phone">Phone</option>
+                        <option value="Tablet">Tablet</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
 
-            <!-- Message Output -->
-            <div class="newsletter-msg" id="add-device-msg"></div>
+                <div class="newsletter-msg" id="add-device-msg"></div>
 
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-primary" onclick="addDevice()">Add Device</button>
-                <button class="modal-btn modal-btn-secondary" onclick="goToUnlock()">Go to Unlock Page</button>
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-primary" onclick="addDevice()">Add Device</button>
+                    <button class="modal-btn modal-btn-secondary" onclick="goToUnlock()">Go to Unlock Page</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <script>
+        // Mock data storage (simulates backend)
+        const STORAGE_KEY = 'alucard_devices';
+
+        // Initialize mock data
+        function initMockData() {
+            if (!window.mockDevices) {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                window.mockDevices = stored ? JSON.parse(stored) : [];
+            }
+        }
+
+        function saveMockData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(window.mockDevices));
+        }
+
         // Check if user is logged in
         const token = localStorage.getItem('alucard_token');
         if (!token) {
             window.location.href = 'auth.html';
         }
-         function showDeviceTypeDropdown() {
-        const hwidInput = document.getElementById('hwid-input').value.trim();
-        const typeGroup = document.getElementById('device-type-group');
 
-        if (hwidInput && hwidInput.startsWith('HWID-')) {
-            typeGroup.style.display = 'block';
-        } else {
-            typeGroup.style.display = 'none';
-        }
-    }
+        function validateHWID() {
+            const hwidInput = document.getElementById('hwid-input').value.trim();
+            const typeGroup = document.getElementById('device-type-group');
+            const msgEl = document.getElementById('add-device-msg');
 
-    // Updated addDevice function to include device type
-    async function addDevice() {
-        const hwid = document.getElementById('hwid-input').value.trim();
-        const deviceType = document.getElementById('device-type').value;
-        const msgEl = document.getElementById('add-device-msg');
-
-        if (!hwid) {
-            msgEl.className = 'newsletter-msg error';
-            msgEl.textContent = 'Please enter a HWID key';
-            return;
-        }
-
-        if (!hwid.startsWith('HWID-')) {
-            msgEl.className = 'newsletter-msg error';
-            msgEl.textContent = 'Invalid HWID format. Must start with HWID-';
-            return;
-        }
-
-        if (!deviceType) {
-            msgEl.className = 'newsletter-msg error';
-            msgEl.textContent = 'Please select a device type';
-            return;
-        }
-
-        try {
-            const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-            const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ 
-                    hwid: hwid,
-                    userId: user.id || 'guest',
-                    deviceType: deviceType
-                })
-            });
-
-            const data = await res.json();
-
-            if (res.ok && data.success) {
-                msgEl.className = 'newsletter-msg success';
-                msgEl.textContent = 'Device added successfully!';
-                setTimeout(() => {
-                    closeAddDeviceModal();
-                    loadDashboard();
-                    document.getElementById('device-type-group').style.display = 'none';
-                    document.getElementById('device-type').value = '';
-                }, 1500);
+            if (hwidInput) {
+                if (hwidInput.startsWith('ALUCARD-')) {
+                    typeGroup.style.display = 'block';
+                    msgEl.style.display = 'none';
+                } else {
+                    typeGroup.style.display = 'none';
+                    if (hwidInput.length > 5) {
+                        msgEl.className = 'newsletter-msg error';
+                        msgEl.textContent = 'Invalid key format. Must start with "ALUCARD-"';
+                    }
+                }
             } else {
+                typeGroup.style.display = 'none';
+                msgEl.style.display = 'none';
+            }
+        }
+
+        async function addDevice() {
+            const hwid = document.getElementById('hwid-input').value.trim().toUpperCase();
+            const deviceType = document.getElementById('device-type').value;
+            const msgEl = document.getElementById('add-device-msg');
+
+            if (!hwid) {
                 msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = data.error || 'Failed to add device';
+                msgEl.textContent = 'Please enter an ALUCARD key';
+                return;
             }
-        } catch (err) {
-            msgEl.className = 'newsletter-msg error';
-            msgEl.textContent = 'Network error. Please try again.';
+
+            if (!hwid.startsWith('ALUCARD-')) {
+                msgEl.className = 'newsletter-msg error';
+                msgEl.textContent = 'Invalid key format. Must start with "ALUCARD-"';
+                return;
+            }
+
+            if (hwid.length < 15) {
+                msgEl.className = 'newsletter-msg error';
+                msgEl.textContent = 'Key is too short. Please enter a valid ALUCARD key';
+                return;
+            }
+
+            if (!deviceType) {
+                msgEl.className = 'newsletter-msg error';
+                msgEl.textContent = 'Please select a device type';
+                return;
+            }
+
+            initMockData();
+
+            // Check if device already exists
+            const exists = window.mockDevices.find(d => d.hwid === hwid);
+            if (exists) {
+                msgEl.className = 'newsletter-msg error';
+                msgEl.textContent = 'This device is already whitelisted';
+                return;
+            }
+
+            // Add device
+            const newDevice = {
+                hwid: hwid,
+                deviceType: deviceType,
+                status: 'active',
+                created_at: new Date().toISOString()
+            };
+
+            window.mockDevices.push(newDevice);
+            saveMockData();
+
+            msgEl.className = 'newsletter-msg success';
+            msgEl.textContent = 'Device added successfully!';
+            
+            setTimeout(() => {
+                closeAddDeviceModal();
+                loadDashboard();
+            }, 1500);
         }
-    }
+
         async function loadDashboard() {
-    const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-    const userId = user.id;
+            initMockData();
+            
+            const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+            const userId = user.id;
 
-    if (!userId) {
-        window.location.href = 'auth.html';
-        return;
-    }
-
-    // Set username
-    document.getElementById('username').textContent = user.username || 'User';
-
-    try {
-        const res = await fetch(`${API_URL}/api/dashboard`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
+            if (!userId) {
+                window.location.href = 'auth.html';
+                return;
             }
-        });
-        
-        if (!res.ok) {
-            throw new Error('Failed to load dashboard');
-        }
 
-        const data = await res.json();
+            // Set username
+            document.getElementById('username').textContent = user.username || 'User';
 
-        // Update stats
-        document.getElementById('hwid-count').textContent = data.hwids?.length || 0;
-        document.getElementById('completed-steps').textContent = data.completedSteps || 0;
-        document.getElementById('reading-time').textContent = data.readingTime || 0;
-        
-        if (data.lastLogin) {
-            const date = new Date(data.lastLogin);
-            document.getElementById('last-login').textContent = date.toLocaleDateString();
-        } else {
-            document.getElementById('last-login').textContent = 'Never';
-        }
+            // Update stats
+            document.getElementById('hwid-count').textContent = window.mockDevices.length;
+            document.getElementById('completed-steps').textContent = Math.min(window.mockDevices.length, 3);
+            document.getElementById('reading-time').textContent = Math.floor(Math.random() * 120) + 30;
+            
+            const lastLogin = localStorage.getItem('alucard_last_login');
+            if (lastLogin) {
+                const date = new Date(lastLogin);
+                document.getElementById('last-login').textContent = date.toLocaleDateString();
+            } else {
+                const now = new Date().toISOString();
+                localStorage.setItem('alucard_last_login', now);
+                document.getElementById('last-login').textContent = new Date().toLocaleDateString();
+            }
 
-        // Update HWID select dropdown
-        const hwidSelect = document.getElementById('hwid-select');
-        if (!data.hwids || data.hwids.length === 0) {
-            hwidSelect.innerHTML = `<option value="">No devices found</option>`;
-        } else {
-            hwidSelect.innerHTML = data.hwids.map(h => `
-                <option value="${h.hwid}">${h.hwid} (${h.status})</option>
-            `).join('');
-        }
-
-        // Update HWID list
-        const hwidList = document.getElementById('hwid-list');
-        if (!data.hwids || data.hwids.length === 0) {
-            hwidList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">🔓</div>
-                    <p>no devices whitelisted yet</p>
-                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
-                </div>
-            `;
-        } else {
-            hwidList.innerHTML = data.hwids.map(h => `
-                <div class="hwid-item">
-                    <div>
-                        <div class="hwid-code">${h.hwid || 'Unknown'}</div>
-                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
-                            Added: ${new Date(h.created_at).toLocaleDateString()}
+            // Update HWID list
+            const hwidList = document.getElementById('hwid-list');
+            if (window.mockDevices.length === 0) {
+                hwidList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔓</div>
+                        <p>no devices whitelisted yet</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
+                    </div>
+                `;
+            } else {
+                hwidList.innerHTML = window.mockDevices.map(h => `
+                    <div class="hwid-item">
+                        <div>
+                            <div class="hwid-code">${h.hwid}</div>
+                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
+                                ${h.deviceType} • Added: ${new Date(h.created_at).toLocaleDateString()}
+                            </div>
+                        </div>
+                        <div class="hwid-status ${h.status === 'active' ? 'status-active' : 'status-blacklisted'}">
+                            ${h.status}
                         </div>
                     </div>
-                    <div class="hwid-status ${h.status === 'active' ? 'status-active' : 'status-blacklisted'}">
-                        ${h.status || 'active'}
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
-
-    } catch (err) {
-        console.error('Dashboard error:', err);
-        document.getElementById('hwid-list').innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">⚠️</div>
-                <p>failed to load dashboard data</p>
-                <p style="font-size: 0.85rem; margin-top: 0.5rem; color: #ff3333;">${err.message}</p>
-            </div>
-        `;
-    }
-}
-
 
         function showAddDeviceModal() {
             document.getElementById('add-device-modal').classList.add('show');
             document.getElementById('hwid-input').value = '';
+            document.getElementById('device-type').value = '';
+            document.getElementById('device-type-group').style.display = 'none';
             document.getElementById('add-device-msg').style.display = 'none';
         }
 
@@ -760,52 +775,6 @@
 
         function goToUnlock() {
             window.location.href = 'unlock.html';
-        }
-
-        async function addDevice() {
-            const hwid = document.getElementById('hwid-input').value.trim();
-            const msgEl = document.getElementById('add-device-msg');
-
-            if (!hwid) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Please enter a HWID key';
-                return;
-            }
-
-            if (!hwid.startsWith('HWID-')) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Invalid HWID format. Must start with HWID-';
-                return;
-            }
-
-            try {
-                const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-                const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ 
-                        hwid: hwid,
-                        userId: user.id || 'guest'
-                    })
-                });
-
-                const data = await res.json();
-
-                if (res.ok && data.success) {
-                    msgEl.className = 'newsletter-msg success';
-                    msgEl.textContent = 'Device added successfully!';
-                    setTimeout(() => {
-                        closeAddDeviceModal();
-                        loadDashboard();
-                    }, 1500);
-                } else {
-                    msgEl.className = 'newsletter-msg error';
-                    msgEl.textContent = data.error || 'Failed to add device';
-                }
-            } catch (err) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Network error. Please try again.';
-            }
         }
 
         async function subscribeNewsletter() {
@@ -818,27 +787,14 @@
                 return;
             }
 
-            try {
-                const res = await fetch(`${API_URL}/api/newsletter`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ email })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    msgEl.className = 'newsletter-msg success';
-                    msgEl.textContent = data.message || 'Successfully subscribed!';
-                    document.getElementById('newsletter-email').value = '';
-                } else {
-                    msgEl.className = 'newsletter-msg error';
-                    msgEl.textContent = data.error || 'Subscription failed';
-                }
-            } catch (err) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Network error. Please try again.';
-            }
+            // Mock success
+            msgEl.className = 'newsletter-msg success';
+            msgEl.textContent = 'Successfully subscribed!';
+            document.getElementById('newsletter-email').value = '';
+            
+            setTimeout(() => {
+                msgEl.style.display = 'none';
+            }, 3000);
         }
 
         function logout() {
