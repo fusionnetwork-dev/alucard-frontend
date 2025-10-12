@@ -457,7 +457,11 @@
             document.getElementById('username').textContent = user.username || 'User';
 
             try {
-                const res = await fetch(`${API_URL}/api/dashboard?userId=${userId}`);
+                const res = await fetch(`${API_URL}/api/dashboard`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 
                 if (!res.ok) {
                     throw new Error('Failed to load dashboard');
