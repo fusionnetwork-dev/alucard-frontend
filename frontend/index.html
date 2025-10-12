@@ -566,64 +566,66 @@ loadstring(game:HttpGet("https://alucard.lol/verify"))()
         </div>
     </footer>
 
-    <script>
-        // Initialize audio
-        const audio = new Audio('assets/music/background.mp3');
-        audio.loop = true;
-        audio.volume = 0.3;
-        
-        let isPlaying = false;
-        let hasStarted = false;
-        const musicBtn = document.getElementById('music-control');
-        musicBtn.innerHTML = '🔇';
+  <script>
+    // Initialize audio
+    const audio = new Audio('assets/music/background.mp3');
+    audio.loop = true;
+    audio.volume = 0.3;
 
-        // Try to start music immediately
+    let isPlaying = false;
+    let hasStarted = false;
+    const musicBtn = document.getElementById('music-control');
+    musicBtn.innerHTML = '🔇';
+
+    // Attempt autoplay when audio is ready
+    audio.addEventListener('canplaythrough', () => {
         audio.play().then(() => {
             isPlaying = true;
             hasStarted = true;
             musicBtn.innerHTML = '🔊';
         }).catch(() => {
-            // Autoplay blocked - start on first user interaction
+            // Autoplay failed - fallback to first user interaction
             const startMusic = () => {
                 if (!hasStarted) {
                     audio.play();
                     isPlaying = true;
                     hasStarted = true;
                     musicBtn.innerHTML = '🔊';
-                    // Remove listeners after first interaction
                     document.removeEventListener('click', startMusic);
                     document.removeEventListener('keydown', startMusic);
                     document.removeEventListener('scroll', startMusic);
                 }
             };
-            
             document.addEventListener('click', startMusic);
             document.addEventListener('keydown', startMusic);
             document.addEventListener('scroll', startMusic);
         });
+    });
 
-        // Toggle music on button click
-        musicBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                audio.pause();
-                musicBtn.innerHTML = '🔇';
-                isPlaying = false;
-            } else {
-                audio.play();
-                musicBtn.innerHTML = '🔊';
-                isPlaying = true;
-            }
-            hasStarted = true;
-        });
+    // Toggle music on button click
+    musicBtn.addEventListener('click', () => {
+        if (isPlaying) {
+            audio.pause();
+            musicBtn.innerHTML = '🔇';
+            isPlaying = false;
+        } else {
+            audio.play();
+            musicBtn.innerHTML = '🔊';
+            isPlaying = true;
+        }
+        hasStarted = true;
+    });
 
-        // Pause when tab is hidden
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && isPlaying) {
-                audio.pause();
-            } else if (!document.hidden && isPlaying) {
-                audio.play().catch(() => {});
-            }
-        });
-    </script>
+    // Pause when tab is hidden
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && isPlaying) {
+            audio.pause();
+        } else if (!document.hidden && isPlaying) {
+            audio.play().catch(() => {});
+        }
+    });
+</script>
+
 </body>
 </html>
+
