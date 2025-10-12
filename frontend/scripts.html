@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <title>alucard - scripts</title>
     <style>
         * {
@@ -403,34 +402,15 @@
     </div>
 
     <script>
-        const supabaseUrl = 'https://yjasnrnrukmtejlwiigx.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqYXNucm5ydWttdGVqbHdpaWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzk5MzUsImV4cCI6MjA3NTc1NTkzNX0.9Q0LgyksJj-EfIyYT_sxDLDuz-q50fVXYj5uuCeEMHI';
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        let userId = null;
-
-        // Check authentication
-        async function checkAuth() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) {
-                window.location.href = 'auth.html';
-                return null;
-            }
-            userId = session.user.id;
-            return session;
+        const token = localStorage.getItem('alucard_token');
+        if (!token) {
+            window.location.href = 'auth.html';
         }
 
-        // Simple obfuscation (in production, use a proper Lua obfuscator)
-        function protectScript(code) {
-            // Basic protection: Base64 encode + add wrapper
-            const encoded = btoa(code);
-            return `-- Protected by Alucard
-local protected = "${encoded}"
-local decoded = function(str)
-    -- Decode logic here
-    return str
-end
-loadstring(decoded(protected))()`;
+        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+        const userId = user.id;
+        if (!userId) {
+            window.location.href = 'auth.html';
         }
 
         // Upload script
@@ -447,23 +427,20 @@ loadstring(decoded(protected))()`;
             uploadBtn.textContent = 'protecting script...';
 
             try {
-                const protectedCode = protectScript(code);
+                const res = await fetch('/api/upload-script', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, description, content: code })
+                });
 
-                const { data, error } = await supabaseClient
-                    .from('scripts')
-                    .insert([{
-                        user_id: userId,
-                        name: name,
-                        description: description,
-                        code: code,
-                        protected_code: protectedCode,
-                        version: '1.0',
-                        downloads: 0,
-                        created_at: new Date().toISOString()
-                    }])
-                    .select();
+                const data = await res.json();
 
-                if (error) throw error;
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to upload');
+                }
 
                 message.className = 'message success';
                 message.textContent = '✅ Script uploaded and protected successfully!';
@@ -493,15 +470,21 @@ loadstring(decoded(protected))()`;
             const scriptList = document.getElementById('script-list');
 
             try {
-                const { data: scripts, error } = await supabaseClient
-                    .from('scripts')
-                    .select('*')
-                    .eq('user_id', userId)
-                    .order('created_at', { ascending: false });
+                const res = await fetch('/api/scripts', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-                if (error) throw error;
+                const data = await res.json();
 
-                if (!scripts || scripts.length === 0) {
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to load');
+                }
+
+                const scripts = data.scripts || [];
+
+                if (scripts.length === 0) {
                     scriptList.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">📭</div>
@@ -549,15 +532,19 @@ loadstring(decoded(protected))()`;
         // Download script
         async function downloadScript(scriptId, protected) {
             try {
-                const { data: script, error } = await supabaseClient
-                    .from('scripts')
-                    .select('*')
-                    .eq('id', scriptId)
-                    .single();
+                const res = await fetch(`/api/scripts/${scriptId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-                if (error) throw error;
+                const script = await res.json();
 
-                const code = protected ? script.protected_code : script.code;
+                if (!res.ok) {
+                    throw new Error(script.error || 'Failed to fetch script');
+                }
+
+                const code = protected ? script.protected_code : script.content;
                 const filename = `${script.name.replace(/\s+/g, '_')}${protected ? '_protected' : ''}.lua`;
 
                 // Create download
@@ -570,10 +557,12 @@ loadstring(decoded(protected))()`;
                 URL.revokeObjectURL(url);
 
                 // Update download count
-                await supabaseClient
-                    .from('scripts')
-                    .update({ downloads: script.downloads + 1 })
-                    .eq('id', scriptId);
+                await fetch(`/api/scripts/${scriptId}/download`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
                 await loadScripts();
 
@@ -587,12 +576,16 @@ loadstring(decoded(protected))()`;
             if (!confirm('Are you sure you want to delete this script?')) return;
 
             try {
-                const { error } = await supabaseClient
-                    .from('scripts')
-                    .delete()
-                    .eq('id', scriptId);
+                const res = await fetch(`/api/scripts/${scriptId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-                if (error) throw error;
+                if (!res.ok) {
+                    throw new Error('Failed to delete');
+                }
 
                 await loadScripts();
 
@@ -608,12 +601,7 @@ loadstring(decoded(protected))()`;
         }
 
         // Initialize
-        async function init() {
-            await checkAuth();
-            await loadScripts();
-        }
-
-        init();
+        loadScripts();
     </script>
 </body>
 </html>
