@@ -58,7 +58,13 @@
       backdrop-filter: blur(20px) saturate(180%);
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-    .logo { font-size: 1.5rem; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
+    .logo { 
+      font-size: 1.5rem; 
+      font-weight: 600; 
+      color: #fff; 
+      letter-spacing: -0.5px;
+      text-decoration: none;
+    }
     .logo span { color: #ff3333; }
 
     /* ==== MAIN ==== */
@@ -85,8 +91,10 @@
       border-radius: 12px;
       padding: 1.5rem;
       margin-bottom: 2rem;
+      text-align: left;
     }
     .info-box h3 { margin-bottom: .5rem; color: #ff6666; }
+    .info-box p { color: rgba(255,255,255,0.7); line-height: 1.6; }
 
     /* ==== PROGRESS BAR ==== */
     .progress-container { margin: 2rem 0; }
@@ -95,6 +103,7 @@
       border-radius: 10px;
       height: 12px;
       overflow: hidden;
+      position: relative;
     }
     .progress-fill {
       background: linear-gradient(90deg,#ff0000,#ff3333);
@@ -127,6 +136,7 @@
     .step-card.active {
       border-color: #ff3333;
       box-shadow: 0 0 20px rgba(255,51,51,0.2);
+      transform: translateY(-5px);
     }
     .step-card.completed {
       border-color: rgba(0,255,0,0.5);
@@ -141,8 +151,30 @@
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 0.9rem;
+      transition: all .3s;
     }
-    .step-card.completed .step-number { background: #00ff00; }
+    .step-card.completed .step-number { 
+      background: #00ff00; 
+      animation: checkmark 0.5s ease;
+    }
+    
+    @keyframes checkmark {
+      0% { transform: scale(0.8); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .step-card h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .step-card p {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
     .ad-button {
       background: #ff3333;
       border: none;
@@ -154,14 +186,25 @@
       transition: all .3s;
       margin-top: 1rem;
       width: 100%;
+      font-size: 0.95rem;
     }
     .ad-button:hover:not(:disabled) {
       background: #ff0000;
       box-shadow: 0 4px 20px rgba(255,51,51,0.4);
       transform: translateY(-2px);
     }
-    .ad-button:disabled { opacity: .5; cursor: not-allowed; }
-    .timer { color: #ff3333; font-weight: 700; margin-top: .5rem; }
+    .ad-button:disabled { 
+      opacity: .5; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    .timer { 
+      color: #ff3333; 
+      font-weight: 700; 
+      margin-top: .5rem;
+      font-size: 1.1rem;
+      display: none;
+    }
 
     /* ==== SUCCESS BOX ==== */
     .success-message {
@@ -171,9 +214,24 @@
       border-radius: 12px;
       padding: 2rem;
       margin-top: 2rem;
+      animation: slideIn 0.5s ease;
     }
     .success-message.show { display: block; }
-    .success-message h2 { color: #00ff00; margin-bottom: 1rem; }
+    .success-message h2 { 
+      color: #00ff00; 
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+    .success-message p {
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 1rem;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .hwid-display {
       background: rgba(0,0,0,0.4);
       border: 1px solid rgba(255,255,255,0.1);
@@ -182,18 +240,124 @@
       font-family: monospace;
       margin: 1rem 0;
       word-break: break-all;
+      font-size: 0.95rem;
+      color: #00ff00;
     }
-    .copy-btn {
+    
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .copy-btn, .add-device-btn, .dashboard-btn {
+      flex: 1;
+      min-width: 150px;
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.2);
       border-radius: 8px;
-      padding: .6rem 1.2rem;
+      padding: .8rem 1.5rem;
       color: white;
       font-size: .9rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all .2s;
+      transition: all .3s;
     }
-    .copy-btn:hover { background: rgba(255,255,255,0.15); }
+    
+    .add-device-btn {
+      background: rgba(255,51,51,0.2);
+      border-color: rgba(255,51,51,0.4);
+      color: #ff6666;
+    }
+
+    .dashboard-btn {
+      background: rgba(51,153,255,0.2);
+      border-color: rgba(51,153,255,0.4);
+      color: #66b3ff;
+    }
+
+    .copy-btn:hover { 
+      background: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+
+    .add-device-btn:hover {
+      background: rgba(255,51,51,0.3);
+      transform: translateY(-2px);
+    }
+
+    .dashboard-btn:hover {
+      background: rgba(51,153,255,0.3);
+      transform: translateY(-2px);
+    }
+
+    .devices-list {
+      margin-top: 2rem;
+      text-align: left;
+    }
+
+    .devices-list h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #00ff00;
+    }
+
+    .device-item {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .device-hwid {
+      font-family: monospace;
+      color: rgba(255,255,255,0.9);
+      font-size: 0.9rem;
+    }
+
+    .device-time {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+    }
+
+    .loading {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .error-message {
+      background: rgba(255,0,0,0.1);
+      border: 1px solid rgba(255,0,0,0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      color: #ff6666;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      .steps-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+
+      .copy-btn, .add-device-btn, .dashboard-btn {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -203,18 +367,18 @@
   </div>
 
   <nav>
-    <div class="logo">alu<span>card</span></div>
-    <a href="index.html" style="color:rgba(255,255,255,0.7);text-decoration:none;">← back</a>
+    <a href="index.html" class="logo">alu<span>card</span></a>
+    <a href="dashboard.html" style="color:rgba(255,255,255,0.7);text-decoration:none;font-weight:500;">dashboard</a>
   </nav>
 
   <div class="container">
     <div class="unlock-card">
       <h1>unlock whitelist access</h1>
-      <p class="subtitle">complete 3 quick tasks to get permanent access</p>
+      <p class="subtitle">complete 3 quick checkpoints to whitelist your device</p>
 
       <div class="info-box">
-        <h3>why ads?</h3>
-        <p>running servers costs money. we keep alucard 100% free by showing ads instead of charging you.</p>
+        <h3>💡 why checkpoints?</h3>
+        <p>Running a free service requires infrastructure costs. These quick checkpoints (15 seconds each) help us keep Alucard completely free for everyone. No premium plans, no paywalls, just 45 seconds of your time.</p>
       </div>
 
       <div class="progress-container">
@@ -226,46 +390,48 @@
         <!-- Step 1 -->
         <div class="step-card active" id="step-1">
           <div class="step-number">1</div>
-          <h3>learn something new</h3>
-          <p>Did you know? Alucard is fully customizable and integrates directly with your dashboard!</p>
-          <button class="ad-button" id="ad-btn-1">Continue</button>
+          <h3>checkpoint one</h3>
+          <p>Alucard provides enterprise-grade script protection with military-level encryption, completely free.</p>
+          <button class="ad-button" id="ad-btn-1">Start Checkpoint</button>
           <div class="timer" id="timer-1"></div>
-          <div class="skip-ad" id="skip-1" style="display:none;">
-            <p>Want to skip this step? <a href="#" onclick="skipStep(1)">Click here</a></p>
-          </div>
         </div>
 
         <!-- Step 2 -->
         <div class="step-card" id="step-2">
           <div class="step-number">2</div>
-          <h3>learn another thing</h3>
-          <p>Did you know? Alucard is 100% free with no hidden fees!</p>
-          <button class="ad-button" id="ad-btn-2" disabled>Continue</button>
+          <h3>checkpoint two</h3>
+          <p>With real-time analytics, webhook integration, and global CDN delivery, your scripts are protected and fast.</p>
+          <button class="ad-button" id="ad-btn-2" disabled>Start Checkpoint</button>
           <div class="timer" id="timer-2"></div>
-          <div class="skip-ad" id="skip-2" style="display:none;">
-            <p>Want to skip this step? <a href="#" onclick="skipStep(2)">Click here</a></p>
-          </div>
         </div>
 
         <!-- Step 3 -->
         <div class="step-card" id="step-3">
           <div class="step-number">3</div>
-          <h3>last step!</h3>
-          <p>Did you know? Alucard is one of the newest and best lua protectors?</p>
-          <button class="ad-button" id="ad-btn-3" disabled>Continue</button>
+          <h3>final checkpoint</h3>
+          <p>Join thousands of developers using Alucard for HWID locking, blacklist management, and API access.</p>
+          <button class="ad-button" id="ad-btn-3" disabled>Start Checkpoint</button>
           <div class="timer" id="timer-3"></div>
-          <div class="skip-ad" id="skip-3" style="display:none;">
-            <p>Want to skip this step? <a href="#" onclick="skipStep(3)">Click here</a></p>
-          </div>
         </div>
       </div>
 
+      <div class="error-message" id="error-message"></div>
+
       <div class="success-message" id="success-message">
-        <h2>🎉 you're all set!</h2>
-        <p>your hwid has been whitelisted. you can now use alucard.</p>
+        <h2>🎉 whitelist unlocked!</h2>
+        <p>Your device has been successfully whitelisted. You now have permanent access to Alucard.</p>
         <div class="hwid-display" id="hwid-display"></div>
-        <button class="copy-btn" onclick="copyHWID(event)">copy hwid</button>
-        <p style="margin-top:1rem;color:rgba(255,255,255,0.7);font-size:.9rem;">head to your dashboard to upload scripts and manage access</p>
+        
+        <div class="button-group">
+          <button class="copy-btn" onclick="copyHWID(event)">📋 Copy HWID</button>
+          <button class="add-device-btn" onclick="addAnotherDevice()">➕ Add Another Device</button>
+          <button class="dashboard-btn" onclick="goToDashboard()">📊 Go to Dashboard</button>
+        </div>
+
+        <div class="devices-list" id="devices-list" style="display:none;">
+          <h3>Your Whitelisted Devices:</h3>
+          <div id="devices-container"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -274,6 +440,8 @@
     const TOTAL_STEPS = 3;
     let completedSteps = 0;
     let userHWID = null;
+    let whitelistedDevices = [];
+    let sessionTokens = {};
 
     function generateHWID() {
       return 'HWID-' + Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -285,54 +453,106 @@
       document.getElementById('completed-count').textContent = completedSteps;
     }
 
+    function showError(message) {
+      const errorEl = document.getElementById('error-message');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+      setTimeout(() => errorEl.classList.remove('show'), 5000);
+    }
+
     async function startAd(stepNum) {
       const btn = document.getElementById(`ad-btn-${stepNum}`);
       const timer = document.getElementById(`timer-${stepNum}`);
+      const card = document.getElementById(`step-${stepNum}`);
+      
       btn.disabled = true;
-      btn.textContent = 'starting...';
+      btn.textContent = 'Connecting...';
+      card.classList.add('loading');
 
       try {
-        await fetch(`${API_URL}/api/ad-start`, {
+        const response = await fetch(`${API_URL}/api/ad-start`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: localStorage.getItem('alucard_user_id') || 'guest', step: stepNum })
+          body: JSON.stringify({ 
+            userId: localStorage.getItem('alucard_user_id') || 'guest', 
+            step: stepNum 
+          })
         });
 
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to start checkpoint');
+        }
+
+        if (data.alreadyCompleted) {
+          completeStep(stepNum, true);
+          return;
+        }
+
+        sessionTokens[stepNum] = data.sessionToken;
+        card.classList.remove('loading');
         startTimer(stepNum);
-        setTimeout(() => completeStep(stepNum), 30000);
+        setTimeout(() => completeStep(stepNum), 15000);
       } catch (e) {
-        alert('Error starting checkpoint: ' + e.message);
+        showError('Error starting checkpoint: ' + e.message);
         btn.disabled = false;
-        btn.textContent = 'Continue';
+        btn.textContent = 'Start Checkpoint';
+        card.classList.remove('loading');
       }
     }
 
     function startTimer(stepNum) {
       const timer = document.getElementById(`timer-${stepNum}`);
       const btn = document.getElementById(`ad-btn-${stepNum}`);
-      let seconds = 30;
+      let seconds = 15;
+      
       btn.style.display = 'none';
       timer.style.display = 'block';
-      timer.textContent = `wait ${seconds}s...`;
+      timer.textContent = `Please wait ${seconds}s...`;
+      
       const interval = setInterval(() => {
         seconds--;
-        timer.textContent = `wait ${seconds}s...`;
-        if (seconds <= 0) {
+        if (seconds > 0) {
+          timer.textContent = `Please wait ${seconds}s...`;
+        } else {
           clearInterval(interval);
-          timer.textContent = 'verifying...';
+          timer.textContent = 'Verifying...';
         }
       }, 1000);
     }
 
-    async function completeStep(stepNum) {
+    async function completeStep(stepNum, skipAPI = false) {
       const card = document.getElementById(`step-${stepNum}`);
       const btn = document.getElementById(`ad-btn-${stepNum}`);
       const timer = document.getElementById(`timer-${stepNum}`);
 
-      card.classList.remove('active');
+      if (!skipAPI) {
+        try {
+          const response = await fetch(`${API_URL}/api/ad-complete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionToken: sessionTokens[stepNum] })
+          });
+
+          if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.error || 'Failed to complete checkpoint');
+          }
+        } catch (e) {
+          showError('Verification failed: ' + e.message);
+          btn.disabled = false;
+          btn.textContent = 'Start Checkpoint';
+          btn.style.display = 'block';
+          timer.style.display = 'none';
+          return;
+        }
+      }
+
+      card.classList.remove('active', 'loading');
       card.classList.add('completed');
       timer.style.display = 'none';
-      btn.textContent = '✓ completed';
+      btn.textContent = '✓ Completed';
       btn.style.background = '#00ff00';
       btn.style.display = 'block';
 
@@ -344,35 +564,95 @@
         document.getElementById(`step-${next}`).classList.add('active');
         document.getElementById(`ad-btn-${next}`).disabled = false;
       } else {
-        unlockWhitelist();
+        setTimeout(() => unlockWhitelist(), 500);
       }
-    }
-
-    function skipStep(stepNum) {
-      if (!confirm('Are you sure you want to skip this step?')) return;
-      completeStep(stepNum);
     }
 
     async function unlockWhitelist() {
       userHWID = generateHWID();
+      
       try {
         const response = await fetch(`${API_URL}/api/unlock-whitelist`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             hwid: userHWID,
-            userId: localStorage.getItem('alucard_user_id') || 'guest',
-            method: 'ad_gate'
+            userId: localStorage.getItem('alucard_user_id') || 'guest'
           })
         });
+        
         const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to unlock whitelist');
+        }
+
         if (data.success) {
-          document.getElementById('hwid-display').textContent = userHWID;
-          document.getElementById('success-message').classList.add('show');
+          whitelistedDevices.push({
+            hwid: userHWID,
+            time: new Date().toLocaleString()
+          });
+          displaySuccess();
         }
       } catch (err) {
-        alert('Error unlocking whitelist: ' + err.message);
+        showError('Error unlocking whitelist: ' + err.message);
       }
+    }
+
+    function displaySuccess() {
+      document.getElementById('hwid-display').textContent = userHWID;
+      document.getElementById('success-message').classList.add('show');
+      
+      if (whitelistedDevices.length > 1) {
+        displayDevicesList();
+      }
+    }
+
+    function displayDevicesList() {
+      const listEl = document.getElementById('devices-list');
+      const containerEl = document.getElementById('devices-container');
+      
+      containerEl.innerHTML = whitelistedDevices.map((device, i) => `
+        <div class="device-item">
+          <div>
+            <div class="device-hwid">${device.hwid}</div>
+            <div class="device-time">Added: ${device.time}</div>
+          </div>
+        </div>
+      `).join('');
+      
+      listEl.style.display = 'block';
+    }
+
+    function addAnotherDevice() {
+      // Reset for another device
+      completedSteps = 0;
+      sessionTokens = {};
+      updateProgress();
+      
+      // Hide success message
+      document.getElementById('success-message').classList.remove('show');
+      
+      // Reset all steps
+      for (let i = 1; i <= TOTAL_STEPS; i++) {
+        const card = document.getElementById(`step-${i}`);
+        const btn = document.getElementById(`ad-btn-${i}`);
+        const timer = document.getElementById(`timer-${i}`);
+        
+        card.classList.remove('completed', 'active', 'loading');
+        btn.disabled = true;
+        btn.textContent = 'Start Checkpoint';
+        btn.style.background = '#ff3333';
+        btn.style.display = 'block';
+        timer.style.display = 'none';
+      }
+      
+      // Activate first step
+      document.getElementById('step-1').classList.add('active');
+      document.getElementById('ad-btn-1').disabled = false;
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function copyHWID(event) {
@@ -380,8 +660,12 @@
       navigator.clipboard.writeText(hwid);
       const btn = event.target;
       const old = btn.textContent;
-      btn.textContent = 'copied!';
+      btn.textContent = '✓ Copied!';
       setTimeout(() => btn.textContent = old, 2000);
+    }
+
+    function goToDashboard() {
+      window.location.href = 'dashboard.html';
     }
 
     // Initialize
@@ -392,4 +676,3 @@
   </script>
 </body>
 </html>
-
