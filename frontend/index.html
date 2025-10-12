@@ -567,24 +567,15 @@ loadstring(game:HttpGet("https://alucard.lol/verify"))()
     </footer>
 
     <script>
-        // Initialize audio
+        // Initialize audio and start playing immediately
         const audio = new Audio('assets/music/background.mp3');
         audio.loop = true;
         audio.volume = 0.3;
+        audio.play(); // Start playing immediately
         
-        let isPlaying = false;
+        let isPlaying = true;
         const musicBtn = document.getElementById('music-control');
-
-        // Try to autoplay when page loads
-        window.addEventListener('load', () => {
-            audio.play().then(() => {
-                isPlaying = true;
-                musicBtn.innerHTML = '🔊';
-            }).catch(() => {
-                // Autoplay blocked by browser, user needs to click
-                musicBtn.innerHTML = '🔇';
-            });
-        });
+        musicBtn.innerHTML = '🔊'; // Show playing icon
 
         // Toggle music on button click
         musicBtn.addEventListener('click', () => {
