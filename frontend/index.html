@@ -567,15 +567,40 @@ loadstring(game:HttpGet("https://alucard.lol/verify"))()
     </footer>
 
     <script>
-        // Initialize audio and start playing immediately
+        // Initialize audio
         const audio = new Audio('assets/music/background.mp3');
         audio.loop = true;
         audio.volume = 0.3;
-        audio.play(); // Start playing immediately
         
-        let isPlaying = true;
+        let isPlaying = false;
+        let hasStarted = false;
         const musicBtn = document.getElementById('music-control');
-        musicBtn.innerHTML = '🔊'; // Show playing icon
+        musicBtn.innerHTML = '🔇';
+
+        // Try to start music immediately
+        audio.play().then(() => {
+            isPlaying = true;
+            hasStarted = true;
+            musicBtn.innerHTML = '🔊';
+        }).catch(() => {
+            // Autoplay blocked - start on first user interaction
+            const startMusic = () => {
+                if (!hasStarted) {
+                    audio.play();
+                    isPlaying = true;
+                    hasStarted = true;
+                    musicBtn.innerHTML = '🔊';
+                    // Remove listeners after first interaction
+                    document.removeEventListener('click', startMusic);
+                    document.removeEventListener('keydown', startMusic);
+                    document.removeEventListener('scroll', startMusic);
+                }
+            };
+            
+            document.addEventListener('click', startMusic);
+            document.addEventListener('keydown', startMusic);
+            document.addEventListener('scroll', startMusic);
+        });
 
         // Toggle music on button click
         musicBtn.addEventListener('click', () => {
@@ -588,6 +613,7 @@ loadstring(game:HttpGet("https://alucard.lol/verify"))()
                 musicBtn.innerHTML = '🔊';
                 isPlaying = true;
             }
+            hasStarted = true;
         });
 
         // Pause when tab is hidden
