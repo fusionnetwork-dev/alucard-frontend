@@ -591,23 +591,7 @@
 
     <script>
         // Check if user is logged in
-        const token = localStorage.getItem('alucard_token');
-        if (!token) {
-            window.location.href = 'auth.html';
-        }
-         function showDeviceTypeDropdown() {
-        const hwidInput = document.getElementById('hwid-input').value.trim();
-        const typeGroup = document.getElementById('device-type-group');
-
-        if (hwidInput && hwidInput.startsWith('HWID-')) {
-            typeGroup.style.display = 'block';
-        } else {
-            typeGroup.style.display = 'none';
-        }
-    }
-
-    // Updated addDevice function to include device type
-    async function addDevice() {
+        async function addDevice() {
     const hwid = document.getElementById('hwid-input').value.trim();
     const deviceType = document.getElementById('device-type').value;
     const msgEl = document.getElementById('add-device-msg');
@@ -631,15 +615,19 @@
     }
 
     try {
-        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+        const token = localStorage.getItem('alucard_token');
+        if (!token) {
+            window.location.href = 'auth.html';
+            return;
+        }
+
         const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ 
-                hwid: hwid,
-                deviceType: deviceType,
-                userId: user.id || 'guest'
-            })
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ hwid }) // include deviceType if backend supports it
         });
 
         const data = await res.json();
@@ -660,6 +648,7 @@
         msgEl.textContent = 'Network error. Please try again.';
     }
 }
+
 
         async function loadDashboard() {
     const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
@@ -858,5 +847,6 @@
     </script>
 </body>
 </html>
+
 
 
