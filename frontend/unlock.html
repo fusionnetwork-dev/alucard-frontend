@@ -1,563 +1,393 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="js/config.js"></script>
-    <title>alucard - unlock whitelist</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="js/config.js"></script>
+  <title>alucard - unlock whitelist</title>
+  <style>
+    /* ==== GLOBAL STYLES ==== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #000000;
-            color: #ffffff;
-            overflow-x: hidden;
-        }
+    /* ==== BACKGROUND ==== */
+    .bg-orbs {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float 20s infinite ease-in-out;
+    }
+    .orb1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #ff0000, transparent);
+      top: -200px; right: -100px;
+    }
+    .orb2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #8b0000, transparent);
+      bottom: -150px; left: -100px;
+      animation-delay: 5s;
+    }
+    @keyframes float {
+      0%,100%{transform:translate(0,0)scale(1)}
+      33%{transform:translate(100px,-100px)scale(1.1)}
+      66%{transform:translate(-100px,100px)scale(0.9)}
+    }
 
-        .bg-orbs {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
+    /* ==== NAVBAR ==== */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 4%;
+      background: rgba(10,10,10,0.6);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .logo { font-size: 1.5rem; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
+    .logo span { color: #ff3333; }
 
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: float 20s infinite ease-in-out;
-        }
+    /* ==== MAIN ==== */
+    .container { max-width: 900px; margin: 4rem auto; padding: 0 2rem; }
+    .unlock-card {
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 3rem;
+      text-align: center;
+    }
+    .unlock-card h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+    .unlock-card .subtitle {
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 3rem;
+      font-size: 1.1rem;
+    }
 
-        .orb1 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, #ff0000, transparent);
-            top: -200px;
-            right: -100px;
-        }
+    /* ==== INFO BOX ==== */
+    .info-box {
+      background: rgba(255,51,51,0.1);
+      border: 1px solid rgba(255,51,51,0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .info-box h3 { margin-bottom: .5rem; color: #ff6666; }
 
-        .orb2 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, #8b0000, transparent);
-            bottom: -150px;
-            left: -100px;
-            animation-delay: 5s;
-        }
+    /* ==== PROGRESS BAR ==== */
+    .progress-container { margin: 2rem 0; }
+    .progress-bar {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      height: 12px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg,#ff0000,#ff3333);
+      height: 100%;
+      width: 0%;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 20px rgba(255,51,51,0.5);
+    }
+    .progress-text {
+      margin-top: 1rem;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.95rem;
+    }
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(100px, -100px) scale(1.1); }
-            66% { transform: translate(-100px, 100px) scale(0.9); }
-        }
+    /* ==== STEPS ==== */
+    .steps-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+      gap: 1.5rem;
+      margin: 3rem 0;
+    }
+    .step-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+      transition: all .3s;
+    }
+    .step-card.active {
+      border-color: #ff3333;
+      box-shadow: 0 0 20px rgba(255,51,51,0.2);
+    }
+    .step-card.completed {
+      border-color: rgba(0,255,0,0.5);
+      background: rgba(0,255,0,0.05);
+    }
+    .step-number {
+      position: absolute;
+      top: -15px;
+      left: 20px;
+      background: #ff3333;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9rem;
+    }
+    .step-card.completed .step-number { background: #00ff00; }
+    .ad-button {
+      background: #ff3333;
+      border: none;
+      border-radius: 10px;
+      padding: 1rem 2rem;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .3s;
+      margin-top: 1rem;
+      width: 100%;
+    }
+    .ad-button:hover:not(:disabled) {
+      background: #ff0000;
+      box-shadow: 0 4px 20px rgba(255,51,51,0.4);
+      transform: translateY(-2px);
+    }
+    .ad-button:disabled { opacity: .5; cursor: not-allowed; }
+    .timer { color: #ff3333; font-weight: 700; margin-top: .5rem; }
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 4%;
-            background: rgba(10, 10, 10, 0.6);
-            backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #fff;
-            letter-spacing: -0.5px;
-        }
-
-        .logo span {
-            color: #ff3333;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 4rem auto;
-            padding: 0 2rem;
-        }
-
-        .unlock-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 3rem;
-            text-align: center;
-        }
-
-        .unlock-card h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            letter-spacing: -1px;
-        }
-
-        .unlock-card .subtitle {
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 3rem;
-            font-size: 1.1rem;
-        }
-
-        .progress-container {
-            margin: 2rem 0;
-        }
-
-        .progress-bar {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            height: 12px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, #ff0000, #ff3333);
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease;
-            box-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
-        }
-
-        .progress-text {
-            margin-top: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.95rem;
-        }
-
-        .steps-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 3rem 0;
-        }
-
-        .step-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 2rem;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .step-card.completed {
-            border-color: rgba(255, 51, 51, 0.5);
-            background: rgba(255, 51, 51, 0.05);
-        }
-
-        .step-card.active {
-            border-color: #ff3333;
-            box-shadow: 0 0 20px rgba(255, 51, 51, 0.2);
-        }
-
-        .step-number {
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background: #ff3333;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        .step-card.completed .step-number {
-            background: #00ff00;
-        }
-
-        .step-icon {
-            font-size: 2.5rem;
-            margin: 1rem 0;
-        }
-
-        .step-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .step-card p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        .ad-button {
-            background: #ff3333;
-            border: none;
-            border-radius: 10px;
-            padding: 1rem 2rem;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 1rem;
-            width: 100%;
-        }
-
-        .ad-button:hover:not(:disabled) {
-            background: #ff0000;
-            box-shadow: 0 4px 20px rgba(255, 51, 51, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .ad-button:disabled {
-            background: rgba(255, 255, 255, 0.1);
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .timer {
-            color: #ff3333;
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin-top: 0.5rem;
-        }
-
-        .success-message {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid rgba(0, 255, 0, 0.3);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-top: 2rem;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        .success-message h2 {
-            color: #00ff00;
-            margin-bottom: 1rem;
-        }
-
-        .hwid-display {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 1rem;
-            font-family: 'Courier New', monospace;
-            margin: 1rem 0;
-            word-break: break-all;
-        }
-
-        .copy-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 0.6rem 1.2rem;
-            color: white;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .info-box {
-            background: rgba(255, 51, 51, 0.1);
-            border: 1px solid rgba(255, 51, 51, 0.2);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .info-box h3 {
-            margin-bottom: 0.5rem;
-            color: #ff6666;
-        }
-
-        .info-box p {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-            .unlock-card {
-                padding: 2rem;
-            }
-
-            .unlock-card h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
+    /* ==== SUCCESS BOX ==== */
+    .success-message {
+      display: none;
+      background: rgba(0,255,0,0.1);
+      border: 1px solid rgba(0,255,0,0.3);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+    .success-message.show { display: block; }
+    .success-message h2 { color: #00ff00; margin-bottom: 1rem; }
+    .hwid-display {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: monospace;
+      margin: 1rem 0;
+      word-break: break-all;
+    }
+    .copy-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: .6rem 1.2rem;
+      color: white;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .copy-btn:hover { background: rgba(255,255,255,0.15); }
+  </style>
 </head>
 <body>
-    <div class="bg-orbs">
-        <div class="orb orb1"></div>
-        <div class="orb orb2"></div>
-    </div>
-
-    <nav>
-        <div class="logo">alu<span>card</span></div>
-        <a href="index.html" style="color: rgba(255,255,255,0.7); text-decoration: none;">← back</a>
-    </nav>
-
-    <div class="container">
-        <div class="unlock-card">
-            <h1>unlock whitelist access</h1>
-            <p class="subtitle">complete 3 quick tasks to get permanent access</p>
-
-            <div class="info-box">
-                <h3>why ads?</h3>
-                <p>running servers costs money. we keep alucard 100% free by showing ads instead of charging you. it takes less than 2 minutes and you only do it once.</p>
-            </div>
-
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
-                </div>
-                <p class="progress-text"><span id="completed-count">0</span> of 3 checkpoints completed</p>
-            </div>
-
-            <div class="steps-container">
-                <!-- Step 1 -->
-                <div class="step-card active" id="step-1">
-  <div class="step-number">1</div>
-  <div class="step-icon">📚</div>
-  <h3>learn something new</h3>
-  <p>read the following info to continue:</p>
-  <div class="info-content" id="info-1">
-      <p>Did you know? Alucard is fully customizable and integrate directly with your dashboard!</p>
-      <p>Take a moment to read this before proceeding.</p>
+  <div class="bg-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
   </div>
-  <button class="ad-button" id="ad-btn-1" disabled>Continue</button>
-  <div class="timer" id="timer-1"></div>
-  <div class="skip-ad" id="skip-1" style="display:none;">
-    <p>Want to skip this step? <a href="#" onclick="skipStep(1)">Click here</a></p>
-</div>
-</div>
 
+  <nav>
+    <div class="logo">alu<span>card</span></div>
+    <a href="index.html" style="color:rgba(255,255,255,0.7);text-decoration:none;">← back</a>
+  </nav>
 
-                <!-- Step 2 -->
-                            <div class="step-card active" id="step-2">
-  <div class="step-number">2</div>
-  <div class="step-icon">📚</div>
-  <h3>learn another thing</h3>
-  <p>read the following info to continue:</p>
-  <div class="info-content" id="info-2">
-      <p>Did you know? Alucard is 100% free? With no added taxes or payments.</p>
-      <p>Take a moment to read this before proceeding.</p>
-  </div>
-  <button class="ad-button" id="ad-btn-2" disabled>Continue</button>
-  <div class="timer" id="timer-2"></div>
-  <div class="skip-ad" id="skip-2" style="display:none;">
-    <p>Want to skip this step? <a href="#" onclick="skipStep(2)">Click here</a></p>
-</div>
-</div>
-                <!-- Step 3 -->
-                                       <div class="step-card active" id="step-3">
-  <div class="step-number">3</div>
-  <div class="step-icon">📚</div>
-  <h3>last step!</h3>
-  <p>read the following info to continue:</p>
-  <div class="info-content" id="info-3">
-      <p>Did you know? Alucard is one of the best, and one of the newest lua protectors to release?</p>
-      <p>Take a moment to read this before proceeding.</p>
-  </div>
-  <button class="ad-button" id="ad-btn-3" disabled>Continue</button>
-  <div class="timer" id="timer-3"></div>
-  <div class="skip-ad" id="skip-3" style="display:none;">
-    <p>Want to skip this step? <a href="#" onclick="skipStep(3)">Click here</a></p>
-</div>
-</div>
+  <div class="container">
+    <div class="unlock-card">
+      <h1>unlock whitelist access</h1>
+      <p class="subtitle">complete 3 quick tasks to get permanent access</p>
 
-            <div class="success-message" id="success-message">
-                <h2>🎉 you're all set!</h2>
-                <p>your hwid has been whitelisted. you can now use alucard.</p>
-                <div class="hwid-display" id="hwid-display"></div>
-                <button class="copy-btn" onclick="copyHWID()">copy hwid</button>
-                <p style="margin-top: 1rem; color: rgba(255,255,255,0.7); font-size: 0.9rem;">head to your dashboard to upload scripts and manage access</p>
-            </div>
+      <div class="info-box">
+        <h3>why ads?</h3>
+        <p>running servers costs money. we keep alucard 100% free by showing ads instead of charging you.</p>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+        <p class="progress-text"><span id="completed-count">0</span> of 3 checkpoints completed</p>
+      </div>
+
+      <div class="steps-container">
+        <!-- Step 1 -->
+        <div class="step-card active" id="step-1">
+          <div class="step-number">1</div>
+          <h3>learn something new</h3>
+          <p>Did you know? Alucard is fully customizable and integrates directly with your dashboard!</p>
+          <button class="ad-button" id="ad-btn-1">Continue</button>
+          <div class="timer" id="timer-1"></div>
+          <div class="skip-ad" id="skip-1" style="display:none;">
+            <p>Want to skip this step? <a href="#" onclick="skipStep(1)">Click here</a></p>
+          </div>
         </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" id="step-2">
+          <div class="step-number">2</div>
+          <h3>learn another thing</h3>
+          <p>Did you know? Alucard is 100% free with no hidden fees!</p>
+          <button class="ad-button" id="ad-btn-2" disabled>Continue</button>
+          <div class="timer" id="timer-2"></div>
+          <div class="skip-ad" id="skip-2" style="display:none;">
+            <p>Want to skip this step? <a href="#" onclick="skipStep(2)">Click here</a></p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card" id="step-3">
+          <div class="step-number">3</div>
+          <h3>last step!</h3>
+          <p>Did you know? Alucard is one of the newest and best lua protectors?</p>
+          <button class="ad-button" id="ad-btn-3" disabled>Continue</button>
+          <div class="timer" id="timer-3"></div>
+          <div class="skip-ad" id="skip-3" style="display:none;">
+            <p>Want to skip this step? <a href="#" onclick="skipStep(3)">Click here</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="success-message" id="success-message">
+        <h2>🎉 you're all set!</h2>
+        <p>your hwid has been whitelisted. you can now use alucard.</p>
+        <div class="hwid-display" id="hwid-display"></div>
+        <button class="copy-btn" onclick="copyHWID(event)">copy hwid</button>
+        <p style="margin-top:1rem;color:rgba(255,255,255,0.7);font-size:.9rem;">head to your dashboard to upload scripts and manage access</p>
+      </div>
     </div>
+  </div>
 
-    <script>
-        let completedSteps = 0;
-        let currentStep = 1;
-        let userHWID = null;
+  <script>
+    const TOTAL_STEPS = 3;
+    let completedSteps = 0;
+    let userHWID = null;
 
-        // Simulate getting HWID (in production, this would come from the user's system)
-        function generateHWID() {
-            return 'HWID-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-        }
+    function generateHWID() {
+      return 'HWID-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    }
 
-        function updateProgress() {
-            const progress = (completedSteps / 3) * 100;
-            document.getElementById('progress-fill').style.width = progress + '%';
-            document.getElementById('completed-count').textContent = completedSteps;
-        }
+    function updateProgress() {
+      const percent = (completedSteps / TOTAL_STEPS) * 100;
+      document.getElementById('progress-fill').style.width = percent + '%';
+      document.getElementById('completed-count').textContent = completedSteps;
+    }
 
-        function startAd(stepNum) {
-            const btn = document.getElementById(`ad-btn-${stepNum}`);
-            const timer = document.getElementById(`timer-${stepNum}`);
-            const stepCard = document.getElementById(`step-${stepNum}`);
-            
-            btn.disabled = true;
-            btn.textContent = 'loading...';
+    async function startAd(stepNum) {
+      const btn = document.getElementById(`ad-btn-${stepNum}`);
+      const timer = document.getElementById(`timer-${stepNum}`);
+      btn.disabled = true;
+      btn.textContent = 'starting...';
 
-            startCustomCheckpoint(stepNum);
-
-        }
-
-        async function startCustomCheckpoint(stepNum) {
-    const btn = document.getElementById(`ad-btn-${stepNum}`);
-    const timer = document.getElementById(`timer-${stepNum}`);
-    
-    btn.disabled = true;
-    btn.textContent = 'starting...';
-
-    try {
-        const response = await fetch(`${API_URL}/api/ad-start`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                userId: localStorage.getItem('alucard_user_id') || 'guest',
-                step: stepNum
-            })
+      try {
+        await fetch(`${API_URL}/api/ad-start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: localStorage.getItem('alucard_user_id') || 'guest', step: stepNum })
         });
 
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to start checkpoint');
-
-        const sessionToken = data.sessionToken;
-
-        // Start the custom timer for the checkpoint
         startTimer(stepNum);
-
-        // After timer, mark checkpoint complete
-        setTimeout(async () => {
-            await completeCustomCheckpoint(sessionToken, stepNum);
-        }, 5000); // 5s timer
-    } catch (err) {
-        console.error(err);
+        setTimeout(() => completeStep(stepNum), 30000);
+      } catch (e) {
+        alert('Error starting checkpoint: ' + e.message);
         btn.disabled = false;
-        btn.textContent = 'start checkpoint ' + stepNum;
-        alert('Error starting checkpoint: ' + err.message);
+        btn.textContent = 'Continue';
+      }
     }
-}
 
-        function startTimer(stepNum) {
-            const timer = document.getElementById(`timer-${stepNum}`);
-            const btn = document.getElementById(`ad-btn-${stepNum}`);
-            
-            timer.style.display = 'block';
-            btn.style.display = 'none';
-            
-            let seconds = 5;
-            timer.textContent = `wait ${seconds}s...`;
-            
-            const interval = setInterval(() => {
-                seconds--;
-                timer.textContent = `wait ${seconds}s...`;
-                
-                if (seconds <= 0) {
-                    clearInterval(interval);
-                    timer.textContent = 'verifying...';
-                }
-            }, 1000);
+    function startTimer(stepNum) {
+      const timer = document.getElementById(`timer-${stepNum}`);
+      const btn = document.getElementById(`ad-btn-${stepNum}`);
+      let seconds = 30;
+      btn.style.display = 'none';
+      timer.style.display = 'block';
+      timer.textContent = `wait ${seconds}s...`;
+      const interval = setInterval(() => {
+        seconds--;
+        timer.textContent = `wait ${seconds}s...`;
+        if (seconds <= 0) {
+          clearInterval(interval);
+          timer.textContent = 'verifying...';
         }
+      }, 1000);
+    }
 
-       async function completeCustomCheckpoint(sessionToken, stepNum) {
-    try {
-       const response = await fetch(`${API_URL}/api/ad-complete`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionToken })
+    async function completeStep(stepNum) {
+      const card = document.getElementById(`step-${stepNum}`);
+      const btn = document.getElementById(`ad-btn-${stepNum}`);
+      const timer = document.getElementById(`timer-${stepNum}`);
+
+      card.classList.remove('active');
+      card.classList.add('completed');
+      timer.style.display = 'none';
+      btn.textContent = '✓ completed';
+      btn.style.background = '#00ff00';
+      btn.style.display = 'block';
+
+      completedSteps++;
+      updateProgress();
+
+      if (stepNum < TOTAL_STEPS) {
+        const next = stepNum + 1;
+        document.getElementById(`step-${next}`).classList.add('active');
+        document.getElementById(`ad-btn-${next}`).disabled = false;
+      } else {
+        unlockWhitelist();
+      }
+    }
+
+    function skipStep(stepNum) {
+      if (!confirm('Are you sure you want to skip this step?')) return;
+      completeStep(stepNum);
+    }
+
+    async function unlockWhitelist() {
+      userHWID = generateHWID();
+      try {
+        const response = await fetch(`${API_URL}/api/unlock-whitelist`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            hwid: userHWID,
+            userId: localStorage.getItem('alucard_user_id') || 'guest',
+            method: 'ad_gate'
+          })
         });
-
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Failed to complete checkpoint');
-
-        // Mark step as completed visually
-        const stepCard = document.getElementById(`step-${stepNum}`);
-        const btn = document.getElementById(`ad-btn-${stepNum}`);
-        const timer = document.getElementById(`timer-${stepNum}`);
-
-        stepCard.classList.remove('active');
-        stepCard.classList.add('completed');
-        timer.style.display = 'none';
-        btn.textContent = '✓ completed';
-        btn.style.background = '#00ff00';
-
-        completedSteps++;
-        updateProgress();
-
-        // Activate next step
-        if (stepNum < 3) {
-            const nextStep = stepNum + 1;
-            document.getElementById(`step-${nextStep}`).classList.add('active');
-            document.getElementById(`ad-btn-${nextStep}`).disabled = false;
-        } else {
-            unlockWhitelist();
+        if (data.success) {
+          document.getElementById('hwid-display').textContent = userHWID;
+          document.getElementById('success-message').classList.add('show');
         }
-
-    } catch (err) {
-        console.error(err);
-        alert('Error completing checkpoint: ' + err.message);
+      } catch (err) {
+        alert('Error unlocking whitelist: ' + err.message);
+      }
     }
-}
 
+    function copyHWID(event) {
+      const hwid = document.getElementById('hwid-display').textContent;
+      navigator.clipboard.writeText(hwid);
+      const btn = event.target;
+      const old = btn.textContent;
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = old, 2000);
+    }
 
-        async function unlockWhitelist() {
-            userHWID = generateHWID();
-            
-            // Send whitelist request to backend
-            try {
-               const response = await fetch(`${API_URL}/api/unlock-whitelist`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        hwid: userHWID,
-                        userId: localStorage.getItem('alucard_user_id') || 'guest',
-                        method: 'ad_gate'
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    document.getElementById('hwid-display').textContent = userHWID;
-                    document.getElementById('success-message').classList.add('show');
-                }
-            } catch (err) {
-                console.error('Whitelist error:', err);
-                alert('Error unlocking whitelist. Please try again.');
-            }
-        }
-
-        function copyHWID() {
-            const hwid = document.getElementById('hwid-display').textContent;
-            navigator.clipboard.writeText(hwid);
-            
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = 'copied!';
-            setTimeout(() => {
-                btn.textContent = originalText;
-            }, 2000);
-        }
-
-        // Initialize
-        updateProgress();
-    </script>
+    // Initialize
+    updateProgress();
+    document.getElementById('ad-btn-1').addEventListener('click', () => startAd(1));
+    document.getElementById('ad-btn-2').addEventListener('click', () => startAd(2));
+    document.getElementById('ad-btn-3').addEventListener('click', () => startAd(3));
+  </script>
 </body>
-
 </html>
