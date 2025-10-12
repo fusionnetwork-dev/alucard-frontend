@@ -575,16 +575,7 @@ loadstring(game:HttpGet("https://alucard.lol/verify"))()
         let isPlaying = false;
         const musicBtn = document.getElementById('music-control');
 
-        // Try to autoplay when page loads
-        window.addEventListener('load', () => {
-            audio.play().then(() => {
-                isPlaying = true;
-                musicBtn.innerHTML = '🔊';
-            }).catch(() => {
-                // Autoplay blocked, user needs to click
-                musicBtn.innerHTML = '🔇';
-            });
-        });
+        // Music starts muted - user must click to play
 
         // Toggle music on button click
         musicBtn.addEventListener('click', () => {
