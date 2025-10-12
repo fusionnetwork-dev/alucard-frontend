@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <title>alucard - documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .bg-orbs {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #ff0000, transparent);
+            top: -200px;
+            right: -100px;
+        }
+
+        .orb2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #8b0000, transparent);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 4%;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #ff3333;
+        }
+
+        .docs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 3rem;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .sidebar nav {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: static;
+        }
+
+        .sidebar h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .sidebar a:hover {
+            color: #ff3333;
+            background: rgba(255, 51, 51, 0.1);
+        }
+
+        .content {
+            max-width: 800px;
+        }
+
+        .content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .content h2 {
+            font-size: 1.8rem;
+            margin: 3rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .content h3 {
+            font-size: 1.3rem;
+            margin: 2rem 0 1rem;
+            color: #ff6666;
+        }
+
+        .content p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .content ul, .content ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            color: #ff6666;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .code-block code {
+            color: #ff9999;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .info-box {
+            background: rgba(255, 51, 51, 0.1);
+            border-left: 3px solid #ff3333;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .info-box.success {
+            background: rgba(0, 255, 0, 0.1);
+            border-left-color: #00ff00;
+        }
+
+        .info-box.warning {
+            background: rgba(255, 165, 0, 0.1);
+            border-left-color: #ffa500;
+        }
+
+        .endpoint-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .method {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+
+        .method.post {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+
+        .method.get {
+            background: rgba(51, 153, 255, 0.2);
+            color: #3399ff;
+        }
+
+        .method.delete {
+            background: rgba(255, 51, 51, 0.2);
+            color: #ff3333;
+        }
+
+        .endpoint-path {
+            font-family: monospace;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .param-table th {
+            text-align: left;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .param-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .param-table code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 968px) {
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+    </div>
+
+    <nav>
+        <a href="index.html" class="logo">alu<span>card</span></a>
+        <a href="dashboard.html" style="color: rgba(255,255,255,0.7); text-decoration: none;">dashboard</a>
+    </nav>
+
+    <div class="docs-container">
+        <aside class="sidebar">
+            <nav>
+                <h3>Getting Started</h3>
+                <ul>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#quickstart">Quick Start</a></li>
+                    <li><a href="#authentication">Authentication</a></li>
+                </ul>
+
+                <h3>API Reference</h3>
+                <ul>
+                    <li><a href="#auth-endpoints">Auth Endpoints</a></li>
+                    <li><a href="#whitelist-endpoints">Whitelist</a></li>
+                    <li><a href="#script-endpoints">Scripts</a></li>
+                    <li><a href="#dashboard-endpoints">Dashboard</a></li>
+                </ul>
+
+                <h3>Integration</h3>
+                <ul>
+                    <li><a href="#roblox-integration">Roblox Scripts</a></li>
+                    <li><a href="#web-integration">Web Apps</a></li>
+                    <li><a href="#examples">Examples</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <h1 id="introduction">Documentation</h1>
+            <p>Welcome to the Alucard API documentation. Alucard is a free, open-source Lua script protection and whitelist system built on Cloudflare Workers for maximum speed and reliability.</p>
+
+            <div class="info-box">
+                <strong>Base URL:</strong> <code>https://api.alucard.lol</code>
+            </div>
+
+            <h2 id="quickstart">Quick Start</h2>
+            <p>Get up and running in under 5 minutes:</p>
+
+            <h3>Step 1: Create an Account</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>POST /api/signup
+Content-Type: application/json
+
+{
+  "email": "you@example.com",
+  "username": "yourname",
+  "password": "secure_password"
+}</pre>
+            </div>
+
+            <h3>Step 2: Get Your HWID Whitelisted</h3>
+            <p>Visit <a href="unlock.html" style="color: #ff6666;">alucard.lol/unlock</a> and complete the 3 quick steps to whitelist your device.</p>
+
+            <h3>Step 3: Upload Your Script</h3>
+            <p>Go to your dashboard and upload your Lua script. We'll automatically protect it with encryption and obfuscation.</p>
+
+            <h3>Step 4: Integrate</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>-- In your Roblox script
+loadstring(game:HttpGet("https://api.alucard.lol/verify"))()
+
+-- Your protected code runs after verification
+print("User is whitelisted!")</pre>
+            </div>
+
+            <h2 id="authentication">Authentication</h2>
+            <p>Most endpoints require a Bearer token in the Authorization header. You receive this token when you login or signup.</p>
+
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>Authorization: Bearer YOUR_TOKEN_HERE</pre>
+            </div>
+
+            <h2 id="auth-endpoints">Authentication Endpoints</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/signup</span>
+                </div>
+                <p>Create a new user account.</p>
+
+                <h4>Request Body</h4>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>email</code></td>
+                            <td>string</td>
+                            <td>User's email address</td>
+                        </tr>
+                        <tr>
+                            <td><code>username</code></td>
+                            <td>string</td>
+                            <td>Unique username</td>
+                        </tr>
+                        <tr>
+                            <td><code>password</code></td>
+                            <td>string</td>
+                            <td>Account password</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Response</h4>
+                <div class="code-block">
+                    <pre>{
+  "token": "eyJhbGc...",
+  "user": {
+    "id": "uuid",
+    "email": "you@example.com",
+    "username": "yourname"
+  }
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/login</span>
+                </div>
+                <p>Login to an existing account.</p>
+
+                <h4>Request Body</h4>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>email</code></td>
+                            <td>string</td>
+                            <td>User's email address</td>
+                        </tr>
+                        <tr>
+                            <td><code>password</code></td>
+                            <td>string</td>
+                            <td>Account password</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Response</h4>
+                <div class="code-block">
+                    <pre>{
+  "token": "eyJhbGc...",
+  "user": {
+    "id": "uuid",
+    "email": "you@example.com",
+    "username": "yourname"
+  }
+}</pre>
+                </div>
+            </div>
+
+            <h2 id="whitelist-endpoints">Whitelist Endpoints</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/unlock-whitelist</span>
+                </div>
+                <p>Whitelist a device after completing ad checkpoints.</p>
+
+                <h4>Request Body</h4>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>userId</code></td>
+                            <td>string</td>
+                            <td>User ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>hwid</code></td>
+                            <td>string</td>
+                            <td>Hardware ID to whitelist</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box warning">
+                    <strong>Note:</strong> User must complete all 3 ad checkpoints before calling this endpoint.
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/verify</span>
+                </div>
+                <p>Verify if a HWID is whitelisted.</p>
+
+                <h4>Request Body</h4>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>hwid</code></td>
+                            <td>string</td>
+                            <td>Hardware ID to check</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Response</h4>
+                <div class="code-block">
+                    <pre>{
+  "verified": true,
+  "message": "Verified successfully"
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/blacklist</span>
+                </div>
+                <p>Blacklist a device (requires authentication).</p>
+
+                <h4>Headers</h4>
+                <div class="code-block">
+                    <pre>Authorization: Bearer YOUR_TOKEN</pre>
+                </div>
+
+                <h4>Request Body</h4>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>hwid</code></td>
+                            <td>string</td>
+                            <td>Hardware ID to blacklist</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="script-endpoints">Script Management</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/upload-script</span>
+                </div>
+                <p>Upload a new Lua script.</p>
+
+                <h4>Headers</h4>
+                <div class="code-block">
+                    <pre>Authorization: Bearer YOUR_TOKEN</pre>
+                </div>
+
+                <h4>Request Body</h4>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>name</code></td>
+                            <td>string</td>
+                            <td>Script name</td>
+                        </tr>
+                        <tr>
+                            <td><code>content</code></td>
+                            <td>string</td>
+                            <td>Script source code</td>
+                        </tr>
+                        <tr>
+                            <td><code>description</code></td>
+                            <td>string</td>
+                            <td>Script description</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/api/scripts</span>
+                </div>
+                <p>Get all scripts for the authenticated user.</p>
+
+                <h4>Headers</h4>
+                <div class="code-block">
+                    <pre>Authorization: Bearer YOUR_TOKEN</pre>
+                </div>
+            </div>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method delete">DELETE</span>
+                    <span class="endpoint-path">/api/scripts/:id</span>
+                </div>
+                <p>Delete a script.</p>
+
+                <h4>Headers</h4>
+                <div class="code-block">
+                    <pre>Authorization: Bearer YOUR_TOKEN</pre>
+                </div>
+            </div>
+
+            <h2 id="dashboard-endpoints">Dashboard Endpoints</h2>
+
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/api/dashboard</span>
+                </div>
+                <p>Get dashboard overview data.</p>
+
+                <h4>Headers</h4>
+                <div class="code-block">
+                    <pre>Authorization: Bearer YOUR_TOKEN</pre>
+                </div>
+
+                <h4>Response</h4>
+                <div class="code-block">
+                    <pre>{
+  "username": "yourname",
+  "hwids": [...],
+  "completedSteps": 3,
+  "readingTime": 0,
+  "lastLogin": "2025-01-15T..."
+}</pre>
+                </div>
+            </div>
+
+            <h2 id="roblox-integration">Roblox Integration</h2>
+            <p>Here's how to integrate Alucard into your Roblox scripts:</p>
+
+            <h3>Basic Integration</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>-- Load the whitelist verification
+loadstring(game:HttpGet("https://api.alucard.lol/verify"))()
+
+-- Your script code here (only runs if verified)
+print("User is whitelisted!")
+game.Players.LocalPlayer:Kick("Script loaded successfully!")</pre>
+            </div>
+
+            <h3>With Error Handling</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>local success, err = pcall(function()
+    loadstring(game:HttpGet("https://api.alucard.lol/verify"))()
+end)
+
+if not success then
+    game.Players.LocalPlayer:Kick("Verification failed: " .. tostring(err))
+    return
+end
+
+-- Your protected code
+print("Access granted!")</pre>
+            </div>
+
+            <h2 id="web-integration">Web Integration</h2>
+            <p>Using Alucard in web applications:</p>
+
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>// Login
+const response = await fetch('https://api.alucard.lol/api/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'you@example.com',
+    password: 'your_password'
+  })
+});
+
+const { token } = await response.json();
+localStorage.setItem('token', token);
+
+// Use the token for authenticated requests
+const scripts = await fetch('https://api.alucard.lol/api/scripts', {
+  headers: { 'Authorization': `Bearer ${token}` }
+});</pre>
+            </div>
+
+            <h2 id="examples">Code Examples</h2>
+
+            <h3>JavaScript/Node.js</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>const AlucardAPI = {
+  baseURL: 'https://api.alucard.lol',
+  token: null,
+
+  async login(email, password) {
+    const res = await fetch(`${this.baseURL}/api/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    this.token = data.token;
+    return data;
+  },
+
+  async verifyHWID(hwid) {
+    const res = await fetch(`${this.baseURL}/api/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hwid })
+    });
+    return await res.json();
+  }
+};
+
+// Usage
+await AlucardAPI.login('you@example.com', 'password');
+const verified = await AlucardAPI.verifyHWID('HWID-ABC123');</pre>
+            </div>
+
+            <h3>Python</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre>import requests
+
+class AlucardAPI:
+    BASE_URL = "https://api.alucard.lol"
+    
+    def __init__(self):
+        self.token = None
+    
+    def login(self, email, password):
+        response = requests.post(
+            f"{self.BASE_URL}/api/login",
+            json={"email": email, "password": password}
+        )
+        data = response.json()
+        self.token = data["token"]
+        return data
+    
+    def verify_hwid(self, hwid):
+        response = requests.post(
+            f"{self.BASE_URL}/api/verify",
+            json={"hwid": hwid}
+        )
+        return response.json()
+
+# Usage
+api = AlucardAPI()
+api.login("you@example.com", "password")
+result = api.verify_hwid("HWID-ABC123")</pre>
+            </div>
+
+            <div class="info-box success">
+                <strong>Need Help?</strong> Join our Discord server or open an issue on GitHub. We're here to help!
+            </div>
+
+            <h2>Rate Limits</h2>
+            <p>To ensure fair usage, the following rate limits apply:</p>
+            <ul>
+                <li><strong>Authentication endpoints:</strong> 10 requests per minute</li>
+                <li><strong>Verification endpoints:</strong> 100 requests per minute</li>
+                <li><strong>API endpoints:</strong> 1000 requests per hour per API key</li>
+            </ul>
+
+            <div class="info-box warning">
+                <strong>Bypass Detection:</strong> Alucard has built-in bypass detection. VPNs, rapid requests, and suspicious behavior will be flagged and may result in automatic blocking.
+            </div>
+
+            <h2>Security</h2>
+            <p>Alucard takes security seriously:</p>
+            <ul>
+                <li>All passwords are hashed using SHA-256</li>
+                <li>HWIDs are hashed before storage</li>
+                <li>Rate limiting on all endpoints</li>
+                <li>IP logging for security audits</li>
+                <li>Automatic flagging of suspicious activity</li>
+                <li>DDoS protection via Cloudflare</li>
+            </ul>
+
+            <h2>Support</h2>
+            <p>Need help? We've got you covered:</p>
+            <ul>
+                <li><strong>Discord:</strong> Join our community server</li>
+                <li><strong>GitHub:</strong> Open an issue or PR</li>
+                <li><strong>Email:</strong> support@alucard.lol</li>
+            </ul>
+
+            <div style="height: 4rem;"></div>
+        </main>
+    </div>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.parentElement;
+            const code = codeBlock.querySelector('pre').textContent;
+            navigator.clipboard.writeText(code);
+            
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
