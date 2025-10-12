@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>alucard - email verification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .bg-orbs {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #ff0000, transparent);
+            top: -200px;
+            right: -100px;
+        }
+
+        .orb2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #8b0000, transparent);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: 5s;
+        }
+
+        .orb3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, #ff3333, transparent);
+            top: 50%;
+            left: 50%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+
+        .verification-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 2rem;
+        }
+
+        .logo span {
+            color: #ff3333;
+        }
+
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .status-icon.loading {
+            background: rgba(255, 255, 255, 0.1);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .status-icon.success {
+            background: rgba(51, 255, 51, 0.15);
+            color: #66ff66;
+        }
+
+        .status-icon.error {
+            background: rgba(255, 51, 51, 0.15);
+            color: #ff6666;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #ff3333;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            background: #ff3333;
+            border: none;
+            border-radius: 10px;
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            background: #ff0000;
+            box-shadow: 0 4px 20px rgba(255, 51, 51, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.05);
+            margin-left: 1rem;
+        }
+
+        .action-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .user-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .user-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-info-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .user-info-value {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .countdown {
+            color: #ff3333;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .verification-container {
+                padding: 2rem;
+            }
+
+            .action-btn.secondary {
+                margin-left: 0;
+                margin-top: 0.75rem;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+    </div>
+
+    <div class="verification-container">
+        <div class="logo">alu<span>card</span></div>
+
+        <div class="status-icon loading" id="status-icon">
+            <div class="spinner"></div>
+        </div>
+
+        <h1 id="status-title">verifying your email...</h1>
+        <p id="status-message">please wait while we confirm your email address</p>
+
+        <div id="user-info" class="user-info" style="display: none;"></div>
+
+        <div id="countdown" class="countdown" style="display: none;"></div>
+
+        <div id="action-buttons" style="display: none;">
+            <a href="dashboard.html" class="action-btn">go to dashboard</a>
+            <a href="auth.html" class="action-btn secondary">sign in</a>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://yjasnrnrukmtejlwiigx.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqYXNucm5ydWttdGVqbHdpaWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzk5MzUsImV4cCI6MjA3NTc1NTkzNX0.9Q0LgyksJj-EfIyYT_sxDLDuz-q50fVXYj5uuCeEMHI';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function verifyEmail() {
+            const statusIcon = document.getElementById('status-icon');
+            const statusTitle = document.getElementById('status-title');
+            const statusMessage = document.getElementById('status-message');
+            const userInfo = document.getElementById('user-info');
+            const actionButtons = document.getElementById('action-buttons');
+            const countdownEl = document.getElementById('countdown');
+
+            try {
+                // Get the session from the URL hash/params
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+
+                if (sessionError) throw sessionError;
+
+                if (session && session.user) {
+                    // Email verified successfully
+                    const user = session.user;
+
+                    // Store user data
+                    const userData = {
+                        id: user.id,
+                        email: user.email,
+                        username: user.user_metadata?.username || user.email.split('@')[0],
+                        createdAt: user.created_at,
+                        lastSignIn: user.last_sign_in_at,
+                        emailVerified: true
+                    };
+
+                    localStorage.setItem('alucard_token', session.access_token);
+                    localStorage.setItem('alucard_refresh_token', session.refresh_token);
+                    localStorage.setItem('alucard_user', JSON.stringify(userData));
+                    localStorage.setItem('alucard_user_id', user.id);
+
+                    // Update UI to success state
+                    statusIcon.className = 'status-icon success';
+                    statusIcon.innerHTML = '✓';
+                    statusTitle.textContent = 'email verified!';
+                    statusMessage.textContent = 'your email has been successfully verified. welcome to alucard!';
+
+                    // Show user info
+                    userInfo.style.display = 'block';
+                    userInfo.innerHTML = `
+                        <div class="user-info-item">
+                            <span class="user-info-label">email</span>
+                            <span class="user-info-value">${user.email}</span>
+                        </div>
+                        <div class="user-info-item">
+                            <span class="user-info-label">username</span>
+                            <span class="user-info-value">${userData.username}</span>
+                        </div>
+                        <div class="user-info-item">
+                            <span class="user-info-label">user id</span>
+                            <span class="user-info-value">${user.id.substring(0, 16)}...</span>
+                        </div>
+                    `;
+
+                    // Show action buttons
+                    actionButtons.style.display = 'block';
+
+                    // Auto redirect countdown
+                    let countdown = 5;
+                    countdownEl.style.display = 'block';
+                    countdownEl.textContent = `redirecting to dashboard in ${countdown} seconds...`;
+
+                    const countdownInterval = setInterval(() => {
+                        countdown--;
+                        if (countdown > 0) {
+                            countdownEl.textContent = `redirecting to dashboard in ${countdown} seconds...`;
+                        } else {
+                            clearInterval(countdownInterval);
+                            window.location.href = 'dashboard.html';
+                        }
+                    }, 1000);
+
+                } else {
+                    // Check if there's an error in the URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const errorDescription = urlParams.get('error_description');
+                    
+                    if (errorDescription) {
+                        throw new Error(errorDescription);
+                    }
+
+                    // No session found
+                    throw new Error('No verification session found. The link may have expired.');
+                }
+
+            } catch (error) {
+                console.error('Verification error:', error);
+
+                // Update UI to error state
+                statusIcon.className = 'status-icon error';
+                statusIcon.innerHTML = '✕';
+                statusTitle.textContent = 'verification failed';
+                statusMessage.textContent = error.message || 'unable to verify your email. the link may have expired or is invalid.';
+
+                // Show action buttons (without dashboard option)
+                actionButtons.style.display = 'block';
+                actionButtons.innerHTML = `
+                    <a href="auth.html" class="action-btn">back to sign in</a>
+                    <button onclick="resendVerification()" class="action-btn secondary">resend email</button>
+                `;
+            }
+        }
+
+        async function resendVerification() {
+            const email = prompt('Enter your email to resend verification:');
+            if (email) {
+                try {
+                    const { error } = await supabaseClient.auth.resend({
+                        type: 'signup',
+                        email: email
+                    });
+
+                    if (error) throw error;
+                    alert('Verification email sent! Please check your inbox.');
+                } catch (err) {
+                    alert('Failed to resend email: ' + err.message);
+                }
+            }
+        }
+
+        // Start verification when page loads
+        window.addEventListener('load', verifyEmail);
+
+        // Also listen for hash changes (for OAuth flows)
+        window.addEventListener('hashchange', verifyEmail);
+    </script>
+</body>
+</html>
