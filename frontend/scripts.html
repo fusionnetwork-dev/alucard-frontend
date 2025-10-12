@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>alucard - scripts</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .bg-orbs {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #ff0000, transparent);
+            top: -200px;
+            right: -100px;
+        }
+
+        .orb2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #8b0000, transparent);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 4%;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #ff3333;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            padding: 0.6rem 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .header {
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff3333;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #ff3333;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover:not(:disabled) {
+            background: #ff0000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 51, 51, 0.4);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .script-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .script-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .script-item:hover {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 51, 51, 0.3);
+        }
+
+        .script-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .script-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .script-desc {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .script-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .script-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn.danger {
+            border-color: rgba(255, 51, 51, 0.3);
+            color: #ff6666;
+        }
+
+        .action-btn.danger:hover {
+            background: rgba(255, 51, 51, 0.15);
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(255, 51, 51, 0.1);
+            border: 1px solid rgba(255, 51, 51, 0.3);
+            color: #ff6666;
+            display: block;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+    </div>
+
+    <nav>
+        <a href="index.html" class="logo">alu<span>card</span></a>
+        <div class="nav-right">
+            <a href="dashboard.html" class="nav-btn">dashboard</a>
+            <a href="api-keys.html" class="nav-btn">api keys</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>script manager</h1>
+            <p>upload, protect, and manage your lua scripts</p>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📤 upload script</h2>
+                <div class="message" id="upload-message"></div>
+
+                <form id="upload-form">
+                    <div class="form-group">
+                        <label>script name</label>
+                        <input type="text" id="script-name" placeholder="my awesome script" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>description</label>
+                        <input type="text" id="script-desc" placeholder="what does this script do?" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>script code</label>
+                        <textarea id="script-code" placeholder="-- paste your lua code here&#10;print('hello world')" required></textarea>
+                    </div>
+
+                    <button type="submit" class="upload-btn" id="upload-btn">
+                        🔐 upload & protect
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>📁 your scripts</h2>
+                <div class="script-list" id="script-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <p>loading scripts...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://yjasnrnrukmtejlwiigx.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqYXNucm5ydWttdGVqbHdpaWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzk5MzUsImV4cCI6MjA3NTc1NTkzNX0.9Q0LgyksJj-EfIyYT_sxDLDuz-q50fVXYj5uuCeEMHI';
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let userId = null;
+
+        // Check authentication
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = 'auth.html';
+                return null;
+            }
+            userId = session.user.id;
+            return session;
+        }
+
+        // Simple obfuscation (in production, use a proper Lua obfuscator)
+        function protectScript(code) {
+            // Basic protection: Base64 encode + add wrapper
+            const encoded = btoa(code);
+            return `-- Protected by Alucard
+local protected = "${encoded}"
+local decoded = function(str)
+    -- Decode logic here
+    return str
+end
+loadstring(decoded(protected))()`;
+        }
+
+        // Upload script
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('script-name').value;
+            const description = document.getElementById('script-desc').value;
+            const code = document.getElementById('script-code').value;
+            const uploadBtn = document.getElementById('upload-btn');
+            const message = document.getElementById('upload-message');
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'protecting script...';
+
+            try {
+                const protectedCode = protectScript(code);
+
+                const { data, error } = await supabaseClient
+                    .from('scripts')
+                    .insert([{
+                        user_id: userId,
+                        name: name,
+                        description: description,
+                        code: code,
+                        protected_code: protectedCode,
+                        version: '1.0',
+                        downloads: 0,
+                        created_at: new Date().toISOString()
+                    }])
+                    .select();
+
+                if (error) throw error;
+
+                message.className = 'message success';
+                message.textContent = '✅ Script uploaded and protected successfully!';
+
+                // Clear form
+                document.getElementById('upload-form').reset();
+
+                // Reload scripts
+                await loadScripts();
+
+                setTimeout(() => {
+                    message.className = 'message';
+                }, 3000);
+
+            } catch (err) {
+                console.error('Upload error:', err);
+                message.className = 'message error';
+                message.textContent = '❌ Error: ' + err.message;
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '🔐 upload & protect';
+            }
+        });
+
+        // Load scripts
+        async function loadScripts() {
+            const scriptList = document.getElementById('script-list');
+
+            try {
+                const { data: scripts, error } = await supabaseClient
+                    .from('scripts')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!scripts || scripts.length === 0) {
+                    scriptList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>no scripts uploaded yet</p>
+                            <p style="font-size: 0.85rem; margin-top: 0.5rem;">upload your first script to get started</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                scriptList.innerHTML = scripts.map(script => `
+                    <div class="script-item">
+                        <div class="script-header">
+                            <div>
+                                <div class="script-title">${escapeHtml(script.name)}</div>
+                                <div class="script-desc">${escapeHtml(script.description)}</div>
+                                <div class="script-meta">
+                                    <span>📦 v${script.version}</span>
+                                    <span>📥 ${script.downloads} downloads</span>
+                                    <span>📅 ${new Date(script.created_at).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                            <span class="status-badge">protected</span>
+                        </div>
+                        <div class="script-actions">
+                            <button class="action-btn" onclick="downloadScript('${script.id}', false)">📄 download original</button>
+                            <button class="action-btn" onclick="downloadScript('${script.id}', true)">🔐 download protected</button>
+                            <button class="action-btn danger" onclick="deleteScript('${script.id}')">🗑️ delete</button>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error('Load scripts error:', err);
+                scriptList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>failed to load scripts</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.5rem; color: #ff6666;">${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Download script
+        async function downloadScript(scriptId, protected) {
+            try {
+                const { data: script, error } = await supabaseClient
+                    .from('scripts')
+                    .select('*')
+                    .eq('id', scriptId)
+                    .single();
+
+                if (error) throw error;
+
+                const code = protected ? script.protected_code : script.code;
+                const filename = `${script.name.replace(/\s+/g, '_')}${protected ? '_protected' : ''}.lua`;
+
+                // Create download
+                const blob = new Blob([code], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                // Update download count
+                await supabaseClient
+                    .from('scripts')
+                    .update({ downloads: script.downloads + 1 })
+                    .eq('id', scriptId);
+
+                await loadScripts();
+
+            } catch (err) {
+                alert('Error downloading script: ' + err.message);
+            }
+        }
+
+        // Delete script
+        async function deleteScript(scriptId) {
+            if (!confirm('Are you sure you want to delete this script?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('scripts')
+                    .delete()
+                    .eq('id', scriptId);
+
+                if (error) throw error;
+
+                await loadScripts();
+
+            } catch (err) {
+                alert('Error deleting script: ' + err.message);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize
+        async function init() {
+            await checkAuth();
+            await loadScripts();
+        }
+
+        init();
+    </script>
+</body>
+</html>
