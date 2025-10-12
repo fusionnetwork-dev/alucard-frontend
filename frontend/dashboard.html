@@ -590,7 +590,16 @@
 </div>
 
     <script>
-        // Check if user is logged in
+        function showDeviceTypeDropdown() {
+            const hwid = document.getElementById('hwid-input').value.trim();
+            const group = document.getElementById('device-type-group');
+            if (hwid && hwid.startsWith('HWID-')) {
+                group.style.display = 'block';
+            } else {
+                group.style.display = 'none';
+            }
+        }
+
         async function addDevice() {
     const hwid = document.getElementById('hwid-input').value.trim();
     const deviceType = document.getElementById('device-type').value;
@@ -627,7 +636,7 @@
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ hwid }) // include deviceType if backend supports it
+            body: JSON.stringify({ hwid, deviceType })
         });
 
         const data = await res.json();
@@ -663,6 +672,12 @@
     document.getElementById('username').textContent = user.username || 'User';
 
     try {
+        const token = localStorage.getItem('alucard_token');
+        if (!token) {
+            window.location.href = 'auth.html';
+            return;
+        }
+
         const res = await fetch(`${API_URL}/api/dashboard`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -685,16 +700,6 @@
             document.getElementById('last-login').textContent = date.toLocaleDateString();
         } else {
             document.getElementById('last-login').textContent = 'Never';
-        }
-
-        // Update HWID select dropdown
-        const hwidSelect = document.getElementById('hwid-select');
-        if (!data.hwids || data.hwids.length === 0) {
-            hwidSelect.innerHTML = `<option value="">No devices found</option>`;
-        } else {
-            hwidSelect.innerHTML = data.hwids.map(h => `
-                <option value="${h.hwid}">${h.hwid} (${h.status})</option>
-            `).join('');
         }
 
         // Update HWID list
@@ -750,52 +755,6 @@
             window.location.href = 'unlock.html';
         }
 
-        async function addDevice() {
-            const hwid = document.getElementById('hwid-input').value.trim();
-            const msgEl = document.getElementById('add-device-msg');
-
-            if (!hwid) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Please enter a HWID key';
-                return;
-            }
-
-            if (!hwid.startsWith('HWID-')) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Invalid HWID format. Must start with HWID-';
-                return;
-            }
-
-            try {
-                const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-                const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ 
-                        hwid: hwid,
-                        userId: user.id || 'guest'
-                    })
-                });
-
-                const data = await res.json();
-
-                if (res.ok && data.success) {
-                    msgEl.className = 'newsletter-msg success';
-                    msgEl.textContent = 'Device added successfully!';
-                    setTimeout(() => {
-                        closeAddDeviceModal();
-                        loadDashboard();
-                    }, 1500);
-                } else {
-                    msgEl.className = 'newsletter-msg error';
-                    msgEl.textContent = data.error || 'Failed to add device';
-                }
-            } catch (err) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Network error. Please try again.';
-            }
-        }
-
         async function subscribeNewsletter() {
             const email = document.getElementById('newsletter-email').value;
             const msgEl = document.getElementById('newsletter-msg');
@@ -847,6 +806,3 @@
     </script>
 </body>
 </html>
-
-
-
