@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="js/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <title>alucard - sign in</title>
     <style>
@@ -134,18 +133,27 @@
             font-size: 0.95rem;
         }
 
-        .error-msg {
-            background: rgba(255, 51, 51, 0.1);
-            border: 1px solid rgba(255, 51, 51, 0.3);
+        .error-msg, .success-msg {
             border-radius: 8px;
             padding: 0.75rem;
             margin-bottom: 1.5rem;
-            color: #ff6666;
             font-size: 0.9rem;
             display: none;
         }
 
-        .error-msg.show {
+        .error-msg {
+            background: rgba(255, 51, 51, 0.1);
+            border: 1px solid rgba(255, 51, 51, 0.3);
+            color: #ff6666;
+        }
+
+        .success-msg {
+            background: rgba(51, 255, 51, 0.1);
+            border: 1px solid rgba(51, 255, 51, 0.3);
+            color: #66ff66;
+        }
+
+        .error-msg.show, .success-msg.show {
             display: block;
         }
 
@@ -200,7 +208,7 @@
             transition: all 0.3s;
         }
 
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             background: #ff0000;
             box-shadow: 0 4px 20px rgba(255, 51, 51, 0.4);
             transform: translateY(-2px);
@@ -308,6 +316,7 @@
             <p id="auth-subtitle">sign in to access your dashboard</p>
 
             <div class="error-msg" id="error-msg"></div>
+            <div class="success-msg" id="success-msg"></div>
 
             <div id="username-field" class="form-group" style="display: none;">
                 <label>username</label>
@@ -338,10 +347,10 @@
             </div>
 
             <div class="social-btns">
-                <button class="social-btn" onclick="socialLogin('google')">
+                <button class="social-btn" id="google-btn">
                     <span style="font-weight: 700; font-size: 1.1rem; margin-right: 0.5rem;">G</span> Google
                 </button>
-                <button class="social-btn" onclick="socialLogin('discord')">
+                <button class="social-btn" id="discord-btn">
                     <span style="font-weight: 700; font-size: 1.1rem; margin-right: 0.5rem;">D</span> Discord
                 </button>
             </div>
@@ -353,6 +362,16 @@
         const supabaseUrl = 'https://yjasnrnrukmtejlwiigx.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqYXNucm5ydWttdGVqbHdpaWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzk5MzUsImV4cCI6MjA3NTc1NTkzNX0.9Q0LgyksJj-EfIyYT_sxDLDuz-q50fVXYj5uuCeEMHI';
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Check if already logged in
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        checkAuth();
 
         function toggleAuthMode() {
             isLogin = !isLogin;
@@ -383,69 +402,155 @@
                 forgotLink.style.display = 'none';
             }
             
-            hideError();
+            hideMessages();
         }
 
         function showError(message) {
             const errorMsg = document.getElementById('error-msg');
+            const successMsg = document.getElementById('success-msg');
+            successMsg.classList.remove('show');
             errorMsg.textContent = message;
             errorMsg.classList.add('show');
         }
 
-        function hideError() {
+        function showSuccess(message) {
             const errorMsg = document.getElementById('error-msg');
+            const successMsg = document.getElementById('success-msg');
             errorMsg.classList.remove('show');
+            successMsg.textContent = message;
+            successMsg.classList.add('show');
+        }
+
+        function hideMessages() {
+            document.getElementById('error-msg').classList.remove('show');
+            document.getElementById('success-msg').classList.remove('show');
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        function validateUsername(username) {
+            return username.length >= 3 && /^[a-zA-Z0-9_]+$/.test(username);
+        }
+
+        function storeUserData(user, session) {
+            const userData = {
+                id: user.id,
+                email: user.email,
+                username: user.user_metadata?.username || user.email.split('@')[0],
+                createdAt: user.created_at,
+                lastSignIn: user.last_sign_in_at
+            };
+
+            localStorage.setItem('alucard_token', session.access_token);
+            localStorage.setItem('alucard_refresh_token', session.refresh_token);
+            localStorage.setItem('alucard_user', JSON.stringify(userData));
+            localStorage.setItem('alucard_user_id', user.id);
+
+            console.log('User authenticated:', userData);
         }
 
         async function handleAuth() {
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const submitBtn = document.getElementById('submit-btn');
 
+            // Validation
             if (!email || !password || (!isLogin && !username)) {
                 showError('Please fill in all fields');
                 return;
             }
 
+            if (!validateEmail(email)) {
+                showError('Please enter a valid email address');
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                showError('Password must be at least 6 characters');
+                return;
+            }
+
+            if (!isLogin && !validateUsername(username)) {
+                showError('Username must be at least 3 characters and contain only letters, numbers, and underscores');
+                return;
+            }
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'loading...';
-            hideError();
+            hideMessages();
 
             try {
-                let authData, authError;
-                let userData = null;
-                let sessionData = null;
-
                 if (isLogin) {
-                    ({ data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({ email, password }));
-                    if (authError) throw authError;
-                    userData = authData.user;
-                    sessionData = authData.session;
+                    // Sign in
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+
+                    if (error) throw error;
+
+                    if (data.user && data.session) {
+                        storeUserData(data.user, data.session);
+                        showSuccess('Welcome back! Redirecting...');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1000);
+                    }
                 } else {
-                    ({ data: authData, error: authError } = await supabaseClient.auth.signUp({
+                    // Sign up
+                    const { data, error } = await supabaseClient.auth.signUp({
                         email,
                         password,
-                        options: { data: { username } }
-                    }));
-                    if (authError) throw authError;
-                    userData = authData.user;
-                    sessionData = authData.session;
+                        options: {
+                            data: {
+                                username: username
+                            }
+                        }
+                    });
 
-                    // If no session (email confirmation required), attempt to sign in
-                    if (!sessionData) {
-                        const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
-                        if (signInError) throw signInError;
-                        sessionData = signInData.session;
-                        userData = signInData.user || userData;
+                    if (error) throw error;
+
+                    if (data.user) {
+                        // Check if email confirmation is required
+                        if (data.session) {
+                            // Auto-confirmed (email confirmation disabled)
+                            storeUserData(data.user, data.session);
+                            showSuccess(`Account created! User ID: ${data.user.id.substring(0, 8)}... Redirecting...`);
+                            setTimeout(() => {
+                                window.location.href = 'dashboard.html';
+                            }, 2000);
+                        } else {
+                            // Email confirmation required
+                            showSuccess('Account created! Please check your email to confirm your account.');
+                            submitBtn.textContent = 'check your email';
+                            setTimeout(() => {
+                                toggleAuthMode();
+                            }, 3000);
+                        }
                     }
                 }
-
-                localStorage.setItem('alucard_token', sessionData ? sessionData.access_token : '');
-                localStorage.setItem('alucard_user', JSON.stringify(userData));
-                window.location.href = 'dashboard.html';
             } catch (err) {
-                showError(err.message || 'Network error. Please try again.');
+                console.error('Auth error:', err);
+                let errorMessage = 'An error occurred. Please try again.';
+                
+                if (err.message.includes('Invalid login credentials')) {
+                    errorMessage = 'Invalid email or password';
+                } else if (err.message.includes('User already registered')) {
+                    errorMessage = 'This email is already registered';
+                } else if (err.message.includes('Email not confirmed')) {
+                    errorMessage = 'Please confirm your email before signing in';
+                } else if (err.message) {
+                    errorMessage = err.message;
+                }
+                
+                showError(errorMessage);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = isLogin ? 'sign in' : 'create account';
@@ -453,30 +558,68 @@
         }
 
         async function socialLogin(provider) {
-            const { data, error } = await supabaseClient.auth.signInWithOAuth({ provider });
-            if (error) {
-                showError(error.message);
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: provider,
+                    options: {
+                        redirectTo: window.location.origin + '/dashboard.html'
+                    }
+                });
+
+                if (error) throw error;
+            } catch (err) {
+                console.error('Social login error:', err);
+                showError('Failed to connect with ' + provider);
             }
-            // Note: This will typically redirect to the provider for authentication
         }
 
+        // Event listeners
         document.getElementById('switch-btn').addEventListener('click', toggleAuthMode);
         document.getElementById('submit-btn').addEventListener('click', handleAuth);
+        document.getElementById('google-btn').addEventListener('click', () => socialLogin('google'));
+        document.getElementById('discord-btn').addEventListener('click', () => socialLogin('discord'));
 
+        // Enter key handling
         document.getElementById('password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') handleAuth();
         });
 
+        document.getElementById('email').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleAuth();
+        });
+
+        document.getElementById('username').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleAuth();
+        });
+
+        // Forgot password
         document.getElementById('forgot-link').addEventListener('click', async (e) => {
             e.preventDefault();
-            const email = prompt('Enter your email to reset password');
-            if (email) {
-                const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
-                if (error) {
-                    showError(error.message);
-                } else {
-                    alert('Check your email for the password reset link.');
+            const emailInput = document.getElementById('email').value.trim();
+            const email = emailInput || prompt('Enter your email to reset password:');
+            
+            if (email && validateEmail(email)) {
+                try {
+                    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                        redirectTo: window.location.origin + '/reset-password.html'
+                    });
+                    
+                    if (error) throw error;
+                    showSuccess('Password reset email sent! Check your inbox.');
+                } catch (err) {
+                    showError(err.message || 'Failed to send reset email');
                 }
+            } else if (email) {
+                showError('Please enter a valid email address');
+            }
+        });
+
+        // Listen for OAuth redirect
+        window.addEventListener('load', async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                storeUserData(session.user, session);
+                window.location.href = 'dashboard.html';
             }
         });
     </script>
