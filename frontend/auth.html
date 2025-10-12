@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/config.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <title>alucard - sign in</title>
     <style>
         * {
@@ -352,7 +352,8 @@
         let isLogin = true;
         const supabaseUrl = 'https://yjasnrnrukmtejlwiigx.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqYXNucm5ydWttdGVqbHdpaWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzk5MzUsImV4cCI6MjA3NTc1NTkzNX0.9Q0LgyksJj-EfIyYT_sxDLDuz-q50fVXYj5uuCeEMHI';
-        const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
         function toggleAuthMode() {
             isLogin = !isLogin;
@@ -415,9 +416,9 @@
             try {
                 let data, error;
                 if (isLogin) {
-                    ({ data, error } = await supabase.auth.signInWithPassword({ email, password }));
+                    ({ data, error } = await supabaseClient.auth.signInWithPassword({ email, password }));
                 } else {
-                    ({ data, error } = await supabase.auth.signUp({
+                    ({ data, error } = await supabaseClient.auth.signUp({
                         email,
                         password,
                         options: { data: { username } }
@@ -440,7 +441,7 @@
         }
 
         async function socialLogin(provider) {
-            const { data, error } = await supabase.auth.signInWithOAuth({ provider });
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({ provider });
             if (error) {
                 showError(error.message);
             }
@@ -458,7 +459,7 @@
             e.preventDefault();
             const email = prompt('Enter your email to reset password');
             if (email) {
-                const { error } = await supabase.auth.resetPasswordForEmail(email);
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
                 if (error) {
                     showError(error.message);
                 } else {
