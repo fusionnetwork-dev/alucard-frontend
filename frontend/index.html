@@ -27,7 +27,30 @@
             overflow: hidden;
             z-index: -1;
         }
+ #music-control {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 51, 51, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        z-index: 9999;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
+    #music-control:hover {
+        background: rgba(255, 51, 51, 0.3);
+        transform: scale(1.1);
+    }
         .orb {
             position: absolute;
             border-radius: 50%;
@@ -527,7 +550,49 @@ loadstring(game:HttpGet("https://alucard.lol/verify"))()
             </div>
         </div>
     </section>
+    <script>
+    // Initialize audio
+    const audio = new Audio('assets/music/background.mp3'); // Change to your music file path
+    audio.loop = true;
+    audio.volume = 0.3; // 30% volume (adjust as needed)
+    
+    let isPlaying = false;
+    const musicBtn = document.getElementById('music-control');
 
+    // Try to autoplay when page loads
+    window.addEventListener('load', () => {
+        audio.play().then(() => {
+            isPlaying = true;
+            musicBtn.innerHTML = '🔊';
+        }).catch(() => {
+            // Autoplay blocked, user needs to click
+            musicBtn.innerHTML = '🔇';
+        });
+    });
+
+    // Toggle music on button click
+    musicBtn.addEventListener('click', () => {
+        if (isPlaying) {
+            audio.pause();
+            musicBtn.innerHTML = '🔇';
+            isPlaying = false;
+        } else {
+            audio.play();
+            musicBtn.innerHTML = '🔊';
+            isPlaying = true;
+        }
+    });
+
+    // Pause when tab is hidden
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && isPlaying) {
+            audio.pause();
+        } else if (!document.hidden && isPlaying) {
+            audio.play().catch(() => {});
+        }
+    });
+</script>
+    <button id="music-control" title="Toggle Music">🔊</button>
     <footer>
         <p>made by developers, for developers</p>
         <div>
@@ -536,9 +601,11 @@ loadstring(game:HttpGet("https://alucard.lol/verify"))()
             <a href="docs.html">docs</a>
             <a href="status.html" target="_blank">status</a>
         </div>
+      
     </footer>
 </body>
 </html>
+
 
 
 
