@@ -27,7 +27,7 @@
         const userId = localStorage.getItem('alucard_user_id');
         if (!userId) return;
 
-        const res = await fetch(`https://alucard.lol/api/dashboard?userId=${userId}`);
+        const res = await fetch(`${API_URL}/api/dashboard?userId=${userId}`);
         const data = await res.json();
 
         document.getElementById('username').textContent = data.username;
@@ -44,7 +44,7 @@
         const email = document.getElementById('newsletter-email').value;
         if (!email) return;
 
-        const res = await fetch('https://alucard.lol/api/newsletter', {
+        const res = await fetch(`${API_URL}/api/newsletter`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ email })
@@ -55,4 +55,5 @@
 
     loadDashboard();
 </script>
+
 
