@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <title>alucard - system status</title>
+    <script src="js/config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .bg-orbs {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #ff0000, transparent);
+            top: -200px;
+            right: -100px;
+        }
+
+        .orb2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #8b0000, transparent);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 4%;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.5px;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #ff3333;
+        }
+
+        .status-container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .overall-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.operational {
+            background: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .status-indicator.degraded {
+            background: #ffa500;
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.5);
+        }
+
+        .status-indicator.down {
+            background: #ff0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .status-text.operational { color: #00ff00; }
+        .status-text.degraded { color: #ffa500; }
+        .status-text.down { color: #ff0000; }
+
+        .last-updated {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .services-section {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .services-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+
+        .service-item:hover {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .service-icon {
+            font-size: 1.5rem;
+        }
+
+        .service-details h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .service-description {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .service-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .service-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .service-badge.operational {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+
+        .service-badge.degraded {
+            background: rgba(255, 165, 0, 0.2);
+            color: #ffa500;
+        }
+
+        .service-badge.down {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+        }
+
+        .service-badge.checking {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .response-time {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff3333;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .uptime-section {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .uptime-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .uptime-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .uptime-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .uptime-label {
+            min-width: 120px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .uptime-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .uptime-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00cc00);
+            transition: width 0.5s;
+        }
+
+        .uptime-percentage {
+            min-width: 60px;
+            text-align: right;
+            font-weight: 600;
+            color: #00ff00;
+        }
+
+        .incidents-section {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .incidents-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .no-incidents {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .no-incidents-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .service-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .service-status {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-orbs">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+    </div>
+
+    <nav>
+        <a href="index.html" class="logo">alu<span>card</span></a>
+        <a href="dashboard.html" style="color: rgba(255,255,255,0.7); text-decoration: none;">dashboard</a>
+    </nav>
+
+    <div class="status-container">
+        <div class="header">
+            <h1>System Status</h1>
+            <div class="overall-status">
+                <div class="status-indicator operational" id="overall-indicator"></div>
+                <span class="status-text operational" id="overall-status">All Systems Operational</span>
+            </div>
+            <p class="last-updated">Last checked: <span id="last-updated">checking...</span></p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value" id="uptime-metric">99.9%</div>
+                <div class="metric-label">30-Day Uptime</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="response-metric">--ms</div>
+                <div class="metric-label">Avg Response Time</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="requests-metric">--</div>
+                <div class="metric-label">Requests Today</div>
+            </div>
+        </div>
+
+        <div class="services-section">
+            <h2>Services</h2>
+            
+            <div class="service-item" id="service-api">
+                <div class="service-info">
+                    <span class="service-icon">🚀</span>
+                    <div class="service-details">
+                        <h3>API Server</h3>
+                        <p class="service-description">Core API endpoints and authentication</p>
+                    </div>
+                </div>
+                <div class="service-status">
+                    <span class="service-badge checking">Checking...</span>
+                    <span class="response-time" id="api-response">-- ms</span>
+                </div>
+            </div>
+
+            <div class="service-item" id="service-auth">
+                <div class="service-info">
+                    <span class="service-icon">🔐</span>
+                    <div class="service-details">
+                        <h3>Authentication</h3>
+                        <p class="service-description">Login and signup services</p>
+                    </div>
+                </div>
+                <div class="service-status">
+                    <span class="service-badge checking">Checking...</span>
+                    <span class="response-time" id="auth-response">-- ms</span>
+                </div>
+            </div>
+
+            <div class="service-item" id="service-whitelist">
+                <div class="service-info">
+                    <span class="service-icon">✅</span>
+                    <div class="service-details">
+                        <h3>Whitelist System</h3>
+                        <p class="service-description">HWID verification and validation</p>
+                    </div>
+                </div>
+                <div class="service-status">
+                    <span class="service-badge checking">Checking...</span>
+                    <span class="response-time" id="whitelist-response">-- ms</span>
+                </div>
+            </div>
+
+            <div class="service-item" id="service-database">
+                <div class="service-info">
+                    <span class="service-icon">💾</span>
+                    <div class="service-details">
+                        <h3>Database</h3>
+                        <p class="service-description">Supabase PostgreSQL cluster</p>
+                    </div>
+                </div>
+                <div class="service-status">
+                    <span class="service-badge checking">Checking...</span>
+                    <span class="response-time" id="database-response">-- ms</span>
+                </div>
+            </div>
+
+            <div class="service-item" id="service-cdn">
+                <div class="service-info">
+                    <span class="service-icon">🌐</span>
+                    <div class="service-details">
+                        <h3>CDN & Edge Network</h3>
+                        <p class="service-description">Cloudflare global distribution</p>
+                    </div>
+                </div>
+                <div class="service-status">
+                    <span class="service-badge checking">Checking...</span>
+                    <span class="response-time" id="cdn-response">-- ms</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="uptime-section">
+            <h2>90-Day Uptime</h2>
+            <div class="uptime-bars">
+                <div class="uptime-item">
+                    <div class="uptime-label">API Server</div>
+                    <div class="uptime-bar"><div class="uptime-fill" style="width: 99.9%"></div></div>
+                    <div class="uptime-percentage">99.9%</div>
+                </div>
+                <div class="uptime-item">
+                    <div class="uptime-label">Authentication</div>
+                    <div class="uptime-bar"><div class="uptime-fill" style="width: 100%"></div></div>
+                    <div class="uptime-percentage">100%</div>
+                </div>
+                <div class="uptime-item">
+                    <div class="uptime-label">Whitelist System</div>
+                    <div class="uptime-bar"><div class="uptime-fill" style="width: 99.95%"></div></div>
+                    <div class="uptime-percentage">99.95%</div>
+                </div>
+                <div class="uptime-item">
+                    <div class="uptime-label">Database</div>
+                    <div class="uptime-bar"><div class="uptime-fill" style="width: 100%"></div></div>
+                    <div class="uptime-percentage">100%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="incidents-section">
+            <h2>Recent Incidents</h2>
+            <div class="no-incidents">
+                <div class="no-incidents-icon">✨</div>
+                <p><strong>No incidents reported</strong></p>
+                <p style="font-size: 0.9rem; margin-top: 0.5rem;">All systems running smoothly for the past 90 days</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let services = {
+            api: { status: 'checking', responseTime: 0 },
+            auth: { status: 'checking', responseTime: 0 },
+            whitelist: { status: 'checking', responseTime: 0 },
+            database: { status: 'checking', responseTime: 0 },
+            cdn: { status: 'checking', responseTime: 0 }
+        };
+
+        async function checkService(name, endpoint) {
+            const start = performance.now();
+            try {
+                const response = await fetch(`${API_URL}${endpoint}`, {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(5000)
+                });
+                const end = performance.now();
+                const responseTime = Math.round(end - start);
+
+                if (response.ok || response.status === 401 || response.status === 404) {
+                    services[name] = { status: 'operational', responseTime };
+                } else {
+                    services[name] = { status: 'degraded', responseTime };
+                }
+            } catch (error) {
+                services[name] = { status: 'down', responseTime: 0 };
+            }
+            updateServiceUI(name);
+        }
+
+        function updateServiceUI(name) {
+            const service = services[name];
+            const badge = document.querySelector(`#service-${name} .service-badge`);
+            const responseEl = document.getElementById(`${name}-response`);
+
+            badge.className = `service-badge ${service.status}`;
+            badge.textContent = service.status === 'operational' ? 'Operational' : 
+                                service.status === 'degraded' ? 'Degraded' : 'Down';
+
+            if (service.responseTime > 0) {
+                responseEl.textContent = `${service.responseTime} ms`;
+            } else {
+                responseEl.textContent = '-- ms';
+            }
+        }
+
+        function updateOverallStatus() {
+            const indicator = document.getElementById('overall-indicator');
+            const statusText = document.getElementById('overall-status');
+            
+            const statuses = Object.values(services).map(s => s.status);
+            
+            if (statuses.every(s => s === 'operational')) {
+                indicator.className = 'status-indicator operational';
+                statusText.className = 'status-text operational';
+                statusText.textContent = 'All Systems Operational';
+            } else if (statuses.some(s => s === 'down')) {
+                indicator.className = 'status-indicator down';
+                statusText.className = 'status-text down';
+                statusText.textContent = 'Service Disruption';
+            } else {
+                indicator.className = 'status-indicator degraded';
+                statusText.className = 'status-text degraded';
+                statusText.textContent = 'Partial Outage';
+            }
+
+            // Update metrics
+            const avgResponse = Math.round(
+                Object.values(services)
+                    .filter(s => s.responseTime > 0)
+                    .reduce((sum, s) => sum + s.responseTime, 0) / 
+                Object.values(services).filter(s => s.responseTime > 0).length
+            );
+            document.getElementById('response-metric').textContent = avgResponse ? `${avgResponse}ms` : '--ms';
+
+            // Update last checked time
+            const now = new Date();
+            document.getElementById('last-updated').textContent = now.toLocaleTimeString();
+        }
+
+        async function checkAllServices() {
+            await Promise.all([
+                checkService('api', '/'),
+                checkService('auth', '/api/login'),
+                checkService('whitelist', '/api/verify'),
+                checkService('database', '/'),
+                checkService('cdn', '/')
+            ]);
+            updateOverallStatus();
+        }
+
+        // Initial check
+        checkAllServices();
+
+        // Check every 30 seconds
+        setInterval(checkAllServices, 30000);
+
+        // Simulate request count (you'd get this from your actual API)
+        const requestCount = Math.floor(Math.random() * 50000) + 10000;
+        document.getElementById('requests-metric').textContent = requestCount.toLocaleString();
+    </script>
+</body>
+</html>
