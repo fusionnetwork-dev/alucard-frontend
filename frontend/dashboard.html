@@ -1,0 +1,56 @@
+<div class="dashboard-container">
+    <h1>Welcome, <span id="username">User</span></h1>
+
+    <div class="hwid-section">
+        <h2>HWID Status</h2>
+        <div id="hwid-list">Loading...</div>
+    </div>
+
+    <div class="analytics-section">
+        <h2>Your Activity</h2>
+        <p>Completed Steps: <span id="completed-steps">0</span> / 3</p>
+        <p>Time spent reading info: <span id="reading-time">0</span> seconds</p>
+        <p>Last login: <span id="last-login">--</span></p>
+    </div>
+
+    <div class="newsletter-section">
+        <h2>Stay Updated</h2>
+        <input type="email" id="newsletter-email" placeholder="Your email">
+        <button onclick="subscribeNewsletter()">Subscribe</button>
+        <p id="newsletter-msg"></p>
+    </div>
+</div>
+
+<script>
+    async function loadDashboard() {
+        const userId = localStorage.getItem('alucard_user_id');
+        if (!userId) return;
+
+        const res = await fetch(`https://alucard.lol/api/dashboard?userId=${userId}`);
+        const data = await res.json();
+
+        document.getElementById('username').textContent = data.username;
+        document.getElementById('completed-steps').textContent = data.completedSteps;
+        document.getElementById('reading-time').textContent = data.readingTime;
+        document.getElementById('last-login').textContent = new Date(data.lastLogin).toLocaleString();
+
+        // HWID list
+        const hwidList = document.getElementById('hwid-list');
+        hwidList.innerHTML = data.hwids.map(h => `<div>${h.hwid} - ${h.status}</div>`).join('');
+    }
+
+    async function subscribeNewsletter() {
+        const email = document.getElementById('newsletter-email').value;
+        if (!email) return;
+
+        const res = await fetch('https://alucard.lol/api/newsletter', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        document.getElementById('newsletter-msg').textContent = data.message;
+    }
+
+    loadDashboard();
+</script>
