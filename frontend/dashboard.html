@@ -639,6 +639,11 @@
             body: JSON.stringify({ hwid, deviceType })
         });
 
+        if (res.status === 401) {
+            logout();
+            return;
+        }
+
         const data = await res.json();
 
         if (res.ok && data.success) {
@@ -684,6 +689,11 @@
             }
         });
         
+        if (res.status === 401) {
+            logout();
+            return;
+        }
+
         if (!res.ok) {
             throw new Error('Failed to load dashboard');
         }
