@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="js/config.js"></script>
     <title>alucard</title>
     <style>
         * {
@@ -122,6 +121,8 @@
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .nav-cta:hover {
@@ -179,16 +180,21 @@
             flex-wrap: wrap;
         }
 
-        .btn-primary {
+        .btn-primary, .btn-glass {
             padding: 1rem 2rem;
-            background: #ff3333;
-            border: none;
             border-radius: 10px;
-            color: white;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #ff3333;
+            border: none;
+            color: white;
             box-shadow: 0 4px 20px rgba(255, 51, 51, 0.3);
         }
 
@@ -198,16 +204,10 @@
         }
 
         .btn-glass {
-            padding: 1rem 2rem;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
             color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1rem;
         }
 
         .btn-glass:hover {
@@ -294,35 +294,6 @@
             margin-top: 20px;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            max-width: 1000px;
-            margin: 4rem auto;
-            text-align: center;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 2rem;
-        }
-
-        .stat-card h4 {
-            font-size: 3rem;
-            color: #ff3333;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-        }
-
-        .stat-card p {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.9rem;
-        }
-
         .comparison {
             max-width: 900px;
             margin: 4rem auto;
@@ -405,13 +376,6 @@
     </style>
 </head>
 <body>
-    <form id="unlock-form">
-  <input type="hidden" id="hwid" value="...">
-  <button class="ad-button" id="ad-btn-1" disabled>Continue</button>
-  <div class="cf-turnstile" data-sitekey="0x4AAAAAAB6FLWq2XG49QkK_"></div>
-</form>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
     <div class="bg-orbs">
         <div class="orb orb1"></div>
         <div class="orb orb2"></div>
@@ -422,26 +386,26 @@
         <div class="logo">alu<span>card</span></div>
         <ul class="nav-menu">
             <li><a href="#features">features</a></li>
-            <li><a href="#docs">documentation</a></li>
+            <li><a href="https://github.com" target="_blank">documentation</a></li>
             <li><a href="#api">api</a></li>
-            <li><a href="#support">support</a></li>
-            <li><button class="nav-cta">dashboard</button></li>
+            <li><a href="https://discord.com" target="_blank">support</a></li>
+            <li><a href="dashboard.html" class="nav-cta">dashboard</a></li>
         </ul>
     </nav>
 
     <section class="hero">
         <div class="tag">
-            <span>✨</span> free & open source
+            <span>✨</span> free & fast
         </div>
         <h1>lua protection<br><span class="gradient-text">that actually works</span></h1>
-        <p>fast whitelist system for your scripts. no ads, no premium plans, no bullshit. just upload and go.</p>
+        <p>fast whitelist system for your scripts. no ad walls, no premium plans, no bullshit. just upload and go.</p>
         <div class="cta-group">
-            <button class="btn-primary">get started now</button>
-            <button class="btn-glass">view on github</button>
+            <a href="unlock.html" class="btn-primary">get started now</a>
+            <a href="https://github.com" target="_blank" class="btn-glass">view on github</a>
         </div>
     </section>
 
-    <section class="features">
+    <section class="features" id="features">
         <div class="grid">
             <div class="glass-card">
                 <span class="feature-icon">⚡</span>
@@ -516,7 +480,7 @@
             </div>
         </div>
 
-        <div class="code-preview">
+        <div class="code-preview" id="api">
             <pre>
 -- users run this to get whitelisted
 loadstring(game:HttpGet("https://alucard.lol/whitelist"))()
@@ -559,24 +523,17 @@ loadstring(game:HttpGet("https://alucard.lol/verify"))()
                 <div class="comparison-cell"><span class="check">✓</span></div>
                 <div class="comparison-cell"><span class="cross">✗</span></div>
             </div>
-            <div class="comparison-row">
-                <div class="comparison-cell">open source</div>
-                <div class="comparison-cell"><span class="check">✓</span></div>
-                <div class="comparison-cell"><span class="cross">✗</span></div>
-            </div>
         </div>
     </section>
 
     <footer>
         <p>made by developers, for developers</p>
         <div>
-            <a href="#">github</a>
-            <a href="#">discord</a>
-            <a href="#">docs</a>
-            <a href="#">status</a>
+            <a href="https://github.com" target="_blank">github</a>
+            <a href="https://discord.com" target="_blank">discord</a>
+            <a href="#api">docs</a>
+            <a href="#" target="_blank">status</a>
         </div>
     </footer>
 </body>
- 
 </html>
-
