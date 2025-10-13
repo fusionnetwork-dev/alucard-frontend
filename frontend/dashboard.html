@@ -172,11 +172,51 @@
             color: #ff3333;
         }
 
-        .section-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
+        .tabs-container {
             margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .tab.active {
+            color: #ff3333;
+            border-bottom-color: #ff3333;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .section-card {
@@ -185,6 +225,7 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px;
             padding: 2rem;
+            margin-bottom: 2rem;
         }
 
         .section-card h2 {
@@ -195,13 +236,13 @@
             gap: 0.5rem;
         }
 
-        .hwid-list {
+        .item-list {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
 
-        .hwid-item {
+        .list-item {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
@@ -209,15 +250,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s;
         }
 
-        .hwid-code {
+        .list-item:hover {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 51, 51, 0.3);
+        }
+
+        .item-code {
             font-family: 'Courier New', monospace;
             color: #ff6666;
             font-size: 0.9rem;
         }
 
-        .hwid-status {
+        .item-status {
             padding: 0.3rem 0.8rem;
             border-radius: 20px;
             font-size: 0.8rem;
@@ -247,113 +294,22 @@
             margin-bottom: 1rem;
         }
 
-        .input-group {
-            margin-bottom: 1rem;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-        }
-
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 0.8rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 0.95rem;
-        }
-
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: #ff3333;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .input-group select {
-            cursor: pointer;
-        }
-
-        .input-group select option {
-            background: #1a1a1a;
-            color: #fff;
-        }
-
-        .input-note {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 0.3rem;
-            font-style: italic;
-        }
-
-        .subscribe-btn {
-            width: 100%;
-            padding: 0.8rem;
-            background: #ff3333;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .subscribe-btn:hover {
-            background: #ff0000;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 51, 51, 0.4);
-        }
-
-        .newsletter-msg {
-            margin-top: 1rem;
-            padding: 0.8rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            text-align: center;
-            display: none;
-        }
-
-        .newsletter-msg.success {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid rgba(0, 255, 0, 0.3);
-            color: #00ff00;
-            display: block;
-        }
-
-        .newsletter-msg.error {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            color: #ff3333;
-            display: block;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
         .action-btn {
-            flex: 1;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 51, 51, 0.2);
+            border: 1px solid rgba(255, 51, 51, 0.4);
             border-radius: 10px;
-            color: white;
+            color: #ff3333;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            text-align: center;
             text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
         }
 
         .action-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: #ff3333;
+            background: rgba(255, 51, 51, 0.3);
             transform: translateY(-2px);
         }
 
@@ -382,6 +338,8 @@
             padding: 2rem;
             max-width: 500px;
             width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
             animation: slideUp 0.3s ease;
         }
 
@@ -421,10 +379,67 @@
             color: #ff3333;
         }
 
-        .modal-body p {
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .input-group textarea {
+            min-height: 150px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #ff3333;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .input-note {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+
+        .message {
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #00ff00;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff3333;
+            display: block;
         }
 
         .modal-buttons {
@@ -462,10 +477,18 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
-        @media (max-width: 1024px) {
-            .section-grid {
-                grid-template-columns: 1fr;
-            }
+        .code-display {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #00ff00;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         @media (max-width: 768px) {
@@ -481,8 +504,12 @@
                 grid-template-columns: 1fr;
             }
 
-            .action-buttons {
-                flex-direction: column;
+            .tabs {
+                gap: 1rem;
+            }
+
+            .tab {
+                padding: 0.8rem 1rem;
             }
 
             .modal-content {
@@ -507,7 +534,7 @@
     <div class="dashboard-container">
         <div class="welcome-section">
             <h1>welcome back, <span id="username">loading...</span></h1>
-            <p>manage your whitelisted devices and track your activity</p>
+            <p>manage your devices, scripts, and monitor activity</p>
         </div>
 
         <div class="stats-grid">
@@ -518,53 +545,89 @@
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-label">completed steps</div>
-                <div class="stat-value"><span id="completed-steps">0</span> / 3</div>
+                <div class="stat-icon">📜</div>
+                <div class="stat-label">uploaded scripts</div>
+                <div class="stat-value" id="script-count">0</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">⏱️</div>
-                <div class="stat-label">reading time</div>
-                <div class="stat-value"><span id="reading-time">0</span>s</div>
+                <div class="stat-icon">📥</div>
+                <div class="stat-label">total downloads</div>
+                <div class="stat-value" id="download-count">0</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">🕐</div>
-                <div class="stat-label">last login</div>
-                <div class="stat-value" id="last-login" style="font-size: 1rem;">--</div>
+                <div class="stat-icon">🔓</div>
+                <div class="stat-label">auth attempts</div>
+                <div class="stat-value" id="auth-count">0</div>
             </div>
         </div>
 
-        <div class="section-grid">
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('devices')">🔑 Devices</button>
+                <button class="tab" onclick="switchTab('scripts')">📜 Scripts</button>
+                <button class="tab" onclick="switchTab('downloads')">📥 Downloads</button>
+                <button class="tab" onclick="switchTab('auth')">🔓 Auth Attempts</button>
+            </div>
+        </div>
+
+        <div id="devices-tab" class="tab-content active">
             <div class="section-card">
-                <h2>🔑 your devices</h2>
-                <div class="hwid-list" id="hwid-list">
+                <h2>🔑 Your Devices</h2>
+                <div class="item-list" id="hwid-list">
                     <div class="empty-state">
                         <div class="empty-state-icon">📦</div>
                         <p>loading your devices...</p>
                     </div>
                 </div>
-                <div class="action-buttons">
-                    <button class="action-btn" onclick="showAddDeviceModal()">+ add new device</button>
+                <div style="margin-top: 1.5rem;">
+                    <button class="action-btn" onclick="showAddDeviceModal()">+ Add New Device</button>
                 </div>
             </div>
+        </div>
 
+        <div id="scripts-tab" class="tab-content">
             <div class="section-card">
-                <h2>📧 stay updated</h2>
-                <p style="color: rgba(255,255,255,0.6); margin-bottom: 1.5rem; font-size: 0.9rem;">
-                    get notified about new features, updates, and important announcements.
-                </p>
-                <div class="input-group">
-                    <label>email address</label>
-                    <input type="email" id="newsletter-email" placeholder="you@example.com">
+                <h2>📜 Your Scripts</h2>
+                <div class="item-list" id="script-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <p>loading your scripts...</p>
+                    </div>
                 </div>
-                <button class="subscribe-btn" onclick="subscribeNewsletter()">subscribe</button>
-                <div class="newsletter-msg" id="newsletter-msg"></div>
+                <div style="margin-top: 1.5rem;">
+                    <button class="action-btn" onclick="showUploadScriptModal()">+ Upload Script</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="downloads-tab" class="tab-content">
+            <div class="section-card">
+                <h2>📥 Script Downloads</h2>
+                <div class="item-list" id="download-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <p>loading download history...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="auth-tab" class="tab-content">
+            <div class="section-card">
+                <h2>🔓 Authentication Attempts</h2>
+                <div class="item-list" id="auth-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <p>loading auth attempts...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Add Device Modal -->
     <div class="modal" id="add-device-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -573,12 +636,12 @@
             </div>
             
             <div class="modal-body">
-                <p>Enter your ALUCARD key to whitelist a new device. You can get your key from the unlock page.</p>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">Enter your ALUCARD key to whitelist a new device.</p>
                 
                 <div class="input-group">
                     <label>ALUCARD Key</label>
                     <input type="text" id="hwid-input" placeholder="ALUCARD-XXXXXXXXXX" oninput="validateHWID()">
-                    <div class="input-note">Note: Your key should start with "ALUCARD-"</div>
+                    <div class="input-note">Key should start with "ALUCARD-"</div>
                 </div>
 
                 <div class="input-group" id="device-type-group" style="display:none;">
@@ -592,7 +655,7 @@
                     </select>
                 </div>
 
-                <div class="newsletter-msg" id="add-device-msg"></div>
+                <div class="message" id="add-device-msg"></div>
 
                 <div class="modal-buttons">
                     <button class="modal-btn modal-btn-primary" onclick="addDevice()">Add Device</button>
@@ -602,44 +665,289 @@
         </div>
     </div>
 
+    <!-- Upload Script Modal -->
+    <div class="modal" id="upload-script-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload Script</h2>
+                <button class="close-modal" onclick="closeUploadScriptModal()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">Upload your Lua script for protection with AES-256 encryption.</p>
+                
+                <div class="input-group">
+                    <label>Script Name</label>
+                    <input type="text" id="script-name" placeholder="My Awesome Script">
+                </div>
+
+                <div class="input-group">
+                    <label>Description</label>
+                    <input type="text" id="script-description" placeholder="What does your script do?">
+                </div>
+
+                <div class="input-group">
+                    <label>Lua Code</label>
+                    <textarea id="script-content" placeholder="-- Your Lua code here
+print('Hello from Alucard!')"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Webhook URL (Optional)</label>
+                    <input type="text" id="script-webhook" placeholder="https://discord.com/api/webhooks/...">
+                    <div class="input-note">Receive notifications on Discord/Slack when script is accessed</div>
+                </div>
+
+                <div class="message" id="upload-script-msg"></div>
+
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-primary" onclick="uploadScript()">Upload & Protect</button>
+                    <button class="modal-btn modal-btn-secondary" onclick="closeUploadScriptModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Script Modal -->
+    <div class="modal" id="view-script-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Script Details</h2>
+                <button class="close-modal" onclick="closeViewScriptModal()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Script Name</label>
+                    <div style="color: rgba(255,255,255,0.8); padding: 0.5rem 0;" id="view-script-name"></div>
+                </div>
+
+                <div class="input-group">
+                    <label>Description</label>
+                    <div style="color: rgba(255,255,255,0.6); padding: 0.5rem 0;" id="view-script-desc"></div>
+                </div>
+
+                <div class="input-group">
+                    <label>Loader Code (Give this to users)</label>
+                    <div class="code-display" id="view-script-loader"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    <div>
+                        <div class="stat-label">Downloads</div>
+                        <div class="stat-value" style="font-size: 1.5rem;" id="view-script-downloads">0</div>
+                    </div>
+                    <div>
+                        <div class="stat-label">Version</div>
+                        <div class="stat-value" style="font-size: 1.5rem;" id="view-script-version">1.0</div>
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-primary" onclick="copyLoader()">Copy Loader</button>
+                    <button class="modal-btn modal-btn-secondary" onclick="closeViewScriptModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Mock data storage (simulates backend)
-        const STORAGE_KEY = 'alucard_devices';
+        let currentScriptId = null;
 
-        // Initialize mock data
-        function initMockData() {
-            if (!window.mockDevices) {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                window.mockDevices = stored ? JSON.parse(stored) : [];
-            }
-        }
-
-        function saveMockData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(window.mockDevices));
-        }
-
-        // Check if user is logged in
+        // Check authentication
         function checkAuth() {
             const token = localStorage.getItem('alucard_token');
             const user = localStorage.getItem('alucard_user');
             
-            console.log('Auth check - Token exists:', !!token);
-            console.log('Auth check - User exists:', !!user);
-            
             if (!token || !user) {
-                console.log('No auth found, redirecting to auth page');
                 window.location.href = 'auth.html';
                 return false;
             }
             return true;
         }
 
-        // Check auth on page load
         if (!checkAuth()) {
-            // Stop execution if not authenticated
             throw new Error('Not authenticated');
         }
 
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+            const token = localStorage.getItem('alucard_token');
+
+            if (!user.id || !token) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            document.getElementById('username').textContent = user.username || 'User';
+
+            try {
+                const res = await fetch(`${API_URL}/api/dashboard`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    // Update stats
+                    document.getElementById('hwid-count').textContent = data.hwids?.length || 0;
+                    document.getElementById('script-count').textContent = data.scripts?.length || 0;
+                    
+                    let totalDownloads = 0;
+                    data.scripts?.forEach(s => totalDownloads += s.downloads || 0);
+                    document.getElementById('download-count').textContent = totalDownloads;
+                    document.getElementById('auth-count').textContent = data.authAttempts?.length || 0;
+
+                    // Render devices
+                    renderDevices(data.hwids || []);
+                    
+                    // Render scripts
+                    renderScripts(data.scripts || []);
+                    
+                    // Render downloads
+                    renderDownloads(data.scripts || []);
+                    
+                    // Render auth attempts
+                    renderAuthAttempts(data.authAttempts || []);
+                }
+            } catch (err) {
+                console.error('Failed to load dashboard:', err);
+            }
+        }
+
+        function renderDevices(hwids) {
+            const list = document.getElementById('hwid-list');
+            if (hwids.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔓</div>
+                        <p>no devices whitelisted yet</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = hwids.map(h => `
+                    <div class="list-item">
+                        <div>
+                            <div class="item-code">${h.hwid}</div>
+                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
+                                ${h.device_type} • Added: ${new Date(h.created_at).toLocaleDateString()}
+                            </div>
+                        </div>
+                        <div class="item-status ${h.status === 'active' ? 'status-active' : 'status-blacklisted'}">
+                            ${h.status}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderScripts(scripts) {
+            const list = document.getElementById('script-list');
+            if (scripts.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📜</div>
+                        <p>no scripts uploaded yet</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">upload your first script to get started</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = scripts.map(s => `
+                    <div class="list-item" onclick="viewScript('${s.id}')">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 0.3rem;">${s.name}</div>
+                            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">${s.description}</div>
+                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.3rem;">
+                                v${s.version} • ${s.downloads} downloads • ${new Date(s.created_at).toLocaleDateString()}
+                            </div>
+                        </div>
+                        <div>
+                            <button class="action-btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="event.stopPropagation(); deleteScript('${s.id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderDownloads(scripts) {
+            const list = document.getElementById('download-list');
+            const downloads = [];
+            
+            scripts.forEach(script => {
+                if (script.downloads > 0) {
+                    downloads.push({
+                        name: script.name,
+                        downloads: script.downloads,
+                        lastAccess: script.updated_at || script.created_at
+                    });
+                }
+            });
+
+            if (downloads.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📥</div>
+                        <p>no downloads yet</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">your scripts haven't been accessed yet</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = downloads.map(d => `
+                    <div class="list-item">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 0.3rem;">${d.name}</div>
+                            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">
+                                Last access: ${new Date(d.lastAccess).toLocaleString()}
+                            </div>
+                        </div>
+                        <div class="stat-value" style="font-size: 1.5rem;">${d.downloads}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderAuthAttempts(attempts) {
+            const list = document.getElementById('auth-list');
+            if (attempts.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔓</div>
+                        <p>no auth attempts logged</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = attempts.slice(0, 50).map(a => `
+                    <div class="list-item">
+                        <div>
+                            <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">
+                                Verification attempt
+                            </div>
+                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
+                                IP: ${a.ip_address} • ${new Date(a.verified_at).toLocaleString()}
+                            </div>
+                        </div>
+                        <div class="item-status status-active">✓</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Device management
         function validateHWID() {
             const hwidInput = document.getElementById('hwid-input').value.trim();
             const typeGroup = document.getElementById('device-type-group');
@@ -652,7 +960,7 @@
                 } else {
                     typeGroup.style.display = 'none';
                     if (hwidInput.length > 5) {
-                        msgEl.className = 'newsletter-msg error';
+                        msgEl.className = 'message error';
                         msgEl.textContent = 'Invalid key format. Must start with "ALUCARD-"';
                     }
                 }
@@ -667,209 +975,151 @@
             const deviceType = document.getElementById('device-type').value;
             const msgEl = document.getElementById('add-device-msg');
 
-            if (!hwid) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Please enter an ALUCARD key';
-                return;
-            }
-
-            if (!hwid.startsWith('ALUCARD-')) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Invalid key format. Must start with "ALUCARD-"';
-                return;
-            }
-
-            if (hwid.length < 15) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Key is too short. Please enter a valid ALUCARD key';
+            if (!hwid || !hwid.startsWith('ALUCARD-') || hwid.length < 15) {
+                msgEl.className = 'message error';
+                msgEl.textContent = 'Please enter a valid ALUCARD key';
                 return;
             }
 
             if (!deviceType) {
-                msgEl.className = 'newsletter-msg error';
+                msgEl.className = 'message error';
                 msgEl.textContent = 'Please select a device type';
                 return;
             }
 
             const token = localStorage.getItem('alucard_token');
-            
-            // Try API first
-            if (token) {
-                try {
-                    const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ 
-                            hwid: hwid,
-                            deviceType: deviceType
-                        })
-                    });
 
-                    const data = await res.json();
+            try {
+                const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ hwid, deviceType })
+                });
 
-                    if (res.ok && data.success) {
-                        msgEl.className = 'newsletter-msg success';
-                        msgEl.textContent = 'Device added successfully!';
-                        setTimeout(() => {
-                            closeAddDeviceModal();
-                            loadDashboard();
-                        }, 1500);
-                        return;
-                    } else {
-                        msgEl.className = 'newsletter-msg error';
-                        msgEl.textContent = data.error || 'Failed to add device';
-                        return;
-                    }
-                } catch (err) {
-                    console.log('API failed, using local storage:', err);
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    msgEl.className = 'message success';
+                    msgEl.textContent = 'Device added successfully!';
+                    setTimeout(() => {
+                        closeAddDeviceModal();
+                        loadDashboard();
+                    }, 1500);
+                } else {
+                    msgEl.className = 'message error';
+                    msgEl.textContent = data.error || 'Failed to add device';
                 }
+            } catch (err) {
+                msgEl.className = 'message error';
+                msgEl.textContent = 'Network error: ' + err.message;
             }
-
-            // Fallback to local storage
-            initMockData();
-
-            const exists = window.mockDevices.find(d => d.hwid === hwid);
-            if (exists) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'This device is already whitelisted';
-                return;
-            }
-
-            const newDevice = {
-                hwid: hwid,
-                deviceType: deviceType,
-                status: 'active',
-                created_at: new Date().toISOString()
-            };
-
-            window.mockDevices.push(newDevice);
-            saveMockData();
-
-            msgEl.className = 'newsletter-msg success';
-            msgEl.textContent = 'Device added successfully!';
-            
-            setTimeout(() => {
-                closeAddDeviceModal();
-                loadDashboard();
-            }, 1500);
         }
 
-        async function loadDashboard() {
-            initMockData();
-            
-            const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-            const token = localStorage.getItem('alucard_token');
-            const userId = user.id;
+        // Script management
+        async function uploadScript() {
+            const name = document.getElementById('script-name').value.trim();
+            const description = document.getElementById('script-description').value.trim();
+            const content = document.getElementById('script-content').value.trim();
+            const webhook = document.getElementById('script-webhook').value.trim();
+            const msgEl = document.getElementById('upload-script-msg');
 
-            if (!userId || !token) {
-                window.location.href = 'auth.html';
+            if (!name || !description || !content) {
+                msgEl.className = 'message error';
+                msgEl.textContent = 'Please fill in all required fields';
                 return;
             }
 
-            // Set username
-            document.getElementById('username').textContent = user.username || 'User';
+            const token = localStorage.getItem('alucard_token');
 
-            // Try to fetch from real API first
             try {
-                const res = await fetch(`${API_URL}/api/dashboard`, {
-                    method: 'GET',
+                const res = await fetch(`${API_URL}/api/upload-script`, {
+                    method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        name, 
+                        description, 
+                        content,
+                        webhook_url: webhook || null
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    msgEl.className = 'message success';
+                    msgEl.textContent = 'Script uploaded and protected!';
+                    setTimeout(() => {
+                        closeUploadScriptModal();
+                        loadDashboard();
+                    }, 1500);
+                } else {
+                    msgEl.className = 'message error';
+                    msgEl.textContent = data.error || 'Failed to upload script';
+                }
+            } catch (err) {
+                msgEl.className = 'message error';
+                msgEl.textContent = 'Network error: ' + err.message;
+            }
+        }
+
+        async function viewScript(scriptId) {
+            currentScriptId = scriptId;
+            const token = localStorage.getItem('alucard_token');
+
+            try {
+                const res = await fetch(`${API_URL}/api/dashboard/scripts`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await res.json();
+                const script = data.scripts.find(s => s.id === scriptId);
+
+                if (script) {
+                    document.getElementById('view-script-name').textContent = script.name;
+                    document.getElementById('view-script-desc').textContent = script.description;
+                    document.getElementById('view-script-loader').textContent = script.loader_code;
+                    document.getElementById('view-script-downloads').textContent = script.downloads;
+                    document.getElementById('view-script-version').textContent = script.version;
+                    
+                    document.getElementById('view-script-modal').classList.add('show');
+                }
+            } catch (err) {
+                console.error('Failed to load script:', err);
+            }
+        }
+
+        async function deleteScript(scriptId) {
+            if (!confirm('Are you sure you want to delete this script?')) return;
+
+            const token = localStorage.getItem('alucard_token');
+
+            try {
+                const res = await fetch(`${API_URL}/api/scripts/${scriptId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 if (res.ok) {
-                    const data = await res.json();
-                    
-                    // Update stats from API
-                    document.getElementById('hwid-count').textContent = data.hwids?.length || 0;
-                    document.getElementById('completed-steps').textContent = data.completedSteps || 0;
-                    document.getElementById('reading-time').textContent = data.readingTime || 0;
-                    
-                    if (data.lastLogin) {
-                        const date = new Date(data.lastLogin);
-                        document.getElementById('last-login').textContent = date.toLocaleDateString();
-                    } else {
-                        document.getElementById('last-login').textContent = 'Today';
-                    }
-
-                    // Update HWID list from API
-                    const hwidList = document.getElementById('hwid-list');
-                    if (!data.hwids || data.hwids.length === 0) {
-                        hwidList.innerHTML = `
-                            <div class="empty-state">
-                                <div class="empty-state-icon">🔓</div>
-                                <p>no devices whitelisted yet</p>
-                                <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
-                            </div>
-                        `;
-                    } else {
-                        hwidList.innerHTML = data.hwids.map(h => `
-                            <div class="hwid-item">
-                                <div>
-                                    <div class="hwid-code">${h.hwid}</div>
-                                    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
-                                        ${h.device_type} • Added: ${new Date(h.created_at).toLocaleDateString()}
-                                    </div>
-                                </div>
-                                <div class="hwid-status ${h.status === 'active' ? 'status-active' : 'status-blacklisted'}">
-                                    ${h.status}
-                                </div>
-                            </div>
-                        `).join('');
-                    }
-                    return;
+                    loadDashboard();
                 }
             } catch (err) {
-                console.log('API not available, using local storage:', err);
-            }
-
-            // Fallback to local storage if API fails
-            document.getElementById('hwid-count').textContent = window.mockDevices.length;
-            document.getElementById('completed-steps').textContent = Math.min(window.mockDevices.length, 3);
-            document.getElementById('reading-time').textContent = Math.floor(Math.random() * 120) + 30;
-            
-            const lastLogin = localStorage.getItem('alucard_last_login');
-            if (lastLogin) {
-                const date = new Date(lastLogin);
-                document.getElementById('last-login').textContent = date.toLocaleDateString();
-            } else {
-                const now = new Date().toISOString();
-                localStorage.setItem('alucard_last_login', now);
-                document.getElementById('last-login').textContent = new Date().toLocaleDateString();
-            }
-
-            // Update HWID list from local storage
-            const hwidList = document.getElementById('hwid-list');
-            if (window.mockDevices.length === 0) {
-                hwidList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔓</div>
-                        <p>no devices whitelisted yet</p>
-                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
-                    </div>
-                `;
-            } else {
-                hwidList.innerHTML = window.mockDevices.map(h => `
-                    <div class="hwid-item">
-                        <div>
-                            <div class="hwid-code">${h.hwid}</div>
-                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
-                                ${h.deviceType} • Added: ${new Date(h.created_at).toLocaleDateString()}
-                            </div>
-                        </div>
-                        <div class="hwid-status ${h.status === 'active' ? 'status-active' : 'status-blacklisted'}">
-                            ${h.status}
-                        </div>
-                    </div>
-                `).join('');
+                console.error('Failed to delete script:', err);
             }
         }
 
+        function copyLoader() {
+            const loader = document.getElementById('view-script-loader').textContent;
+            navigator.clipboard.writeText(loader);
+            alert('Loader code copied to clipboard!');
+        }
+
+        // Modal functions
         function showAddDeviceModal() {
             document.getElementById('add-device-modal').classList.add('show');
             document.getElementById('hwid-input').value = '';
@@ -882,28 +1132,25 @@
             document.getElementById('add-device-modal').classList.remove('show');
         }
 
-        function goToUnlock() {
-            window.location.href = 'unlock.html';
+        function showUploadScriptModal() {
+            document.getElementById('upload-script-modal').classList.add('show');
+            document.getElementById('script-name').value = '';
+            document.getElementById('script-description').value = '';
+            document.getElementById('script-content').value = '';
+            document.getElementById('script-webhook').value = '';
+            document.getElementById('upload-script-msg').style.display = 'none';
         }
 
-        async function subscribeNewsletter() {
-            const email = document.getElementById('newsletter-email').value;
-            const msgEl = document.getElementById('newsletter-msg');
+        function closeUploadScriptModal() {
+            document.getElementById('upload-script-modal').classList.remove('show');
+        }
 
-            if (!email || !email.includes('@')) {
-                msgEl.className = 'newsletter-msg error';
-                msgEl.textContent = 'Please enter a valid email address';
-                return;
-            }
+        function closeViewScriptModal() {
+            document.getElementById('view-script-modal').classList.remove('show');
+        }
 
-            // Mock success
-            msgEl.className = 'newsletter-msg success';
-            msgEl.textContent = 'Successfully subscribed!';
-            document.getElementById('newsletter-email').value = '';
-            
-            setTimeout(() => {
-                msgEl.style.display = 'none';
-            }, 3000);
+        function goToUnlock() {
+            window.location.href = 'unlock.html';
         }
 
         function logout() {
@@ -912,15 +1159,17 @@
             window.location.href = 'auth.html';
         }
 
-        // Close modal when clicking outside
-        document.getElementById('add-device-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'add-device-modal') {
-                closeAddDeviceModal();
-            }
+        // Close modals on outside click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
         });
 
         // Load dashboard on page load
         loadDashboard();
     </script>
 </body>
-</html>
+</html
