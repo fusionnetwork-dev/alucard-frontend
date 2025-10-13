@@ -619,9 +619,25 @@
         }
 
         // Check if user is logged in
-        const token = localStorage.getItem('alucard_token');
-        if (!token) {
-            window.location.href = 'auth.html';
+        function checkAuth() {
+            const token = localStorage.getItem('alucard_token');
+            const user = localStorage.getItem('alucard_user');
+            
+            console.log('Auth check - Token exists:', !!token);
+            console.log('Auth check - User exists:', !!user);
+            
+            if (!token || !user) {
+                console.log('No auth found, redirecting to auth page');
+                window.location.href = 'auth.html';
+                return false;
+            }
+            return true;
+        }
+
+        // Check auth on page load
+        if (!checkAuth()) {
+            // Stop execution if not authenticated
+            throw new Error('Not authenticated');
         }
 
         function validateHWID() {
