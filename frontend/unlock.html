@@ -304,39 +304,6 @@
       transform: translateY(-2px);
     }
 
-    .devices-list {
-      margin-top: 2rem;
-      text-align: left;
-    }
-
-    .devices-list h3 {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-      color: #00ff00;
-    }
-
-    .device-item {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .device-hwid {
-      font-family: monospace;
-      color: rgba(255,255,255,0.9);
-      font-size: 0.9rem;
-    }
-
-    .device-time {
-      color: rgba(255,255,255,0.5);
-      font-size: 0.8rem;
-    }
-
     .loading {
       opacity: 0.5;
       pointer-events: none;
@@ -414,16 +381,16 @@
   <div class="container">
     <div class="unlock-card">
       <h1>unlock whitelist access</h1>
-      <p class="subtitle">complete 3 quick checkpoints to whitelist your device</p>
+      <p class="subtitle">complete 3 quick checkpoints to generate your ALUCARD key</p>
 
       <div class="info-box">
-        <h3>💡 why checkpoints?</h3>
-        <p>Running a free service requires infrastructure costs. These quick checkpoints (15 seconds each) help us keep Alucard completely free for everyone. No premium plans, no paywalls, just 45 seconds of your time.</p>
+        <h3>💡 how it works</h3>
+        <p>Complete 3 simple checkpoints (15 seconds each) to generate your unique ALUCARD key. Then add it to your dashboard to whitelist your device. Running a free service requires infrastructure costs - these quick checkpoints help us keep Alucard completely free for everyone.</p>
       </div>
 
       <div class="warning-box">
         <h3>⚠️ rate limit notice</h3>
-        <p><strong>Three unlocks per 24 hours per IP address.</strong> This prevents abuse and ensures fair access for everyone. Plan accordingly!</p>
+        <p><strong>Three keys per 24 hours per IP address.</strong> This prevents abuse and ensures fair access for everyone. Plan accordingly!</p>
       </div>
 
       <div class="progress-container">
@@ -463,19 +430,13 @@
       <div class="error-message" id="error-message"></div>
 
       <div class="success-message" id="success-message">
-        <h2>🎉 whitelist unlocked!</h2>
-        <p>Your device has been successfully whitelisted. You now have permanent access to Alucard.</p>
+        <h2>🎉 ALUCARD key generated!</h2>
+        <p>Copy your key below and add it to your dashboard to whitelist your device.</p>
         <div class="hwid-display" id="hwid-display"></div>
         
         <div class="button-group">
-          <button class="copy-btn" onclick="copyHWID(event)">📋 Copy HWID</button>
-          <button class="add-device-btn" onclick="addAnotherDevice()">➕ Add Another Device</button>
-          <button class="dashboard-btn" onclick="goToDashboard()">📊 Go to Dashboard</button>
-        </div>
-
-        <div class="devices-list" id="devices-list" style="display:none;">
-          <h3>Your Whitelisted Devices:</h3>
-          <div id="devices-container"></div>
+          <button class="copy-btn" onclick="copyHWID(event)">📋 Copy Key</button>
+          <button class="dashboard-btn" onclick="goToDashboard()">📊 Add to Dashboard</button>
         </div>
       </div>
     </div>
@@ -485,11 +446,37 @@
     const TOTAL_STEPS = 3;
     let completedSteps = 0;
     let userHWID = null;
-    let whitelistedDevices = [];
     let sessionTokens = {};
 
+    // Check authentication
+    function checkAuth() {
+      const token = localStorage.getItem('alucard_token');
+      const user = localStorage.getItem('alucard_user');
+      
+      console.log('Unlock page - Token exists:', !!token);
+      console.log('Unlock page - User exists:', !!user);
+      
+      if (!token || !user) {
+        console.log('No auth found, redirecting to auth page');
+        window.location.href = 'auth.html';
+        return false;
+      }
+      return true;
+    }
+
+    // Check auth on page load
+    if (!checkAuth()) {
+      throw new Error('Not authenticated');
+    }
+
     function generateHWID() {
-      return 'HWID-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+      // Changed from HWID- to ALUCARD-
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = 'ALUCARD-';
+      for (let i = 0; i < 12; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
     }
 
     function updateProgress() {
@@ -505,42 +492,6 @@
       setTimeout(() => errorEl.classList.remove('show'), 8000);
     }
 
-    function showCooldownMessage(timeRemaining) {
-      const card = document.querySelector('.unlock-card');
-      const hours = Math.floor(timeRemaining / 3600000);
-      const minutes = Math.floor((timeRemaining % 3600000) / 60000);
-      
-      card.innerHTML = `
-        <div class="cooldown-message">
-          <h2>⏰ rate limit active</h2>
-          <p>You've already unlocked a device from this IP address in the last 24 hours.</p>
-          <div class="cooldown-timer" id="cooldown-timer">
-            ${hours}h ${minutes}m remaining
-          </div>
-          <p>This limit prevents abuse and ensures fair access for all users. You can unlock another device after the cooldown expires.</p>
-          <div class="button-group" style="justify-content: center; margin-top: 2rem;">
-            <button class="dashboard-btn" onclick="goToDashboard()">📊 Go to Dashboard</button>
-          </div>
-        </div>
-      `;
-      
-      // Update timer every minute
-      setInterval(() => {
-        const now = Date.now();
-        const remaining = timeRemaining - (now - Date.now());
-        if (remaining > 0) {
-          const h = Math.floor(remaining / 3600000);
-          const m = Math.floor((remaining % 3600000) / 60000);
-          const timerEl = document.getElementById('cooldown-timer');
-          if (timerEl) {
-            timerEl.textContent = `${h}h ${m}m remaining`;
-          }
-        } else {
-          location.reload();
-        }
-      }, 60000);
-    }
-
     async function startAd(stepNum) {
       const btn = document.getElementById(`ad-btn-${stepNum}`);
       const timer = document.getElementById(`timer-${stepNum}`);
@@ -550,17 +501,25 @@
       btn.textContent = 'Connecting...';
       card.classList.add('loading');
 
+      const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+      const token = localStorage.getItem('alucard_token');
+
       try {
+        console.log('Starting checkpoint', stepNum);
         const response = await fetch(`${API_URL}/api/ad-start`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({ 
-            userId: localStorage.getItem('alucard_user_id') || 'guest', 
+            userId: user.id || 'guest', 
             step: stepNum 
           })
         });
 
         const data = await response.json();
+        console.log('Ad start response:', data);
         
         if (!response.ok) {
           throw new Error(data.error || 'Failed to start checkpoint');
@@ -576,6 +535,7 @@
         startTimer(stepNum);
         setTimeout(() => completeStep(stepNum), 15000);
       } catch (e) {
+        console.error('Error starting ad:', e);
         showError('Error starting checkpoint: ' + e.message);
         btn.disabled = false;
         btn.textContent = 'Start Checkpoint';
@@ -610,17 +570,21 @@
 
       if (!skipAPI) {
         try {
+          console.log('Completing checkpoint', stepNum);
           const response = await fetch(`${API_URL}/api/ad-complete`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sessionToken: sessionTokens[stepNum] })
           });
 
+          const data = await response.json();
+          console.log('Ad complete response:', data);
+
           if (!response.ok) {
-            const data = await response.json();
             throw new Error(data.error || 'Failed to complete checkpoint');
           }
         } catch (e) {
+          console.error('Error completing ad:', e);
           showError('Verification failed: ' + e.message);
           btn.disabled = false;
           btn.textContent = 'Start Checkpoint';
@@ -645,106 +609,20 @@
         document.getElementById(`step-${next}`).classList.add('active');
         document.getElementById(`ad-btn-${next}`).disabled = false;
       } else {
-        setTimeout(() => unlockWhitelist(), 500);
+        setTimeout(() => generateKey(), 500);
       }
     }
 
-    async function unlockWhitelist() {
+    function generateKey() {
+      // Just generate and display the key - user will add it manually in dashboard
       userHWID = generateHWID();
-      
-      try {
-        const response = await fetch(`${API_URL}/api/unlock-whitelist`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            hwid: userHWID,
-            userId: localStorage.getItem('alucard_user_id') || 'guest'
-          })
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-          // Check if it's the 24-hour cooldown error
-          if (data.error && data.error.includes('24 hours')) {
-            showError('⏰ Rate Limit: ' + data.error);
-            if (data.timeRemaining) {
-              setTimeout(() => showCooldownMessage(data.timeRemaining), 2000);
-            }
-            return;
-          }
-          throw new Error(data.error || 'Failed to unlock whitelist');
-        }
-
-        if (data.success) {
-          whitelistedDevices.push({
-            hwid: userHWID,
-            time: new Date().toLocaleString()
-          });
-          displaySuccess();
-        }
-      } catch (err) {
-        showError('Error unlocking whitelist: ' + err.message);
-      }
+      console.log('Generated ALUCARD key:', userHWID);
+      displaySuccess();
     }
 
     function displaySuccess() {
       document.getElementById('hwid-display').textContent = userHWID;
       document.getElementById('success-message').classList.add('show');
-      
-      if (whitelistedDevices.length > 1) {
-        displayDevicesList();
-      }
-    }
-
-    function displayDevicesList() {
-      const listEl = document.getElementById('devices-list');
-      const containerEl = document.getElementById('devices-container');
-      
-      containerEl.innerHTML = whitelistedDevices.map((device, i) => `
-        <div class="device-item">
-          <div>
-            <div class="device-hwid">${device.hwid}</div>
-            <div class="device-time">Added: ${device.time}</div>
-          </div>
-        </div>
-      `).join('');
-      
-      listEl.style.display = 'block';
-    }
-
-    function addAnotherDevice() {
-      showError('⚠️ Remember: Only three unlocks per 24 hours per IP address. You may hit the rate limit.');
-      setTimeout(() => {
-        // Reset for another device
-        completedSteps = 0;
-        sessionTokens = {};
-        updateProgress();
-        
-        // Hide success message
-        document.getElementById('success-message').classList.remove('show');
-        
-        // Reset all steps
-        for (let i = 1; i <= TOTAL_STEPS; i++) {
-          const card = document.getElementById(`step-${i}`);
-          const btn = document.getElementById(`ad-btn-${i}`);
-          const timer = document.getElementById(`timer-${i}`);
-          
-          card.classList.remove('completed', 'active', 'loading');
-          btn.disabled = true;
-          btn.textContent = 'Start Checkpoint';
-          btn.style.background = '#ff3333';
-          btn.style.display = 'block';
-          timer.style.display = 'none';
-        }
-        
-        // Activate first step
-        document.getElementById('step-1').classList.add('active');
-        document.getElementById('ad-btn-1').disabled = false;
-        
-        // Scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 3000);
     }
 
     function copyHWID(event) {
@@ -757,7 +635,13 @@
     }
 
     function goToDashboard() {
-      window.location.href = 'dashboard.html';
+      // Copy HWID to clipboard before redirecting
+      const hwid = document.getElementById('hwid-display').textContent;
+      navigator.clipboard.writeText(hwid).then(() => {
+        window.location.href = 'dashboard.html';
+      }).catch(() => {
+        window.location.href = 'dashboard.html';
+      });
     }
 
     // Initialize
