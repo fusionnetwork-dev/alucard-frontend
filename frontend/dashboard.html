@@ -675,9 +675,46 @@
                 return;
             }
 
+            const token = localStorage.getItem('alucard_token');
+            
+            // Try API first
+            if (token) {
+                try {
+                    const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ 
+                            hwid: hwid,
+                            deviceType: deviceType
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        msgEl.className = 'newsletter-msg success';
+                        msgEl.textContent = 'Device added successfully!';
+                        setTimeout(() => {
+                            closeAddDeviceModal();
+                            loadDashboard();
+                        }, 1500);
+                        return;
+                    } else {
+                        msgEl.className = 'newsletter-msg error';
+                        msgEl.textContent = data.error || 'Failed to add device';
+                        return;
+                    }
+                } catch (err) {
+                    console.log('API failed, using local storage:', err);
+                }
+            }
+
+            // Fallback to local storage
             initMockData();
 
-            // Check if device already exists
             const exists = window.mockDevices.find(d => d.hwid === hwid);
             if (exists) {
                 msgEl.className = 'newsletter-msg error';
@@ -685,7 +722,6 @@
                 return;
             }
 
-            // Add device
             const newDevice = {
                 hwid: hwid,
                 deviceType: deviceType,
@@ -709,9 +745,10 @@
             initMockData();
             
             const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+            const token = localStorage.getItem('alucard_token');
             const userId = user.id;
 
-            if (!userId) {
+            if (!userId || !token) {
                 window.location.href = 'auth.html';
                 return;
             }
@@ -719,7 +756,63 @@
             // Set username
             document.getElementById('username').textContent = user.username || 'User';
 
-            // Update stats
+            // Try to fetch from real API first
+            try {
+                const res = await fetch(`${API_URL}/api/dashboard`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    // Update stats from API
+                    document.getElementById('hwid-count').textContent = data.hwids?.length || 0;
+                    document.getElementById('completed-steps').textContent = data.completedSteps || 0;
+                    document.getElementById('reading-time').textContent = data.readingTime || 0;
+                    
+                    if (data.lastLogin) {
+                        const date = new Date(data.lastLogin);
+                        document.getElementById('last-login').textContent = date.toLocaleDateString();
+                    } else {
+                        document.getElementById('last-login').textContent = 'Today';
+                    }
+
+                    // Update HWID list from API
+                    const hwidList = document.getElementById('hwid-list');
+                    if (!data.hwids || data.hwids.length === 0) {
+                        hwidList.innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">🔓</div>
+                                <p>no devices whitelisted yet</p>
+                                <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
+                            </div>
+                        `;
+                    } else {
+                        hwidList.innerHTML = data.hwids.map(h => `
+                            <div class="hwid-item">
+                                <div>
+                                    <div class="hwid-code">${h.hwid}</div>
+                                    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
+                                        ${h.device_type} • Added: ${new Date(h.created_at).toLocaleDateString()}
+                                    </div>
+                                </div>
+                                <div class="hwid-status ${h.status === 'active' ? 'status-active' : 'status-blacklisted'}">
+                                    ${h.status}
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                    return;
+                }
+            } catch (err) {
+                console.log('API not available, using local storage:', err);
+            }
+
+            // Fallback to local storage if API fails
             document.getElementById('hwid-count').textContent = window.mockDevices.length;
             document.getElementById('completed-steps').textContent = Math.min(window.mockDevices.length, 3);
             document.getElementById('reading-time').textContent = Math.floor(Math.random() * 120) + 30;
@@ -734,7 +827,7 @@
                 document.getElementById('last-login').textContent = new Date().toLocaleDateString();
             }
 
-            // Update HWID list
+            // Update HWID list from local storage
             const hwidList = document.getElementById('hwid-list');
             if (window.mockDevices.length === 0) {
                 hwidList.innerHTML = `
