@@ -751,425 +751,506 @@ print('Hello from Alucard!')"></textarea>
         </div>
     </div>
 
-    <script>
-        let currentScriptId = null;
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    let currentScriptId = null;
+    
+    // Initialize Supabase
+    const supabaseUrl = 'https://yjasnrnrukmtejlwiigx.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqYXNucm5ydWttdGVqbHdpaWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzk5MzUsImV4cCI6MjA3NTc1NTkzNX0.9Q0LgyksJj-EfIyYT_sxDLDuz-q50fVXYj5uuCeEMHI';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Check authentication
-        function checkAuth() {
-            const token = localStorage.getItem('alucard_token');
-            const user = localStorage.getItem('alucard_user');
-            
-            if (!token || !user) {
+    // Check authentication
+    async function checkAuth() {
+        const token = localStorage.getItem('alucard_token');
+        const user = localStorage.getItem('alucard_user');
+        
+        console.log('=== AUTH CHECK ===');
+        console.log('Token exists:', !!token);
+        console.log('User exists:', !!user);
+        
+        if (!token || !user) {
+            console.log('Missing auth data, redirecting to login...');
+            window.location.href = 'auth.html';
+            return false;
+        }
+        
+        // Verify session with Supabase
+        try {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error || !session) {
+                console.log('No valid Supabase session, redirecting...');
+                localStorage.clear();
                 window.location.href = 'auth.html';
                 return false;
             }
+            console.log('Valid session found');
             return true;
-        }
-
-        if (!checkAuth()) {
-            throw new Error('Not authenticated');
-        }
-
-        // Tab switching
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-        }
-
-        // Load dashboard data
-        async function loadDashboard() {
-            const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-            const token = localStorage.getItem('alucard_token');
-
-            if (!user.id || !token) {
-                window.location.href = 'auth.html';
-                return;
-            }
-
-            document.getElementById('username').textContent = user.username || 'User';
-
-            try {
-                const res = await fetch(`${API_URL}/api/dashboard`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    
-                    // Update stats
-                    document.getElementById('hwid-count').textContent = data.hwids?.length || 0;
-                    document.getElementById('script-count').textContent = data.scripts?.length || 0;
-                    
-                    let totalDownloads = 0;
-                    data.scripts?.forEach(s => totalDownloads += s.downloads || 0);
-                    document.getElementById('download-count').textContent = totalDownloads;
-                    document.getElementById('auth-count').textContent = data.authAttempts?.length || 0;
-
-                    // Render devices
-                    renderDevices(data.hwids || []);
-                    
-                    // Render scripts
-                    renderScripts(data.scripts || []);
-                    
-                    // Render downloads
-                    renderDownloads(data.scripts || []);
-                    
-                    // Render auth attempts
-                    renderAuthAttempts(data.authAttempts || []);
-                }
-            } catch (err) {
-                console.error('Failed to load dashboard:', err);
-            }
-        }
-
-        function renderDevices(hwids) {
-            const list = document.getElementById('hwid-list');
-            if (hwids.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔓</div>
-                        <p>no devices whitelisted yet</p>
-                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
-                    </div>
-                `;
-            } else {
-                list.innerHTML = hwids.map(h => `
-                    <div class="list-item">
-                        <div>
-                            <div class="item-code">${h.hwid}</div>
-                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
-                                ${h.device_type} • Added: ${new Date(h.created_at).toLocaleDateString()}
-                            </div>
-                        </div>
-                        <div class="item-status ${h.status === 'active' ? 'status-active' : 'status-blacklisted'}">
-                            ${h.status}
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function renderScripts(scripts) {
-            const list = document.getElementById('script-list');
-            if (scripts.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📜</div>
-                        <p>no scripts uploaded yet</p>
-                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">upload your first script to get started</p>
-                    </div>
-                `;
-            } else {
-                list.innerHTML = scripts.map(s => `
-                    <div class="list-item" onclick="viewScript('${s.id}')">
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 0.3rem;">${s.name}</div>
-                            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">${s.description}</div>
-                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.3rem;">
-                                v${s.version} • ${s.downloads} downloads • ${new Date(s.created_at).toLocaleDateString()}
-                            </div>
-                        </div>
-                        <div>
-                            <button class="action-btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="event.stopPropagation(); deleteScript('${s.id}')">Delete</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function renderDownloads(scripts) {
-            const list = document.getElementById('download-list');
-            const downloads = [];
-            
-            scripts.forEach(script => {
-                if (script.downloads > 0) {
-                    downloads.push({
-                        name: script.name,
-                        downloads: script.downloads,
-                        lastAccess: script.updated_at || script.created_at
-                    });
-                }
-            });
-
-            if (downloads.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📥</div>
-                        <p>no downloads yet</p>
-                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">your scripts haven't been accessed yet</p>
-                    </div>
-                `;
-            } else {
-                list.innerHTML = downloads.map(d => `
-                    <div class="list-item">
-                        <div>
-                            <div style="font-weight: 600; margin-bottom: 0.3rem;">${d.name}</div>
-                            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">
-                                Last access: ${new Date(d.lastAccess).toLocaleString()}
-                            </div>
-                        </div>
-                        <div class="stat-value" style="font-size: 1.5rem;">${d.downloads}</div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function renderAuthAttempts(attempts) {
-            const list = document.getElementById('auth-list');
-            if (attempts.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔓</div>
-                        <p>no auth attempts logged</p>
-                    </div>
-                `;
-            } else {
-                list.innerHTML = attempts.slice(0, 50).map(a => `
-                    <div class="list-item">
-                        <div>
-                            <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">
-                                Verification attempt
-                            </div>
-                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
-                                IP: ${a.ip_address} • ${new Date(a.verified_at).toLocaleString()}
-                            </div>
-                        </div>
-                        <div class="item-status status-active">✓</div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        // Device management
-        function validateHWID() {
-            const hwidInput = document.getElementById('hwid-input').value.trim();
-            const typeGroup = document.getElementById('device-type-group');
-            const msgEl = document.getElementById('add-device-msg');
-
-            if (hwidInput) {
-                if (hwidInput.startsWith('ALUCARD-')) {
-                    typeGroup.style.display = 'block';
-                    msgEl.style.display = 'none';
-                } else {
-                    typeGroup.style.display = 'none';
-                    if (hwidInput.length > 5) {
-                        msgEl.className = 'message error';
-                        msgEl.textContent = 'Invalid key format. Must start with "ALUCARD-"';
-                    }
-                }
-            } else {
-                typeGroup.style.display = 'none';
-                msgEl.style.display = 'none';
-            }
-        }
-
-        async function addDevice() {
-            const hwid = document.getElementById('hwid-input').value.trim().toUpperCase();
-            const deviceType = document.getElementById('device-type').value;
-            const msgEl = document.getElementById('add-device-msg');
-
-            if (!hwid || !hwid.startsWith('ALUCARD-') || hwid.length < 15) {
-                msgEl.className = 'message error';
-                msgEl.textContent = 'Please enter a valid ALUCARD key';
-                return;
-            }
-
-            if (!deviceType) {
-                msgEl.className = 'message error';
-                msgEl.textContent = 'Please select a device type';
-                return;
-            }
-
-            const token = localStorage.getItem('alucard_token');
-
-            try {
-                const res = await fetch(`${API_URL}/api/unlock-whitelist`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ hwid, deviceType })
-                });
-
-                const data = await res.json();
-
-                if (res.ok && data.success) {
-                    msgEl.className = 'message success';
-                    msgEl.textContent = 'Device added successfully!';
-                    setTimeout(() => {
-                        closeAddDeviceModal();
-                        loadDashboard();
-                    }, 1500);
-                } else {
-                    msgEl.className = 'message error';
-                    msgEl.textContent = data.error || 'Failed to add device';
-                }
-            } catch (err) {
-                msgEl.className = 'message error';
-                msgEl.textContent = 'Network error: ' + err.message;
-            }
-        }
-
-        // Script management
-        async function uploadScript() {
-            const name = document.getElementById('script-name').value.trim();
-            const description = document.getElementById('script-description').value.trim();
-            const content = document.getElementById('script-content').value.trim();
-            const webhook = document.getElementById('script-webhook').value.trim();
-            const msgEl = document.getElementById('upload-script-msg');
-
-            if (!name || !description || !content) {
-                msgEl.className = 'message error';
-                msgEl.textContent = 'Please fill in all required fields';
-                return;
-            }
-
-            const token = localStorage.getItem('alucard_token');
-
-            try {
-                const res = await fetch(`${API_URL}/api/upload-script`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ 
-                        name, 
-                        description, 
-                        content,
-                        webhook_url: webhook || null
-                    })
-                });
-
-                const data = await res.json();
-
-                if (res.ok && data.success) {
-                    msgEl.className = 'message success';
-                    msgEl.textContent = 'Script uploaded and protected!';
-                    setTimeout(() => {
-                        closeUploadScriptModal();
-                        loadDashboard();
-                    }, 1500);
-                } else {
-                    msgEl.className = 'message error';
-                    msgEl.textContent = data.error || 'Failed to upload script';
-                }
-            } catch (err) {
-                msgEl.className = 'message error';
-                msgEl.textContent = 'Network error: ' + err.message;
-            }
-        }
-
-        async function viewScript(scriptId) {
-            currentScriptId = scriptId;
-            const token = localStorage.getItem('alucard_token');
-
-            try {
-                const res = await fetch(`${API_URL}/api/dashboard/scripts`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await res.json();
-                const script = data.scripts.find(s => s.id === scriptId);
-
-                if (script) {
-                    document.getElementById('view-script-name').textContent = script.name;
-                    document.getElementById('view-script-desc').textContent = script.description;
-                    document.getElementById('view-script-loader').textContent = script.loader_code;
-                    document.getElementById('view-script-downloads').textContent = script.downloads;
-                    document.getElementById('view-script-version').textContent = script.version;
-                    
-                    document.getElementById('view-script-modal').classList.add('show');
-                }
-            } catch (err) {
-                console.error('Failed to load script:', err);
-            }
-        }
-
-        async function deleteScript(scriptId) {
-            if (!confirm('Are you sure you want to delete this script?')) return;
-
-            const token = localStorage.getItem('alucard_token');
-
-            try {
-                const res = await fetch(`${API_URL}/api/scripts/${scriptId}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                if (res.ok) {
-                    loadDashboard();
-                }
-            } catch (err) {
-                console.error('Failed to delete script:', err);
-            }
-        }
-
-        function copyLoader() {
-            const loader = document.getElementById('view-script-loader').textContent;
-            navigator.clipboard.writeText(loader);
-            alert('Loader code copied to clipboard!');
-        }
-
-        // Modal functions
-        function showAddDeviceModal() {
-            document.getElementById('add-device-modal').classList.add('show');
-            document.getElementById('hwid-input').value = '';
-            document.getElementById('device-type').value = '';
-            document.getElementById('device-type-group').style.display = 'none';
-            document.getElementById('add-device-msg').style.display = 'none';
-        }
-
-        function closeAddDeviceModal() {
-            document.getElementById('add-device-modal').classList.remove('show');
-        }
-
-        function showUploadScriptModal() {
-            document.getElementById('upload-script-modal').classList.add('show');
-            document.getElementById('script-name').value = '';
-            document.getElementById('script-description').value = '';
-            document.getElementById('script-content').value = '';
-            document.getElementById('script-webhook').value = '';
-            document.getElementById('upload-script-msg').style.display = 'none';
-        }
-
-        function closeUploadScriptModal() {
-            document.getElementById('upload-script-modal').classList.remove('show');
-        }
-
-        function closeViewScriptModal() {
-            document.getElementById('view-script-modal').classList.remove('show');
-        }
-
-        function goToUnlock() {
-            window.location.href = 'unlock.html';
-        }
-
-        function logout() {
-            localStorage.removeItem('alucard_token');
-            localStorage.removeItem('alucard_user');
+        } catch (e) {
+            console.error('Auth check error:', e);
             window.location.href = 'auth.html';
+            return false;
+        }
+    }
+
+    // Initialize dashboard
+    (async function init() {
+        const isAuthenticated = await checkAuth();
+        if (!isAuthenticated) return;
+        
+        await loadDashboard();
+    })();
+
+    // Tab switching
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+    }
+
+    // Load dashboard data
+    async function loadDashboard() {
+        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+        const userId = localStorage.getItem('alucard_user_id') || user.id;
+
+        console.log('Loading dashboard for user:', userId);
+
+        if (!userId) {
+            window.location.href = 'auth.html';
+            return;
         }
 
-        // Close modals on outside click
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('show');
-                }
-            });
+        document.getElementById('username').textContent = user.username || user.email?.split('@')[0] || 'User';
+
+        try {
+            // Fetch user's whitelisted devices
+            const { data: hwids, error: hwidsError } = await supabase
+                .from('whitelist')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false });
+
+            if (hwidsError) console.error('Error fetching HWIDs:', hwidsError);
+
+            // Fetch user's scripts
+            const { data: scripts, error: scriptsError } = await supabase
+                .from('scripts')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false });
+
+            if (scriptsError) console.error('Error fetching scripts:', scriptsError);
+
+            // Fetch auth attempts
+            const { data: authAttempts, error: authError } = await supabase
+                .from('verification_logs')
+                .select('*')
+                .eq('user_id', userId)
+                .order('verified_at', { ascending: false })
+                .limit(50);
+
+            if (authError) console.error('Error fetching auth attempts:', authError);
+
+            // Update stats
+            document.getElementById('hwid-count').textContent = hwids?.length || 0;
+            document.getElementById('script-count').textContent = scripts?.length || 0;
+            
+            let totalDownloads = 0;
+            scripts?.forEach(s => totalDownloads += s.downloads || 0);
+            document.getElementById('download-count').textContent = totalDownloads;
+            document.getElementById('auth-count').textContent = authAttempts?.length || 0;
+
+            // Render sections
+            renderDevices(hwids || []);
+            renderScripts(scripts || []);
+            renderDownloads(scripts || []);
+            renderAuthAttempts(authAttempts || []);
+
+        } catch (err) {
+            console.error('Failed to load dashboard:', err);
+        }
+    }
+
+    function renderDevices(hwids) {
+        const list = document.getElementById('hwid-list');
+        if (hwids.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔓</div>
+                    <p>no devices whitelisted yet</p>
+                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
+                </div>
+            `;
+        } else {
+            list.innerHTML = hwids.map(h => `
+                <div class="list-item">
+                    <div>
+                        <div class="item-code">${h.hwid_display || h.hwid}</div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
+                            ${h.device_type || 'Unknown'} • Added: ${new Date(h.created_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <div class="item-status ${h.status === 'active' ? 'status-active' : 'status-blacklisted'}">
+                        ${h.status}
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function renderScripts(scripts) {
+        const list = document.getElementById('script-list');
+        if (scripts.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📜</div>
+                    <p>no scripts uploaded yet</p>
+                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">upload your first script to get started</p>
+                </div>
+            `;
+        } else {
+            list.innerHTML = scripts.map(s => `
+                <div class="list-item" onclick="viewScript('${s.id}')">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 0.3rem;">${s.name}</div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">${s.description}</div>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.3rem;">
+                            v${s.version} • ${s.downloads} downloads • ${new Date(s.created_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <div>
+                        <button class="action-btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="event.stopPropagation(); deleteScript('${s.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function renderDownloads(scripts) {
+        const list = document.getElementById('download-list');
+        const downloads = [];
+        
+        scripts.forEach(script => {
+            if (script.downloads > 0) {
+                downloads.push({
+                    name: script.name,
+                    downloads: script.downloads,
+                    lastAccess: script.updated_at || script.created_at
+                });
+            }
         });
 
-        // Load dashboard on page load
-        loadDashboard();
-    </script>
+        if (downloads.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📥</div>
+                    <p>no downloads yet</p>
+                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">your scripts haven't been accessed yet</p>
+                </div>
+            `;
+        } else {
+            list.innerHTML = downloads.map(d => `
+                <div class="list-item">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 0.3rem;">${d.name}</div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">
+                            Last access: ${new Date(d.lastAccess).toLocaleString()}
+                        </div>
+                    </div>
+                    <div class="stat-value" style="font-size: 1.5rem;">${d.downloads}</div>
+                </div>
+            `).join('');
+        }
+    }
+
+    function renderAuthAttempts(attempts) {
+        const list = document.getElementById('auth-list');
+        if (attempts.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔓</div>
+                    <p>no auth attempts logged</p>
+                </div>
+            `;
+        } else {
+            list.innerHTML = attempts.slice(0, 50).map(a => `
+                <div class="list-item">
+                    <div>
+                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">
+                            Verification attempt
+                        </div>
+                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
+                            IP: ${a.ip_address} • ${new Date(a.verified_at).toLocaleString()}
+                        </div>
+                    </div>
+                    <div class="item-status status-active">✓</div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // Device management
+    function validateHWID() {
+        const hwidInput = document.getElementById('hwid-input').value.trim();
+        const typeGroup = document.getElementById('device-type-group');
+        const msgEl = document.getElementById('add-device-msg');
+
+        if (hwidInput) {
+            if (hwidInput.startsWith('ALUCARD-')) {
+                typeGroup.style.display = 'block';
+                msgEl.style.display = 'none';
+            } else {
+                typeGroup.style.display = 'none';
+                if (hwidInput.length > 5) {
+                    msgEl.className = 'message error';
+                    msgEl.textContent = 'Invalid key format. Must start with "ALUCARD-"';
+                }
+            }
+        } else {
+            typeGroup.style.display = 'none';
+            msgEl.style.display = 'none';
+        }
+    }
+
+    async function addDevice() {
+        const hwid = document.getElementById('hwid-input').value.trim().toUpperCase();
+        const deviceType = document.getElementById('device-type').value;
+        const msgEl = document.getElementById('add-device-msg');
+
+        if (!hwid || !hwid.startsWith('ALUCARD-') || hwid.length < 15) {
+            msgEl.className = 'message error';
+            msgEl.textContent = 'Please enter a valid ALUCARD key';
+            return;
+        }
+
+        if (!deviceType) {
+            msgEl.className = 'message error';
+            msgEl.textContent = 'Please select a device type';
+            return;
+        }
+
+        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+        const userId = localStorage.getItem('alucard_user_id') || user.id;
+
+        try {
+            // Hash the HWID (simple hash for demo - use proper hashing in production)
+            const hashedHWID = await hashString(hwid);
+
+            // Check if HWID already exists
+            const { data: existing } = await supabase
+                .from('whitelist')
+                .select('*')
+                .eq('hwid', hashedHWID);
+
+            if (existing && existing.length > 0) {
+                const ownedByUser = existing.some(e => e.user_id === userId);
+                if (ownedByUser) {
+                    msgEl.className = 'message success';
+                    msgEl.textContent = 'Device already whitelisted!';
+                    return;
+                } else {
+                    msgEl.className = 'message error';
+                    msgEl.textContent = 'This key is already registered to another account';
+                    return;
+                }
+            }
+
+            // Insert new device
+            const { error } = await supabase
+                .from('whitelist')
+                .insert({
+                    user_id: userId,
+                    hwid: hashedHWID,
+                    hwid_display: hwid,
+                    device_type: deviceType,
+                    status: 'active',
+                    unlock_method: 'manual',
+                    created_at: new Date().toISOString()
+                });
+
+            if (error) throw error;
+
+            msgEl.className = 'message success';
+            msgEl.textContent = 'Device added successfully!';
+            setTimeout(() => {
+                closeAddDeviceModal();
+                loadDashboard();
+            }, 1500);
+        } catch (err) {
+            console.error('Add device error:', err);
+            msgEl.className = 'message error';
+            msgEl.textContent = 'Failed to add device: ' + err.message;
+        }
+    }
+
+    // Simple hash function (replace with proper hashing in production)
+    async function hashString(str) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Script management
+    async function uploadScript() {
+        const name = document.getElementById('script-name').value.trim();
+        const description = document.getElementById('script-description').value.trim();
+        const content = document.getElementById('script-content').value.trim();
+        const webhook = document.getElementById('script-webhook').value.trim();
+        const msgEl = document.getElementById('upload-script-msg');
+
+        if (!name || !description || !content) {
+            msgEl.className = 'message error';
+            msgEl.textContent = 'Please fill in all required fields';
+            return;
+        }
+
+        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+        const userId = localStorage.getItem('alucard_user_id') || user.id;
+
+        try {
+            const scriptId = crypto.randomUUID();
+            const loader = `-- Protected by Alucard\nloadstring(game:HttpGet("https://api.alucard.lol/script/${scriptId}"))()`;
+
+            const { error } = await supabase
+                .from('scripts')
+                .insert({
+                    id: scriptId,
+                    user_id: userId,
+                    name,
+                    description,
+                    content,
+                    obfuscated_code: content, // In production, actually obfuscate this
+                    loader_code: loader,
+                    webhook_url: webhook || null,
+                    version: '1.0',
+                    downloads: 0,
+                    created_at: new Date().toISOString()
+                });
+
+            if (error) throw error;
+
+            msgEl.className = 'message success';
+            msgEl.textContent = 'Script uploaded successfully!';
+            setTimeout(() => {
+                closeUploadScriptModal();
+                loadDashboard();
+            }, 1500);
+        } catch (err) {
+            console.error('Upload script error:', err);
+            msgEl.className = 'message error';
+            msgEl.textContent = 'Failed to upload script: ' + err.message;
+        }
+    }
+
+    async function viewScript(scriptId) {
+        currentScriptId = scriptId;
+
+        try {
+            const { data: script, error } = await supabase
+                .from('scripts')
+                .select('*')
+                .eq('id', scriptId)
+                .single();
+
+            if (error) throw error;
+
+            if (script) {
+                document.getElementById('view-script-name').textContent = script.name;
+                document.getElementById('view-script-desc').textContent = script.description;
+                document.getElementById('view-script-loader').textContent = script.loader_code;
+                document.getElementById('view-script-downloads').textContent = script.downloads;
+                document.getElementById('view-script-version').textContent = script.version;
+                
+                document.getElementById('view-script-modal').classList.add('show');
+            }
+        } catch (err) {
+            console.error('Failed to load script:', err);
+        }
+    }
+
+    async function deleteScript(scriptId) {
+        if (!confirm('Are you sure you want to delete this script?')) return;
+
+        try {
+            const { error } = await supabase
+                .from('scripts')
+                .delete()
+                .eq('id', scriptId);
+
+            if (error) throw error;
+
+            loadDashboard();
+        } catch (err) {
+            console.error('Failed to delete script:', err);
+            alert('Failed to delete script: ' + err.message);
+        }
+    }
+
+    function copyLoader() {
+        const loader = document.getElementById('view-script-loader').textContent;
+        navigator.clipboard.writeText(loader);
+        alert('Loader code copied to clipboard!');
+    }
+
+    // Modal functions
+    function showAddDeviceModal() {
+        document.getElementById('add-device-modal').classList.add('show');
+        document.getElementById('hwid-input').value = '';
+        document.getElementById('device-type').value = '';
+        document.getElementById('device-type-group').style.display = 'none';
+        document.getElementById('add-device-msg').style.display = 'none';
+    }
+
+    function closeAddDeviceModal() {
+        document.getElementById('add-device-modal').classList.remove('show');
+    }
+
+    function showUploadScriptModal() {
+        document.getElementById('upload-script-modal').classList.add('show');
+        document.getElementById('script-name').value = '';
+        document.getElementById('script-description').value = '';
+        document.getElementById('script-content').value = '';
+        document.getElementById('script-webhook').value = '';
+        document.getElementById('upload-script-msg').style.display = 'none';
+    }
+
+    function closeUploadScriptModal() {
+        document.getElementById('upload-script-modal').classList.remove('show');
+    }
+
+    function closeViewScriptModal() {
+        document.getElementById('view-script-modal').classList.remove('show');
+    }
+
+    function goToUnlock() {
+        window.location.href = 'unlock.html';
+    }
+
+    async function logout() {
+        try {
+            await supabase.auth.signOut();
+        } catch (e) {
+            console.error('Logout error:', e);
+        }
+        
+        localStorage.clear();
+        window.location.href = 'auth.html';
+    }
+
+    // Close modals on outside click
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+    });
+    loadDashboard();
+</script>
 </body>
 </html
+
