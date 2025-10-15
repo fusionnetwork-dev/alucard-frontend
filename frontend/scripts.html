@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-    
     <title>alucard - scripts</title>
     <style>
         * {
@@ -404,20 +402,46 @@
     </div>
 
     <script>
-        const token = localStorage.getItem('alucard_token');
-        if (!token) {
-            window.location.href = 'auth.html';
-        }
+        // ===== IN-MEMORY SESSION MANAGEMENT (No localStorage) =====
+        const session = {
+            token: null,
+            user: null
+        };
 
-        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-        const userId = user.id;
-        if (!userId) {
-            window.location.href = 'auth.html';
+        // Check if we have auth (you'd need to pass this from your auth page via URL params or similar)
+        // For demo purposes, we'll simulate a session
+        function checkAuth() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const userId = urlParams.get('userId');
+            
+            if (token && userId) {
+                session.token = token;
+                session.user = { id: userId };
+                return true;
+            }
+            
+            // If no auth, show message
+            document.getElementById('script-list').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔒</div>
+                    <p>please log in to manage scripts</p>
+                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">
+                        <a href="auth.html" style="color: #ff3333;">go to login</a>
+                    </p>
+                </div>
+            `;
+            return false;
         }
 
         // Upload script
         document.getElementById('upload-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            if (!session.token) {
+                alert('Please log in first');
+                return;
+            }
 
             const name = document.getElementById('script-name').value;
             const description = document.getElementById('script-desc').value;
@@ -433,7 +457,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${session.token}`
                     },
                     body: JSON.stringify({ name, description, content: code })
                 });
@@ -447,10 +471,7 @@
                 message.className = 'message success';
                 message.textContent = '✅ Script uploaded and protected successfully!';
 
-                // Clear form
                 document.getElementById('upload-form').reset();
-
-                // Reload scripts
                 await loadScripts();
 
                 setTimeout(() => {
@@ -469,12 +490,14 @@
 
         // Load scripts
         async function loadScripts() {
+            if (!session.token) return;
+
             const scriptList = document.getElementById('script-list');
 
             try {
-                const res = await fetch('/api/scripts', {
+                const res = await fetch('/api/dashboard/scripts', {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${session.token}`
                     }
                 });
 
@@ -504,8 +527,8 @@
                                 <div class="script-title">${escapeHtml(script.name)}</div>
                                 <div class="script-desc">${escapeHtml(script.description)}</div>
                                 <div class="script-meta">
-                                    <span>📦 v${script.version}</span>
-                                    <span>📥 ${script.downloads} downloads</span>
+                                    <span>📦 v${script.version || '1.0'}</span>
+                                    <span>📥 ${script.downloads || 0} downloads</span>
                                     <span>📅 ${new Date(script.created_at).toLocaleDateString()}</span>
                                 </div>
                             </div>
@@ -532,11 +555,16 @@
         }
 
         // Download script
-        async function downloadScript(scriptId, protected) {
+        async function downloadScript(scriptId, isProtected) {
+            if (!session.token) {
+                alert('Please log in first');
+                return;
+            }
+
             try {
                 const res = await fetch(`/api/scripts/${scriptId}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${session.token}`
                     }
                 });
 
@@ -546,10 +574,9 @@
                     throw new Error(script.error || 'Failed to fetch script');
                 }
 
-                const code = protected ? script.protected_code : script.content;
-                const filename = `${script.name.replace(/\s+/g, '_')}${protected ? '_protected' : ''}.lua`;
+                const code = isProtected ? (script.obfuscated_code || script.protected_code) : script.content;
+                const filename = `${script.name.replace(/\s+/g, '_')}${isProtected ? '_protected' : ''}.lua`;
 
-                // Create download
                 const blob = new Blob([code], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -562,7 +589,7 @@
                 await fetch(`/api/scripts/${scriptId}/download`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${session.token}`
                     }
                 });
 
@@ -575,13 +602,18 @@
 
         // Delete script
         async function deleteScript(scriptId) {
+            if (!session.token) {
+                alert('Please log in first');
+                return;
+            }
+
             if (!confirm('Are you sure you want to delete this script?')) return;
 
             try {
                 const res = await fetch(`/api/scripts/${scriptId}`, {
                     method: 'DELETE',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${session.token}`
                     }
                 });
 
@@ -603,7 +635,9 @@
         }
 
         // Initialize
-        loadScripts();
+        if (checkAuth()) {
+            loadScripts();
+        }
     </script>
 </body>
 </html>
