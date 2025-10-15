@@ -1121,6 +1121,8 @@ print('Hello from Alucard!')"></textarea>
                     return;
                 }
             }
+const expiresAt = new Date();
+expiresAt.setDate(expiresAt.getDate() + 7); // example: 7 days from now
 
             // Insert new device
           const { error } = await supabase
@@ -1318,6 +1320,7 @@ print('Hello from Alucard!')"></textarea>
 </script>
 </body>
 </html
+
 
 
 
