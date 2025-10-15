@@ -419,7 +419,7 @@
     // MONETIZATION CONFIG
     // ========================================
     // Replace these with your actual IDs from the ad networks
-    const LINKVERTISE_USER_ID = 'YOUR_LINKVERTISE_USER_ID'; // Get from linkvertise.com
+    const LINKVERTISE_USER_ID = '1409255'; // Get from linkvertise.com
     const LOOTLABS_API_KEY = 'YOUR_LOOTLABS_API_KEY'; // Get from loot-labs.com/dashboard
 
     const TOTAL_STEPS = 3;
@@ -456,7 +456,7 @@
     function generateHWID() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let result = 'ALUCARD-';
-      for (let i = 0; i < 32; i++) {
+      for (let i = 0; i < 12; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       return result;
@@ -478,26 +478,13 @@
     // ========================================
     // MONETIZATION LINKS
     // ========================================
-    function openMonetizationLink(stepNum, sessionToken) {
-      const baseUrl = window.location.origin + window.location.pathname;
-      const returnUrl = baseUrl + '?verify=' + sessionToken;
-      
-      let adUrl;
-      
-      if (stepNum === 1 || stepNum === 3) {
-        // Linkvertise for steps 1 and 3
-        // Format: https://link-to.net/YOUR_USER_ID/dynamic-slug
-        const slug = `alucard-checkpoint-${stepNum}`;
-        adUrl = `https://link-to.net/${LINKVERTISE_USER_ID}/${slug}?o=${encodeURIComponent(returnUrl)}`;
-      } else {
-        // Loot-Labs for step 2
-        // Format: https://loot-link.com/s?YOUR_API_KEY
-        adUrl = `https://loot-link.com/s?${LOOTLABS_API_KEY}`;
-      }
-      
-      console.log('Opening monetization link:', adUrl);
-      window.open(adUrl, '_blank', 'noopener,noreferrer');
-    }
+function openMonetizationLink(stepNum, sessionToken) {
+  // The same Linkvertise URL for all 3 steps
+  const adUrl = "https://linkvertise.com/1409255/03FEgbtbNtx9?o=sharing";
+
+  console.log(`Opening monetization link for step ${stepNum}:`, adUrl);
+  window.open(adUrl, '_blank', 'noopener,noreferrer');
+}
 
     // ========================================
     // AD FLOW
