@@ -543,6 +543,14 @@
                                     <span>📥 ${script.downloads || 0} downloads</span>
                                     <span>📅 ${new Date(script.created_at).toLocaleDateString()}</span>
                                 </div>
+                                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; font-family: monospace; font-size: 0.85rem; position: relative;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                        <span style="color: rgba(255,255,255,0.6);">🔗 Script Loader:</span>
+                                        <button class="action-btn" onclick="copyLoader('${script.id}')" style="padding: 0.3rem 0.6rem;">📋 Copy</button>
+                                    </div>
+                                    <code id="loader-${script.id}" style="color: #ff6666; word-break: break-all;">loadstring(game:HttpGet("${API_URL}/s/${script.id}?hwid=YOUR_HWID"))()
+</code>
+                                </div>
                             </div>
                             <span class="status-badge">protected</span>
                         </div>
