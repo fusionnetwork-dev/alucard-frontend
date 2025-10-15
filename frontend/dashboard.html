@@ -778,51 +778,69 @@ print('Hello from Alucard!')"></textarea>
 
     // Check authentication
     async function checkAuth() {
-        const token = localStorage.getItem('alucard_token');
-        const user = localStorage.getItem('alucard_user');
-        
-        console.log('=== AUTH CHECK ===');
-        console.log('Token exists:', !!token);
-        console.log('User exists:', !!user);
-        
-        if (!token || !user) {
-            console.log('Missing auth data, redirecting to login...');
+    const token = localStorage.getItem('alucard_token');
+    const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
+
+    console.log('=== AUTH CHECK ===');
+    console.log('Token exists:', !!token);
+    console.log('User exists:', !!user);
+
+    if (!token || !user.id) {
+        console.log('Missing auth data, redirecting to login...');
+        window.location.href = 'auth.html';
+        return false;
+    }
+
+    // Fetch user's devices from Supabase
+    let hwids;
+    try {
+        const { data, error } = await supabase
+            .from('whitelist')
+            .select('*')
+            .eq('user_id', user.id);
+
+        if (error) throw error;
+        hwids = data; // hwids is now defined
+
+        if (!hwids || hwids.length === 0) return false;
+
+        const now = new Date();
+
+        for (const h of hwids) {
+            const expiresAt = new Date(h.expires_at);
+            if (h.blocked || now > expiresAt) {
+                // Automatically block expired devices
+                await supabase
+                    .from('whitelist')
+                    .update({ blocked: true, status: 'blacklisted' })
+                    .eq('hwid', h.hwid);
+
+                return false; // deny access if any device is invalid
+            }
+        }
+    } catch (e) {
+        console.error('Error fetching devices:', e);
+        return false;
+    }
+
+    // Verify session with Supabase
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error || !session) {
+            console.log('No valid Supabase session, redirecting...');
+            localStorage.clear();
             window.location.href = 'auth.html';
             return false;
         }
-        if (!hwids) return false;
-
-const now = new Date();
-const expiresAt = new Date(hwids.expires_at);
-
-// Check expiration
-if (hwids.blocked || now > expiresAt) {
-    // Automatically block expired devices
-    await supabase
-      .from('whitelist')
-      .update({ blocked: true, status: 'blacklisted' })
-      .eq('hwid', hashedHWID);
-
-    return false;  // deny access
+        console.log('Valid session found');
+        return true;
+    } catch (e) {
+        console.error('Auth check error:', e);
+        window.location.href = 'auth.html';
+        return false;
+    }
 }
 
-        // Verify session with Supabase
-        try {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            if (error || !session) {
-                console.log('No valid Supabase session, redirecting...');
-                localStorage.clear();
-                window.location.href = 'auth.html';
-                return false;
-            }
-            console.log('Valid session found');
-            return true;
-        } catch (e) {
-            console.error('Auth check error:', e);
-            window.location.href = 'auth.html';
-            return false;
-        }
-    }
 
     // Initialize dashboard
     (async function init() {
@@ -1300,5 +1318,6 @@ if (hwids.blocked || now > expiresAt) {
 </script>
 </body>
 </html
+
 
 
