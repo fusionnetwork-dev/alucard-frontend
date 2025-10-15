@@ -515,6 +515,22 @@
             .modal-content {
                 padding: 1.5rem;
             }
+            .status-expired {
+    background-color: #ff5555;
+    color: white;
+}
+
+.status-blocked {
+    background-color: #990000;
+    color: white;
+}
+
+.expired-device .item-code,
+.blocked-device .item-code {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
         }
     </style>
 </head>
@@ -774,7 +790,22 @@ print('Hello from Alucard!')"></textarea>
             window.location.href = 'auth.html';
             return false;
         }
-        
+        if (!hwids) return false;
+
+const now = new Date();
+const expiresAt = new Date(hwids.expires_at);
+
+// Check expiration
+if (hwids.blocked || now > expiresAt) {
+    // Automatically block expired devices
+    await supabase
+      .from('whitelist')
+      .update({ blocked: true, status: 'blacklisted' })
+      .eq('hwid', hashedHWID);
+
+    return false;  // deny access
+}
+
         // Verify session with Supabase
         try {
             const { data: { session }, error } = await supabase.auth.getSession();
@@ -873,32 +904,48 @@ print('Hello from Alucard!')"></textarea>
         }
     }
 
-    function renderDevices(hwids) {
-        const list = document.getElementById('hwid-list');
-        if (hwids.length === 0) {
-            list.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">🔓</div>
-                    <p>no devices whitelisted yet</p>
-                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
-                </div>
-            `;
-        } else {
-            list.innerHTML = hwids.map(h => `
-                <div class="list-item">
+   function renderDevices(hwids) {
+    const list = document.getElementById('hwid-list');
+    if (hwids.length === 0) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔓</div>
+                <p>no devices whitelisted yet</p>
+                <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
+            </div>
+        `;
+    } else {
+        list.innerHTML = hwids.map(h => {
+            const now = new Date();
+            const expiresDate = h.expires_at ? new Date(h.expires_at) : null;
+            const isExpired = expiresDate && expiresDate < now;
+            const isBlocked = h.blocked;
+
+            // Status styling
+            let statusClass = '';
+            if (isBlocked) statusClass = 'status-blocked';
+            else if (isExpired) statusClass = 'status-expired';
+            else statusClass = h.status === 'active' ? 'status-active' : 'status-blacklisted';
+
+            return `
+                <div class="list-item ${isExpired ? 'expired-device' : ''} ${isBlocked ? 'blocked-device' : ''}">
                     <div>
                         <div class="item-code">${h.hwid_display || h.hwid}</div>
                         <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
-                            ${h.device_type || 'Unknown'} • Added: ${new Date(h.created_at).toLocaleDateString()}
+                            ${h.device_type || 'Unknown'} • 
+                            Added: ${new Date(h.created_at).toLocaleDateString()} • 
+                            Expires: ${expiresDate ? expiresDate.toLocaleDateString() : 'Never'}
                         </div>
                     </div>
-                    <div class="item-status ${h.status === 'active' ? 'status-active' : 'status-blacklisted'}">
-                        ${h.status}
+                    <div class="item-status ${statusClass}">
+                        ${isBlocked ? 'BLOCKED' : isExpired ? 'EXPIRED' : h.status.toUpperCase()}
                     </div>
                 </div>
-            `).join('');
-        }
+            `;
+        }).join('');
     }
+}
+
 
     function renderScripts(scripts) {
         const list = document.getElementById('script-list');
@@ -1058,17 +1105,17 @@ print('Hello from Alucard!')"></textarea>
             }
 
             // Insert new device
-            const { error } = await supabase
-                .from('whitelist')
-                .insert({
-                    user_id: userId,
-                    hwid: hashedHWID,
-                    hwid_display: hwid,
-                    device_type: deviceType,
-                    status: 'active',
-                    unlock_method: 'manual',
-                    created_at: new Date().toISOString()
-                });
+          const { error } = await supabase
+  .from('whitelist')
+  .insert({
+      user_id: userId,
+      hwid: hashedHWID,
+      device_type: deviceType,
+      status: 'active',
+      created_at: new Date().toISOString(),
+      expires_at: expiresAt.toISOString(),  // <-- PUT IT HERE
+      blocked: false
+  });
 
             if (error) throw error;
 
@@ -1253,4 +1300,5 @@ print('Hello from Alucard!')"></textarea>
 </script>
 </body>
 </html
+
 
