@@ -324,34 +324,6 @@
       animation: slideIn 0.3s ease;
     }
 
-    .cooldown-message {
-      background: rgba(255,165,0,0.1);
-      border: 1px solid rgba(255,165,0,0.3);
-      border-radius: 12px;
-      padding: 2rem;
-      margin-top: 2rem;
-      text-align: center;
-    }
-
-    .cooldown-message h2 {
-      color: #ffa500;
-      margin-bottom: 1rem;
-      font-size: 1.8rem;
-    }
-
-    .cooldown-message p {
-      color: rgba(255,255,255,0.8);
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-
-    .cooldown-timer {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #ffa500;
-      margin: 1.5rem 0;
-    }
-
     @media (max-width: 768px) {
       .steps-container {
         grid-template-columns: 1fr;
@@ -385,12 +357,12 @@
 
       <div class="info-box">
         <h3>💡 how it works</h3>
-        <p>Complete 3 simple checkpoints (15 seconds each) to generate your unique ALUCARD key. Then add it to your dashboard to whitelist your device. Running a free service requires infrastructure costs - these quick checkpoints help us keep Alucard completely free for everyone.</p>
+        <p>Complete 3 simple checkpoints to generate your unique ALUCARD key. Then add it to your dashboard to whitelist your device. Running a free service requires infrastructure costs - these quick checkpoints help us keep Alucard completely free for everyone.</p>
       </div>
 
       <div class="warning-box">
-        <h3>⚠️ rate limit notice</h3>
-        <p><strong>Three keys per 24 hours per IP address.</strong> This prevents abuse and ensures fair access for everyone. Plan accordingly!</p>
+        <h3>⚠️ important</h3>
+        <p><strong>Complete each checkpoint task fully.</strong> Each checkpoint opens in a new tab - follow the instructions, complete the task, and return here to continue. Progress is tracked automatically.</p>
       </div>
 
       <div class="progress-container">
@@ -443,12 +415,22 @@
   </div>
 
   <script>
+    // ========================================
+    // MONETIZATION CONFIG
+    // ========================================
+    // Replace these with your actual IDs from the ad networks
+    const LINKVERTISE_USER_ID = 'YOUR_LINKVERTISE_USER_ID'; // Get from linkvertise.com
+    const LOOTLABS_API_KEY = 'YOUR_LOOTLABS_API_KEY'; // Get from loot-labs.com/dashboard
+
     const TOTAL_STEPS = 3;
     let completedSteps = 0;
     let userHWID = null;
     let sessionTokens = {};
+    let pollIntervals = {};
 
-    // Check authentication
+    // ========================================
+    // AUTHENTICATION
+    // ========================================
     function checkAuth() {
       const token = localStorage.getItem('alucard_token');
       const user = localStorage.getItem('alucard_user');
@@ -464,16 +446,17 @@
       return true;
     }
 
-    // Check auth on page load
     if (!checkAuth()) {
       throw new Error('Not authenticated');
     }
 
+    // ========================================
+    // UTILITY FUNCTIONS
+    // ========================================
     function generateHWID() {
-      // Changed from HWID- to ALUCARD-
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let result = 'ALUCARD-';
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 32; i++) {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       return result;
@@ -492,13 +475,40 @@
       setTimeout(() => errorEl.classList.remove('show'), 8000);
     }
 
+    // ========================================
+    // MONETIZATION LINKS
+    // ========================================
+    function openMonetizationLink(stepNum, sessionToken) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const returnUrl = baseUrl + '?verify=' + sessionToken;
+      
+      let adUrl;
+      
+      if (stepNum === 1 || stepNum === 3) {
+        // Linkvertise for steps 1 and 3
+        // Format: https://link-to.net/YOUR_USER_ID/dynamic-slug
+        const slug = `alucard-checkpoint-${stepNum}`;
+        adUrl = `https://link-to.net/${LINKVERTISE_USER_ID}/${slug}?o=${encodeURIComponent(returnUrl)}`;
+      } else {
+        // Loot-Labs for step 2
+        // Format: https://loot-link.com/s?YOUR_API_KEY
+        adUrl = `https://loot-link.com/s?${LOOTLABS_API_KEY}`;
+      }
+      
+      console.log('Opening monetization link:', adUrl);
+      window.open(adUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    // ========================================
+    // AD FLOW
+    // ========================================
     async function startAd(stepNum) {
       const btn = document.getElementById(`ad-btn-${stepNum}`);
       const timer = document.getElementById(`timer-${stepNum}`);
       const card = document.getElementById(`step-${stepNum}`);
       
       btn.disabled = true;
-      btn.textContent = 'Connecting...';
+      btn.textContent = 'Opening checkpoint...';
       card.classList.add('loading');
 
       const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
@@ -531,9 +541,16 @@
         }
 
         sessionTokens[stepNum] = data.sessionToken;
+        
+        // Open the monetization link
+        openMonetizationLink(stepNum, data.sessionToken);
+        
         card.classList.remove('loading');
-        startTimer(stepNum);
-        setTimeout(() => completeStep(stepNum), 15000);
+        btn.textContent = 'Complete task & return here';
+        btn.style.background = 'rgba(255,165,0,0.3)';
+        
+        // Start verification polling
+        startVerificationPolling(stepNum);
       } catch (e) {
         console.error('Error starting ad:', e);
         showError('Error starting checkpoint: ' + e.message);
@@ -543,30 +560,60 @@
       }
     }
 
-    function startTimer(stepNum) {
+    function startVerificationPolling(stepNum) {
       const timer = document.getElementById(`timer-${stepNum}`);
-      const btn = document.getElementById(`ad-btn-${stepNum}`);
-      let seconds = 15;
       
-      btn.style.display = 'none';
       timer.style.display = 'block';
-      timer.textContent = `Please wait ${seconds}s...`;
+      timer.textContent = 'Waiting for completion...';
       
-      const interval = setInterval(() => {
-        seconds--;
-        if (seconds > 0) {
-          timer.textContent = `Please wait ${seconds}s...`;
-        } else {
-          clearInterval(interval);
-          timer.textContent = 'Verifying...';
+      let attempts = 0;
+      const maxAttempts = 180; // 6 minutes (180 * 2 seconds)
+      
+      pollIntervals[stepNum] = setInterval(async () => {
+        attempts++;
+        
+        if (attempts > maxAttempts) {
+          clearInterval(pollIntervals[stepNum]);
+          showError('Checkpoint timed out. Please restart this checkpoint.');
+          const btn = document.getElementById(`ad-btn-${stepNum}`);
+          btn.disabled = false;
+          btn.textContent = 'Start Checkpoint';
+          btn.style.background = '#ff3333';
+          timer.style.display = 'none';
+          return;
         }
-      }, 1000);
+        
+        try {
+          const response = await fetch(`${API_URL}/api/ad-verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionToken: sessionTokens[stepNum] })
+          });
+          
+          const data = await response.json();
+          
+          if (data.completed) {
+            clearInterval(pollIntervals[stepNum]);
+            completeStep(stepNum, true);
+          } else {
+            const elapsed = Math.floor(attempts * 2);
+            timer.textContent = `Waiting for completion... (${elapsed}s)`;
+          }
+        } catch (e) {
+          console.error('Verification poll error:', e);
+        }
+      }, 2000); // Poll every 2 seconds
     }
 
     async function completeStep(stepNum, skipAPI = false) {
       const card = document.getElementById(`step-${stepNum}`);
       const btn = document.getElementById(`ad-btn-${stepNum}`);
       const timer = document.getElementById(`timer-${stepNum}`);
+
+      // Clear polling interval if exists
+      if (pollIntervals[stepNum]) {
+        clearInterval(pollIntervals[stepNum]);
+      }
 
       if (!skipAPI) {
         try {
@@ -589,6 +636,7 @@
           btn.disabled = false;
           btn.textContent = 'Start Checkpoint';
           btn.style.display = 'block';
+          btn.style.background = '#ff3333';
           timer.style.display = 'none';
           return;
         }
@@ -613,8 +661,10 @@
       }
     }
 
+    // ========================================
+    // KEY GENERATION
+    // ========================================
     function generateKey() {
-      // Just generate and display the key - user will add it manually in dashboard
       userHWID = generateHWID();
       console.log('Generated ALUCARD key:', userHWID);
       displaySuccess();
@@ -635,7 +685,6 @@
     }
 
     function goToDashboard() {
-      // Copy HWID to clipboard before redirecting
       const hwid = document.getElementById('hwid-display').textContent;
       navigator.clipboard.writeText(hwid).then(() => {
         window.location.href = 'dashboard.html';
@@ -644,8 +693,28 @@
       });
     }
 
-    // Initialize
+    // ========================================
+    // URL PARAMETER HANDLING
+    // ========================================
+    // Check if user returned from ad link
+    function checkReturnUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const verifyToken = urlParams.get('verify');
+      
+      if (verifyToken) {
+        console.log('User returned from ad with token:', verifyToken);
+        // The polling will detect the completion
+        // Clean the URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
+    // ========================================
+    // INITIALIZATION
+    // ========================================
     updateProgress();
+    checkReturnUrl();
+    
     document.getElementById('ad-btn-1').addEventListener('click', () => startAd(1));
     document.getElementById('ad-btn-2').addEventListener('click', () => startAd(2));
     document.getElementById('ad-btn-3').addEventListener('click', () => startAd(3));
