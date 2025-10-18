@@ -396,7 +396,7 @@
                 forgotLink.style.display = 'block';
             } else {
                 title.textContent = 'create account';
-                subtitle.textContent = 'join thousands of developers';
+                subtitle.textContent = 'join thousands of creators';
                 submitBtn.textContent = 'create account';
                 switchText.textContent = 'already have an account?';
                 switchBtn.textContent = 'sign in';
@@ -521,16 +521,13 @@
                     if (error) throw error;
 
                     if (data.user) {
-                        // Check if email confirmation is required
                         if (data.session) {
-                            // Auto-confirmed (email confirmation disabled)
                             storeUserData(data.user, data.session);
                             showSuccess(`Account created! User ID: ${data.user.id.substring(0, 8)}... Redirecting...`);
                             setTimeout(() => {
                                 window.location.href = 'dashboard.html';
                             }, 2000);
                         } else {
-                            // Email confirmation required
                             showSuccess('Account created! Please check your email to confirm your account.');
                             submitBtn.textContent = 'check your email';
                             setTimeout(() => {
@@ -628,6 +625,3 @@
     </script>
 </body>
 </html>
-
-
-
