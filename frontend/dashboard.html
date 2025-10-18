@@ -41,7 +41,7 @@
         .orb1 {
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, #ff0000, transparent);
+            background: radial-gradient(circle, #3366ff, transparent);
             top: -200px;
             right: -100px;
         }
@@ -49,7 +49,7 @@
         .orb2 {
             width: 400px;
             height: 400px;
-            background: radial-gradient(circle, #8b0000, transparent);
+            background: radial-gradient(circle, #0033cc, transparent);
             bottom: -150px;
             left: -100px;
             animation-delay: 5s;
@@ -83,7 +83,7 @@
         }
 
         .logo span {
-            color: #ff3333;
+            color: #3366ff;
         }
 
         .nav-right {
@@ -94,10 +94,10 @@
 
         .logout-btn {
             padding: 0.6rem 1.2rem;
-            background: rgba(255, 51, 51, 0.15);
-            border: 1px solid rgba(255, 51, 51, 0.3);
+            background: rgba(51, 102, 255, 0.15);
+            border: 1px solid rgba(51, 102, 255, 0.3);
             border-radius: 8px;
-            color: #ff3333;
+            color: #3366ff;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
@@ -105,7 +105,7 @@
         }
 
         .logout-btn:hover {
-            background: rgba(255, 51, 51, 0.25);
+            background: rgba(51, 102, 255, 0.25);
         }
 
         .dashboard-container {
@@ -125,7 +125,7 @@
         }
 
         .welcome-section h1 span {
-            color: #ff3333;
+            color: #3366ff;
         }
 
         .welcome-section p {
@@ -151,7 +151,7 @@
 
         .stat-card:hover {
             background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 51, 51, 0.3);
+            border-color: rgba(51, 102, 255, 0.3);
             transform: translateY(-3px);
         }
 
@@ -169,7 +169,7 @@
         .stat-value {
             font-size: 2rem;
             font-weight: 700;
-            color: #ff3333;
+            color: #3366ff;
         }
 
         .tabs-container {
@@ -201,8 +201,8 @@
         }
 
         .tab.active {
-            color: #ff3333;
-            border-bottom-color: #ff3333;
+            color: #3366ff;
+            border-bottom-color: #3366ff;
         }
 
         .tab-content {
@@ -255,12 +255,12 @@
 
         .list-item:hover {
             background: rgba(0, 0, 0, 0.5);
-            border-color: rgba(255, 51, 51, 0.3);
+            border-color: rgba(51, 102, 255, 0.3);
         }
 
         .item-code {
             font-family: 'Courier New', monospace;
-            color: #ff6666;
+            color: #6699ff;
             font-size: 0.9rem;
         }
 
@@ -296,10 +296,10 @@
 
         .action-btn {
             padding: 0.8rem 1.5rem;
-            background: rgba(255, 51, 51, 0.2);
-            border: 1px solid rgba(255, 51, 51, 0.4);
+            background: rgba(51, 102, 255, 0.2);
+            border: 1px solid rgba(51, 102, 255, 0.4);
             border-radius: 10px;
-            color: #ff3333;
+            color: #3366ff;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
@@ -309,7 +309,7 @@
         }
 
         .action-btn:hover {
-            background: rgba(255, 51, 51, 0.3);
+            background: rgba(51, 102, 255, 0.3);
             transform: translateY(-2px);
         }
 
@@ -363,7 +363,7 @@
 
         .modal-header h2 {
             font-size: 1.5rem;
-            color: #ff3333;
+            color: #3366ff;
         }
 
         .close-modal {
@@ -376,7 +376,7 @@
         }
 
         .close-modal:hover {
-            color: #ff3333;
+            color: #3366ff;
         }
 
         .input-group {
@@ -409,7 +409,7 @@
 
         .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
             outline: none;
-            border-color: #ff3333;
+            border-color: #3366ff;
             background: rgba(255, 255, 255, 0.08);
         }
 
@@ -459,12 +459,12 @@
         }
 
         .modal-btn-primary {
-            background: #ff3333;
+            background: #3366ff;
             color: white;
         }
 
         .modal-btn-primary:hover {
-            background: #ff0000;
+            background: #0033cc;
             transform: translateY(-2px);
         }
 
@@ -541,7 +541,7 @@
     </div>
 
     <nav>
-        <a href="index.html" class="logo">alu<span>card</span></a>
+        <a href="index.html" class="logo">guns<span>.lol</span></a>
         <div class="nav-right">
             <button class="logout-btn" onclick="logout()">logout</button>
         </div>
@@ -550,218 +550,189 @@
     <div class="dashboard-container">
         <div class="welcome-section">
             <h1>welcome back, <span id="username">loading...</span></h1>
-            <p>manage your devices, scripts, and monitor activity</p>
+            <p>manage your profiles, links, and analytics</p>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">🔐</div>
-                <div class="stat-label">whitelisted devices</div>
-                <div class="stat-value" id="hwid-count">0</div>
+                <div class="stat-icon">👤</div>
+                <div class="stat-label">your profiles</div>
+                <div class="stat-value" id="profile-count">0</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">📜</div>
-                <div class="stat-label">uploaded scripts</div>
-                <div class="stat-value" id="script-count">0</div>
+                <div class="stat-icon">🔗</div>
+                <div class="stat-label">total links</div>
+                <div class="stat-value" id="link-count">0</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">📥</div>
-                <div class="stat-label">total downloads</div>
-                <div class="stat-value" id="download-count">0</div>
+                <div class="stat-icon">📊</div>
+                <div class="stat-label">total clicks</div>
+                <div class="stat-value" id="click-count">0</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon">🔓</div>
-                <div class="stat-label">auth attempts</div>
-                <div class="stat-value" id="auth-count">0</div>
+                <div class="stat-icon">👀</div>
+                <div class="stat-label">profile views</div>
+                <div class="stat-value" id="view-count">0</div>
             </div>
         </div>
 
         <div class="tabs-container">
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('devices')">🔑 Devices</button>
-                <button class="tab" onclick="switchTab('scripts')">📜 Scripts</button>
-                <button class="tab" onclick="switchTab('downloads')">📥 Downloads</button>
-                <button class="tab" onclick="switchTab('auth')">🔓 Auth Attempts</button>
+                <button class="tab active" onclick="switchTab('profiles')">👤 Profiles</button>
+                <button class="tab" onclick="switchTab('analytics')">📊 Analytics</button>
+                <button class="tab" onclick="switchTab('themes')">🎨 Themes</button>
+                <button class="tab" onclick="switchTab('upgrades')">💎 Upgrades</button>
             </div>
         </div>
 
-        <div id="devices-tab" class="tab-content active">
+        <div id="profiles-tab" class="tab-content active">
             <div class="section-card">
-                <h2>🔑 Your Devices</h2>
-                <div class="item-list" id="hwid-list">
+                <h2>👤 Your Profiles</h2>
+                <div class="item-list" id="profile-list">
                     <div class="empty-state">
                         <div class="empty-state-icon">📦</div>
-                        <p>loading your devices...</p>
+                        <p>loading your profiles...</p>
                     </div>
                 </div>
                 <div style="margin-top: 1.5rem;">
-                    <button class="action-btn" onclick="showAddDeviceModal()">+ Add New Device</button>
+                    <button class="action-btn" onclick="showCreateProfileModal()">+ Create Profile</button>
                 </div>
             </div>
         </div>
 
-        <div id="scripts-tab" class="tab-content">
+        <div id="analytics-tab" class="tab-content">
             <div class="section-card">
-                <h2>📜 Your Scripts</h2>
-                <div class="item-list" id="script-list">
+                <h2>📊 Analytics</h2>
+                <div class="item-list" id="analytics-list">
                     <div class="empty-state">
                         <div class="empty-state-icon">📦</div>
-                        <p>loading your scripts...</p>
-                    </div>
-                </div>
-                <div style="margin-top: 1.5rem;">
-                    <button class="action-btn" onclick="showUploadScriptModal()">+ Upload Script</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="downloads-tab" class="tab-content">
-            <div class="section-card">
-                <h2>📥 Script Downloads</h2>
-                <div class="item-list" id="download-list">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📦</div>
-                        <p>loading download history...</p>
+                        <p>loading analytics...</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="auth-tab" class="tab-content">
+        <div id="themes-tab" class="tab-content">
             <div class="section-card">
-                <h2>🔓 Authentication Attempts</h2>
-                <div class="item-list" id="auth-list">
+                <h2>🎨 Themes</h2>
+                <div class="item-list" id="theme-list">
                     <div class="empty-state">
                         <div class="empty-state-icon">📦</div>
-                        <p>loading auth attempts...</p>
+                        <p>loading themes...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="upgrades-tab" class="tab-content">
+            <div class="section-card">
+                <h2>💎 Upgrades</h2>
+                <div class="item-list" id="upgrade-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <p>loading upgrades...</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add Device Modal -->
-    <div class="modal" id="add-device-modal">
+    <!-- Create Profile Modal -->
+    <div class="modal" id="create-profile-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Add New Device</h2>
-                <button class="close-modal" onclick="closeAddDeviceModal()">×</button>
+                <h2>Create Profile</h2>
+                <button class="close-modal" onclick="closeCreateProfileModal()">×</button>
             </div>
             
             <div class="modal-body">
-                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">Enter your ALUCARD key to whitelist a new device.</p>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">Set up your new profile.</p>
                 
                 <div class="input-group">
-                    <label>ALUCARD Key</label>
-                    <input type="text" id="hwid-input" placeholder="ALUCARD-XXXXXXXXXX" oninput="validateHWID()">
-                    <div class="input-note">Key should start with "ALUCARD-"</div>
+                    <label>Title</label>
+                    <input type="text" id="profile-title" placeholder="My Awesome Profile">
                 </div>
 
-                <div class="input-group" id="device-type-group" style="display:none;">
-                    <label>Device Type</label>
-                    <select id="device-type">
-                        <option value="">Select device type</option>
-                        <option value="PC">PC</option>
-                        <option value="Phone">Phone</option>
-                        <option value="Tablet">Tablet</option>
-                        <option value="Other">Other</option>
+                <div class="input-group">
+                    <label>Avatar URL</label>
+                    <input type="text" id="profile-avatar" placeholder="https://example.com/avatar.jpg">
+                </div>
+
+                <div class="input-group">
+                    <label>Background URL</label>
+                    <input type="text" id="profile-background" placeholder="https://example.com/background.jpg">
+                </div>
+
+                <div class="input-group">
+                    <label>Theme</label>
+                    <select id="profile-theme">
+                        <option value="default">Default</option>
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
                     </select>
                 </div>
 
-                <div class="message" id="add-device-msg"></div>
+                <div class="message" id="create-profile-msg"></div>
 
                 <div class="modal-buttons">
-                    <button class="modal-btn modal-btn-primary" onclick="addDevice()">Add Device</button>
-                    <button class="modal-btn modal-btn-secondary" onclick="goToUnlock()">Go to Unlock Page</button>
+                    <button class="modal-btn modal-btn-primary" onclick="createProfile()">Create</button>
+                    <button class="modal-btn modal-btn-secondary" onclick="closeCreateProfileModal()">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Upload Script Modal -->
-    <div class="modal" id="upload-script-modal">
+    <!-- Edit Profile Modal (expanded for links, embeds) -->
+    <div class="modal" id="edit-profile-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Upload Script</h2>
-                <button class="close-modal" onclick="closeUploadScriptModal()">×</button>
-            </div>
-            
-            <div class="modal-body">
-                <p style="color: rgba(255,255,255,0.7); margin-bottom: 1.5rem;">Upload your Lua script for protection with AES-256 encryption.</p>
-                
-                <div class="input-group">
-                    <label>Script Name</label>
-                    <input type="text" id="script-name" placeholder="My Awesome Script">
-                </div>
-
-                <div class="input-group">
-                    <label>Description</label>
-                    <input type="text" id="script-description" placeholder="What does your script do?">
-                </div>
-
-                <div class="input-group">
-                    <label>Lua Code</label>
-                    <textarea id="script-content" placeholder="-- Your Lua code here
-print('Hello from Alucard!')"></textarea>
-                </div>
-
-                <div class="input-group">
-                    <label>Webhook URL (Optional)</label>
-                    <input type="text" id="script-webhook" placeholder="https://discord.com/api/webhooks/...">
-                    <div class="input-note">Receive notifications on Discord/Slack when script is accessed</div>
-                </div>
-
-                <div class="message" id="upload-script-msg"></div>
-
-                <div class="modal-buttons">
-                    <button class="modal-btn modal-btn-primary" onclick="uploadScript()">Upload & Protect</button>
-                    <button class="modal-btn modal-btn-secondary" onclick="closeUploadScriptModal()">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- View Script Modal -->
-    <div class="modal" id="view-script-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Script Details</h2>
-                <button class="close-modal" onclick="closeViewScriptModal()">×</button>
+                <h2>Edit Profile</h2>
+                <button class="close-modal" onclick="closeEditProfileModal()">×</button>
             </div>
             
             <div class="modal-body">
                 <div class="input-group">
-                    <label>Script Name</label>
-                    <div style="color: rgba(255,255,255,0.8); padding: 0.5rem 0;" id="view-script-name"></div>
+                    <label>Title</label>
+                    <input type="text" id="edit-title" placeholder="My Awesome Profile">
                 </div>
 
                 <div class="input-group">
-                    <label>Description</label>
-                    <div style="color: rgba(255,255,255,0.6); padding: 0.5rem 0;" id="view-script-desc"></div>
+                    <label>Avatar URL</label>
+                    <input type="text" id="edit-avatar" placeholder="https://example.com/avatar.jpg">
                 </div>
 
                 <div class="input-group">
-                    <label>Loader Code (Give this to users)</label>
-                    <div class="code-display" id="view-script-loader"></div>
+                    <label>Background URL</label>
+                    <input type="text" id="edit-background" placeholder="https://example.com/background.jpg">
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-                    <div>
-                        <div class="stat-label">Downloads</div>
-                        <div class="stat-value" style="font-size: 1.5rem;" id="view-script-downloads">0</div>
-                    </div>
-                    <div>
-                        <div class="stat-label">Version</div>
-                        <div class="stat-value" style="font-size: 1.5rem;" id="view-script-version">1.0</div>
-                    </div>
+                <div class="input-group">
+                    <label>Theme</label>
+                    <select id="edit-theme">
+                        <option value="default">Default</option>
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                    </select>
                 </div>
+
+                <div class="input-group">
+                    <label>Links (one per line)</label>
+                    <textarea id="edit-links" placeholder="https://example.com | Link Text"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Embeds (YouTube/Spotify URL)</label>
+                    <input type="text" id="edit-embeds" placeholder="https://youtube.com/watch?v=...">
+                </div>
+
+                <div class="message" id="edit-profile-msg"></div>
 
                 <div class="modal-buttons">
-                    <button class="modal-btn modal-btn-primary" onclick="copyLoader()">Copy Loader</button>
-                    <button class="modal-btn modal-btn-secondary" onclick="closeViewScriptModal()">Close</button>
+                    <button class="modal-btn modal-btn-primary" onclick="saveProfile()">Save</button>
+                    <button class="modal-btn modal-btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
                 </div>
             </div>
         </div>
@@ -769,80 +740,18 @@ print('Hello from Alucard!')"></textarea>
 
    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    let currentScriptId = null;
+    let currentProfileId = null;
     
-    // Initialize Supabase
-    const supabaseUrl = 'https://yjasnrnrukmtejlwiigx.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqYXNucm5ydWttdGVqbHdpaWd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNzk5MzUsImV4cCI6MjA3NTc1NTkzNX0.9Q0LgyksJj-EfIyYT_sxDLDuz-q50fVXYj5uuCeEMHI';
+    // Initialize Supabase (update with guns.lol Supabase if different)
+    const supabaseUrl = 'https://your-supabase-url.supabase.co';
+    const supabaseKey = 'your-supabase-key';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Check authentication
+    // Check authentication (similar, adapt if needed)
     async function checkAuth() {
-    const token = localStorage.getItem('alucard_token');
-    const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-
-    console.log('=== AUTH CHECK ===');
-    console.log('Token exists:', !!token);
-    console.log('User exists:', !!user);
-
-    if (!token || !user.id) {
-        console.log('Missing auth data, redirecting to login...');
-        window.location.href = 'auth.html';
-        return false;
+        // ... (keep similar logic, redirect to auth.html if not logged in)
     }
 
-    // Fetch user's devices from Supabase
-    let hwids;
-    try {
-        const { data, error } = await supabase
-            .from('whitelist')
-            .select('*')
-            .eq('user_id', user.id);
-
-        if (error) throw error;
-        hwids = data; // hwids is now defined
-
-        if (!hwids || hwids.length === 0) return false;
-
-        const now = new Date();
-
-        for (const h of hwids) {
-            const expiresAt = new Date(h.expires_at);
-            if (h.blocked || now > expiresAt) {
-                // Automatically block expired devices
-                await supabase
-                    .from('whitelist')
-                    .update({ blocked: true, status: 'blacklisted' })
-                    .eq('hwid', h.hwid);
-
-                return false; // deny access if any device is invalid
-            }
-        }
-    } catch (e) {
-        console.error('Error fetching devices:', e);
-        return false;
-    }
-
-    // Verify session with Supabase
-    try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error || !session) {
-            console.log('No valid Supabase session, redirecting...');
-            localStorage.clear();
-            window.location.href = 'auth.html';
-            return false;
-        }
-        console.log('Valid session found');
-        return true;
-    } catch (e) {
-        console.error('Auth check error:', e);
-        window.location.href = 'auth.html';
-        return false;
-    }
-}
-
-
-    // Initialize dashboard
     (async function init() {
         const isAuthenticated = await checkAuth();
         if (!isAuthenticated) return;
@@ -850,21 +759,15 @@ print('Hello from Alucard!')"></textarea>
         await loadDashboard();
     })();
 
-    // Tab switching
+    // Tab switching (adapted tabs)
     function switchTab(tabName) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        
-        event.target.classList.add('active');
-        document.getElementById(`${tabName}-tab`).classList.add('active');
+        // ... (keep similar)
     }
 
-    // Load dashboard data
+    // Load dashboard data (adapt to profiles)
     async function loadDashboard() {
-        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-        const userId = localStorage.getItem('alucard_user_id') || user.id;
-
-        console.log('Loading dashboard for user:', userId);
+        const user = JSON.parse(localStorage.getItem('guns_user') || '{}');
+        const userId = localStorage.getItem('guns_user_id') || user.id;
 
         if (!userId) {
             window.location.href = 'auth.html';
@@ -874,453 +777,255 @@ print('Hello from Alucard!')"></textarea>
         document.getElementById('username').textContent = user.username || user.email?.split('@')[0] || 'User';
 
         try {
-            // Fetch user's whitelisted devices
-            const { data: hwids, error: hwidsError } = await supabase
-                .from('whitelist')
+            // Fetch user's profiles
+            const { data: profiles } = await supabase
+                .from('profiles')
                 .select('*')
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false });
 
-            if (hwidsError) console.error('Error fetching HWIDs:', hwidsError);
-
-            // Fetch user's scripts
-            const { data: scripts, error: scriptsError } = await supabase
-                .from('scripts')
+            // Fetch analytics
+            const { data: analytics } = await supabase
+                .from('analytics')
                 .select('*')
                 .eq('user_id', userId)
-                .order('created_at', { ascending: false });
-
-            if (scriptsError) console.error('Error fetching scripts:', scriptsError);
-
-            // Fetch auth attempts
-            const { data: authAttempts, error: authError } = await supabase
-                .from('verification_logs')
-                .select('*')
-                .eq('user_id', userId)
-                .order('verified_at', { ascending: false })
-                .limit(50);
-
-            if (authError) console.error('Error fetching auth attempts:', authError);
+                .order('date', { ascending: false });
 
             // Update stats
-            document.getElementById('hwid-count').textContent = hwids?.length || 0;
-            document.getElementById('script-count').textContent = scripts?.length || 0;
+            document.getElementById('profile-count').textContent = profiles?.length || 0;
             
-            let totalDownloads = 0;
-            scripts?.forEach(s => totalDownloads += s.downloads || 0);
-            document.getElementById('download-count').textContent = totalDownloads;
-            document.getElementById('auth-count').textContent = authAttempts?.length || 0;
+            let totalLinks = 0;
+            profiles?.forEach(p => totalLinks += p.links?.length || 0);
+            document.getElementById('link-count').textContent = totalLinks;
+
+            let totalClicks = 0;
+            analytics?.forEach(a => totalClicks += a.clicks || 0);
+            document.getElementById('click-count').textContent = totalClicks;
+
+            let totalViews = 0;
+            analytics?.forEach(a => totalViews += a.views || 0);
+            document.getElementById('view-count').textContent = totalViews;
 
             // Render sections
-            renderDevices(hwids || []);
-            renderScripts(scripts || []);
-            renderDownloads(scripts || []);
-            renderAuthAttempts(authAttempts || []);
+            renderProfiles(profiles || []);
+            renderAnalytics(analytics || []);
+            renderThemes([]); // Add theme data if needed
+            renderUpgrades([]); // Add upgrade data if needed
 
         } catch (err) {
             console.error('Failed to load dashboard:', err);
         }
     }
 
-   function renderDevices(hwids) {
-    const list = document.getElementById('hwid-list');
-    if (hwids.length === 0) {
-        list.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">🔓</div>
-                <p>no devices whitelisted yet</p>
-                <p style="font-size: 0.85rem; margin-top: 0.5rem;">click "add new device" to get started</p>
-            </div>
-        `;
-    } else {
-        list.innerHTML = hwids.map(h => {
-            const now = new Date();
-            const expiresDate = h.expires_at ? new Date(h.expires_at) : null;
-            const isExpired = expiresDate && expiresDate < now;
-            const isBlocked = h.blocked;
-
-            // Status styling
-            let statusClass = '';
-            if (isBlocked) statusClass = 'status-blocked';
-            else if (isExpired) statusClass = 'status-expired';
-            else statusClass = h.status === 'active' ? 'status-active' : 'status-blacklisted';
-
-            return `
-                <div class="list-item ${isExpired ? 'expired-device' : ''} ${isBlocked ? 'blocked-device' : ''}">
-                    <div>
-                        <div class="item-code">${h.hwid_display || h.hwid}</div>
-                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
-                            ${h.device_type || 'Unknown'} • 
-                            Added: ${new Date(h.created_at).toLocaleDateString()} • 
-                            Expires: ${expiresDate ? expiresDate.toLocaleDateString() : 'Never'}
-                        </div>
-                    </div>
-                    <div class="item-status ${statusClass}">
-                        ${isBlocked ? 'BLOCKED' : isExpired ? 'EXPIRED' : h.status.toUpperCase()}
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-}
-
-
-    function renderScripts(scripts) {
-        const list = document.getElementById('script-list');
-        if (scripts.length === 0) {
+    function renderProfiles(profiles) {
+        const list = document.getElementById('profile-list');
+        if (profiles.length === 0) {
             list.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon">📜</div>
-                    <p>no scripts uploaded yet</p>
-                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">upload your first script to get started</p>
+                    <div class="empty-state-icon">👤</div>
+                    <p>no profiles yet</p>
+                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">create your first profile</p>
                 </div>
             `;
         } else {
-            list.innerHTML = scripts.map(s => `
-                <div class="list-item" onclick="viewScript('${s.id}')">
+            list.innerHTML = profiles.map(p => `
+                <div class="list-item" onclick="editProfile('${p.id}')">
                     <div>
-                        <div style="font-weight: 600; margin-bottom: 0.3rem;">${s.name}</div>
-                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">${s.description}</div>
+                        <div style="font-weight: 600; margin-bottom: 0.3rem;">${p.title}</div>
+                        <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">guns.lol/${p.username}</div>
                         <div style="font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.3rem;">
-                            v${s.version} • ${s.downloads} downloads • ${new Date(s.created_at).toLocaleDateString()}
+                            Links: ${p.links?.length || 0} • Views: ${p.views || 0} • Created: ${new Date(p.created_at).toLocaleDateString()}
                         </div>
                     </div>
                     <div>
-                        <button class="action-btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="event.stopPropagation(); deleteScript('${s.id}')">Delete</button>
+                        <button class="action-btn" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="event.stopPropagation(); deleteProfile('${p.id}')">Delete</button>
                     </div>
                 </div>
             `).join('');
         }
     }
 
-    function renderDownloads(scripts) {
-        const list = document.getElementById('download-list');
-        const downloads = [];
-        
-        scripts.forEach(script => {
-            if (script.downloads > 0) {
-                downloads.push({
-                    name: script.name,
-                    downloads: script.downloads,
-                    lastAccess: script.updated_at || script.created_at
-                });
-            }
-        });
-
-        if (downloads.length === 0) {
+    function renderAnalytics(analytics) {
+        const list = document.getElementById('analytics-list');
+        if (analytics.length === 0) {
             list.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon">📥</div>
-                    <p>no downloads yet</p>
-                    <p style="font-size: 0.85rem; margin-top: 0.5rem;">your scripts haven't been accessed yet</p>
+                    <div class="empty-state-icon">📊</div>
+                    <p>no analytics yet</p>
                 </div>
             `;
         } else {
-            list.innerHTML = downloads.map(d => `
+            list.innerHTML = analytics.map(a => `
                 <div class="list-item">
                     <div>
-                        <div style="font-weight: 600; margin-bottom: 0.3rem;">${d.name}</div>
+                        <div style="font-weight: 600; margin-bottom: 0.3rem;">${a.profile_name}</div>
                         <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">
-                            Last access: ${new Date(d.lastAccess).toLocaleString()}
+                            Date: ${new Date(a.date).toLocaleDateString()}
                         </div>
                     </div>
-                    <div class="stat-value" style="font-size: 1.5rem;">${d.downloads}</div>
+                    <div class="stat-value" style="font-size: 1.5rem;">Clicks: ${a.clicks}</div>
                 </div>
             `).join('');
         }
     }
 
-    function renderAuthAttempts(attempts) {
-        const list = document.getElementById('auth-list');
-        if (attempts.length === 0) {
-            list.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-state-icon">🔓</div>
-                    <p>no auth attempts logged</p>
-                </div>
-            `;
-        } else {
-            list.innerHTML = attempts.slice(0, 50).map(a => `
-                <div class="list-item">
-                    <div>
-                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">
-                            Verification attempt
-                        </div>
-                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem;">
-                            IP: ${a.ip_address} • ${new Date(a.verified_at).toLocaleString()}
-                        </div>
-                    </div>
-                    <div class="item-status status-active">✓</div>
-                </div>
-            `).join('');
-        }
-    }
+    // Similar for renderThemes, renderUpgrades...
 
-    // Device management
-    function validateHWID() {
-        const hwidInput = document.getElementById('hwid-input').value.trim();
-        const typeGroup = document.getElementById('device-type-group');
-        const msgEl = document.getElementById('add-device-msg');
+    // Profile management
+    async function createProfile() {
+        const title = document.getElementById('profile-title').value.trim();
+        const avatar = document.getElementById('profile-avatar').value.trim();
+        const background = document.getElementById('profile-background').value.trim();
+        const theme = document.getElementById('profile-theme').value;
+        const msgEl = document.getElementById('create-profile-msg');
 
-        if (hwidInput) {
-            if (hwidInput.startsWith('ALUCARD-')) {
-                typeGroup.style.display = 'block';
-                msgEl.style.display = 'none';
-            } else {
-                typeGroup.style.display = 'none';
-                if (hwidInput.length > 5) {
-                    msgEl.className = 'message error';
-                    msgEl.textContent = 'Invalid key format. Must start with "ALUCARD-"';
-                }
-            }
-        } else {
-            typeGroup.style.display = 'none';
-            msgEl.style.display = 'none';
-        }
-    }
-
-    async function addDevice() {
-        const hwid = document.getElementById('hwid-input').value.trim().toUpperCase();
-        const deviceType = document.getElementById('device-type').value;
-        const msgEl = document.getElementById('add-device-msg');
-
-        if (!hwid || !hwid.startsWith('ALUCARD-') || hwid.length < 15) {
+        if (!title) {
             msgEl.className = 'message error';
-            msgEl.textContent = 'Please enter a valid ALUCARD key';
+            msgEl.textContent = 'Please enter a title';
             return;
         }
 
-        if (!deviceType) {
-            msgEl.className = 'message error';
-            msgEl.textContent = 'Please select a device type';
-            return;
-        }
-
-        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-        const userId = localStorage.getItem('alucard_user_id') || user.id;
+        const user = JSON.parse(localStorage.getItem('guns_user') || '{}');
+        const userId = localStorage.getItem('guns_user_id') || user.id;
 
         try {
-            // Hash the HWID (simple hash for demo - use proper hashing in production)
-            const hashedHWID = await hashString(hwid);
-
-            // Check if HWID already exists
-            const { data: existing } = await supabase
-                .from('whitelist')
-                .select('*')
-                .eq('hwid', hashedHWID);
-
-            if (existing && existing.length > 0) {
-                const ownedByUser = existing.some(e => e.user_id === userId);
-                if (ownedByUser) {
-                    msgEl.className = 'message success';
-                    msgEl.textContent = 'Device already whitelisted!';
-                    return;
-                } else {
-                    msgEl.className = 'message error';
-                    msgEl.textContent = 'This key is already registered to another account';
-                    return;
-                }
-            }
-const expiresAt = new Date();
-expiresAt.setDate(expiresAt.getDate() + 7); // example: 7 days from now
-
-            // Insert new device
-          const { error } = await supabase
-  .from('whitelist')
-  .insert({
-      user_id: userId,
-      hwid: hashedHWID,
-      device_type: deviceType,
-      status: 'active',
-      created_at: new Date().toISOString(),
-      expires_at: expiresAt.toISOString(),  // <-- PUT IT HERE
-      blocked: false
-  });
-
-            if (error) throw error;
-
-            msgEl.className = 'message success';
-            msgEl.textContent = 'Device added successfully!';
-            setTimeout(() => {
-                closeAddDeviceModal();
-                loadDashboard();
-            }, 1500);
-        } catch (err) {
-            console.error('Add device error:', err);
-            msgEl.className = 'message error';
-            msgEl.textContent = 'Failed to add device: ' + err.message;
-        }
-    }
-
-    // Simple hash function (replace with proper hashing in production)
-    async function hashString(str) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(str);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    // Script management
-    async function uploadScript() {
-        const name = document.getElementById('script-name').value.trim();
-        const description = document.getElementById('script-description').value.trim();
-        const content = document.getElementById('script-content').value.trim();
-        const webhook = document.getElementById('script-webhook').value.trim();
-        const msgEl = document.getElementById('upload-script-msg');
-
-        if (!name || !description || !content) {
-            msgEl.className = 'message error';
-            msgEl.textContent = 'Please fill in all required fields';
-            return;
-        }
-
-        const user = JSON.parse(localStorage.getItem('alucard_user') || '{}');
-        const userId = localStorage.getItem('alucard_user_id') || user.id;
-
-        try {
-            const scriptId = crypto.randomUUID();
-            const loader = `-- Protected by Alucard\nloadstring(game:HttpGet("https://api.alucard.lol/script/${scriptId}"))()`;
+            const profileId = crypto.randomUUID();
+            const username = title.toLowerCase().replace(/ /g, '-'); // Simple username gen
 
             const { error } = await supabase
-                .from('scripts')
+                .from('profiles')
                 .insert({
-                    id: scriptId,
+                    id: profileId,
                     user_id: userId,
-                    name,
-                    description,
-                    content,
-                    obfuscated_code: content, // In production, actually obfuscate this
-                    loader_code: loader,
-                    webhook_url: webhook || null,
-                    version: '1.0',
-                    downloads: 0,
-                    created_at: new Date().toISOString()
+                    title,
+                    avatar,
+                    background,
+                    theme,
+                    links: [],
+                    embeds: [],
+                    created_at: new Date().toISOString(),
+                    username
                 });
 
             if (error) throw error;
 
             msgEl.className = 'message success';
-            msgEl.textContent = 'Script uploaded successfully!';
+            msgEl.textContent = 'Profile created!';
             setTimeout(() => {
-                closeUploadScriptModal();
+                closeCreateProfileModal();
                 loadDashboard();
             }, 1500);
         } catch (err) {
-            console.error('Upload script error:', err);
             msgEl.className = 'message error';
-            msgEl.textContent = 'Failed to upload script: ' + err.message;
+            msgEl.textContent = 'Failed to create profile: ' + err.message;
         }
     }
 
-    async function viewScript(scriptId) {
-        currentScriptId = scriptId;
+    async function editProfile(profileId) {
+        currentProfileId = profileId;
 
-        try {
-            const { data: script, error } = await supabase
-                .from('scripts')
-                .select('*')
-                .eq('id', scriptId)
-                .single();
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', profileId)
+            .single();
 
-            if (error) throw error;
-
-            if (script) {
-                document.getElementById('view-script-name').textContent = script.name;
-                document.getElementById('view-script-desc').textContent = script.description;
-                document.getElementById('view-script-loader').textContent = script.loader_code;
-                document.getElementById('view-script-downloads').textContent = script.downloads;
-                document.getElementById('view-script-version').textContent = script.version;
-                
-                document.getElementById('view-script-modal').classList.add('show');
-            }
-        } catch (err) {
-            console.error('Failed to load script:', err);
+        if (profile) {
+            document.getElementById('edit-title').value = profile.title;
+            document.getElementById('edit-avatar').value = profile.avatar;
+            document.getElementById('edit-background').value = profile.background;
+            document.getElementById('edit-theme').value = profile.theme;
+            document.getElementById('edit-links').value = profile.links?.join('\n') || '';
+            document.getElementById('edit-embeds').value = profile.embeds?.join('\n') || '';
+            
+            document.getElementById('edit-profile-modal').classList.add('show');
         }
     }
 
-    async function deleteScript(scriptId) {
-        if (!confirm('Are you sure you want to delete this script?')) return;
+    async function saveProfile() {
+        const title = document.getElementById('edit-title').value.trim();
+        const avatar = document.getElementById('edit-avatar').value.trim();
+        const background = document.getElementById('edit-background').value.trim();
+        const theme = document.getElementById('edit-theme').value;
+        const links = document.getElementById('edit-links').value.trim().split('\n');
+        const embeds = document.getElementById('edit-embeds').value.trim().split('\n');
+        const msgEl = document.getElementById('edit-profile-msg');
+
+        if (!title) {
+            msgEl.className = 'message error';
+            msgEl.textContent = 'Please enter a title';
+            return;
+        }
 
         try {
             const { error } = await supabase
-                .from('scripts')
-                .delete()
-                .eq('id', scriptId);
+                .from('profiles')
+                .update({
+                    title,
+                    avatar,
+                    background,
+                    theme,
+                    links,
+                    embeds,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', currentProfileId);
 
             if (error) throw error;
 
-            loadDashboard();
+            msgEl.className = 'message success';
+            msgEl.textContent = 'Profile saved!';
+            setTimeout(() => {
+                closeEditProfileModal();
+                loadDashboard();
+            }, 1500);
         } catch (err) {
-            console.error('Failed to delete script:', err);
-            alert('Failed to delete script: ' + err.message);
+            msgEl.className = 'message error';
+            msgEl.textContent = 'Failed to save profile: ' + err.message;
         }
     }
 
-    function copyLoader() {
-        const loader = document.getElementById('view-script-loader').textContent;
-        navigator.clipboard.writeText(loader);
-        alert('Loader code copied to clipboard!');
+    async function deleteProfile(profileId) {
+        if (!confirm('Are you sure?')) return;
+
+        const { error } = await supabase
+            .from('profiles')
+            .delete()
+            .eq('id', profileId);
+
+        if (error) {
+            alert('Failed to delete');
+            return;
+        }
+
+        loadDashboard();
     }
 
-    // Modal functions
-    function showAddDeviceModal() {
-        document.getElementById('add-device-modal').classList.add('show');
-        document.getElementById('hwid-input').value = '';
-        document.getElementById('device-type').value = '';
-        document.getElementById('device-type-group').style.display = 'none';
-        document.getElementById('add-device-msg').style.display = 'none';
+    // Modal functions (adapted)
+    function showCreateProfileModal() {
+        document.getElementById('create-profile-modal').classList.add('show');
     }
 
-    function closeAddDeviceModal() {
-        document.getElementById('add-device-modal').classList.remove('show');
+    function closeCreateProfileModal() {
+        document.getElementById('create-profile-modal').classList.remove('show');
     }
 
-    function showUploadScriptModal() {
-        document.getElementById('upload-script-modal').classList.add('show');
-        document.getElementById('script-name').value = '';
-        document.getElementById('script-description').value = '';
-        document.getElementById('script-content').value = '';
-        document.getElementById('script-webhook').value = '';
-        document.getElementById('upload-script-msg').style.display = 'none';
+    function closeEditProfileModal() {
+        document.getElementById('edit-profile-modal').classList.remove('show');
     }
 
-    function closeUploadScriptModal() {
-        document.getElementById('upload-script-modal').classList.remove('show');
-    }
-
-    function closeViewScriptModal() {
-        document.getElementById('view-script-modal').classList.remove('show');
-    }
-
-    function goToUnlock() {
-        window.location.href = 'unlock.html';
-    }
-
+    // Logout (adapt storage keys)
     async function logout() {
-        try {
-            await supabase.auth.signOut();
-        } catch (e) {
-            console.error('Logout error:', e);
-        }
-        
         localStorage.clear();
         window.location.href = 'auth.html';
     }
 
-    // Close modals on outside click
+    // Close modals on click
     document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('show');
-            }
+            if (e.target === modal) modal.classList.remove('show');
         });
     });
-    loadDashboard();
 </script>
 </body>
-</html
-
-
-
-
+</html>
