@@ -1,186 +1,192 @@
-/* ==========================================================
-   alucard Documentation Portal
-   Design language: dark tech, neon blue accent
-   ========================================================== */
+/* ======================================================
+   alucard documentation — cyber‑dev blue aesthetic
+   ====================================================== */
 
 :root {
-  --bg-0: #02040a;
-  --bg-1: #0c101c;
-  --bg-2: #141824;
-  --fg-0: #e8f7ff;
-  --fg-muted: #8ba2b5;
+  --bg: #03060f;
+  --bg-card: #0b0f1c;
+  --bg-glass: rgba(12, 16, 28, 0.6);
+  --fg: #ecf6ff;
+  --fg-muted: #94a8c4;
   --accent: #00bfff;
-  --accent-glow: #43d3ff;
-  --border: rgba(255, 255, 255, 0.05);
-  --radius: 10px;
-  --shadow-neon: 0 0 20px rgba(0,191,255,0.3);
-  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --accent-light: #45e8ff;
+  --border: rgba(255, 255, 255, 0.08);
+  --radius: 12px;
+  --shadow: 0 0 30px rgba(0,191,255,0.15);
   scroll-behavior: smooth;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body {
-  background: var(--bg-0);
-  color: var(--fg-0);
-  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
   font-size: 16px;
-  line-height: 1.6;
+}
+
+/* reset */
+* { box-sizing:border-box; margin:0; padding:0; }
+html,body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Inter", "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  line-height:1.6;
 }
 
-/* ========== NAVBAR ========== */
+/* animated background gradient */
+body::before{
+  content:"";
+  position:fixed;
+  width:150%;
+  height:150%;
+  top:-25%;
+  left:-25%;
+  background:radial-gradient(circle at 30% 20%, rgba(0,191,255,0.25), transparent 30%),
+             radial-gradient(circle at 80% 70%, rgba(0,255,255,0.15), transparent 40%);
+  animation:drift 20s infinite linear alternate;
+  z-index:-1;
+}
+@keyframes drift {from{transform:translate(0,0);}to{transform:translate(-50px, 50px);}}
 
+/* NAVBAR ------------------------------------------------*/
 nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.2rem var(--gutter);
-  background: rgba(10,15,25,0.65);
-  backdrop-filter: blur(20px) saturate(150%);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:1.2rem 5%;
+  backdrop-filter: blur(20px) saturate(180%);
+  background: var(--bg-glass);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0; z-index:100;
 }
-
-.logo {
-  font-weight: 800;
-  font-size: 1.4rem;
-  letter-spacing: -0.5px;
-  color: var(--fg-0);
-  text-decoration: none;
-  text-transform: lowercase;
+.logo{
+  text-decoration:none;
+  font-weight:800;
+  letter-spacing:-0.5px;
+  color:var(--fg);
+  font-size:1.4rem;
 }
-.logo span {
-  color: var(--accent);
-  text-shadow: 0 0 10px var(--accent-glow);
+.logo span{
+  color:var(--accent);
+  text-shadow:0 0 8px var(--accent-light);
 }
-
-.nav-links a {
-  color: var(--fg-muted);
-  text-decoration: none;
-  margin-left: 2rem;
-  font-weight: 500;
-  transition: color 0.3s;
+.nav-links a{
+  text-decoration:none;
+  color:var(--fg-muted);
+  margin-left:2rem;
+  font-weight:500;
+  position:relative;
+  transition:0.3s;
 }
 .nav-links a:hover,
-.nav-links a:focus {
-  color: var(--accent);
-  text-shadow: 0 0 10px var(--accent-glow);
+.nav-links a.active{
+  color:var(--accent-light);
+}
+.nav-links a.active::after{
+  content:"";
+  position:absolute;
+  bottom:-6px; left:0; width:100%; height:2px;
+  background:var(--accent);
+  border-radius:2px;
+  box-shadow:0 0 8px var(--accent-light);
 }
 
-/* ========== CONTENT WRAPPERS ========== */
-
-.wrapper {
-  max-width: 1200px;
-  margin: auto;
-  padding: var(--gutter);
+/* HERO / PAGE HEADER ------------------------------------*/
+.hero{
+  text-align:center;
+  padding:6rem 5% 3rem;
+}
+.hero h1{
+  font-size:3rem;
+  background:linear-gradient(90deg,var(--accent-light),#ffffff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 0 30px rgba(0,191,255,0.3);
+  font-weight:800;
+}
+.hero p{
+  color:var(--fg-muted);
+  max-width:600px;
+  margin:1rem auto 2rem;
+}
+.search{
+  width:100%;
+  max-width:400px;
+  border:none;
+  border-radius:var(--radius);
+  padding:.8rem 1rem;
+  font-size:1rem;
+  background:var(--bg-card);
+  color:var(--fg);
+  border:1px solid var(--border);
+  transition:.3s;
+}
+.search:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 10px rgba(0,191,255,0.4);
 }
 
-section {
-  margin-bottom: 4rem;
+/* CONTENT -----------------------------------------------*/
+.wrapper{
+  max-width:1200px;
+  margin:auto;
+  padding:0 5% 4rem;
+  display:grid;
+  gap:2.5rem;
+}
+.section{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:2rem;
+  animation:fadeUp .5s ease;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.section h2{
+  color:var(--accent);
+  margin-bottom:1rem;
+  font-size:1.4rem;
+}
+.section ul{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:.7rem;
+  list-style:none;
+}
+.section li{
+  background:var(--bg-glass);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:.7rem 1rem;
+  color:var(--fg-muted);
+  transition:.3s;
+}
+.section li:hover{
+  color:var(--accent-light);
+  border-color:var(--accent);
+  box-shadow:0 0 15px rgba(0,191,255,0.2);
 }
 
-h1, h2 {
-  font-weight: 700;
-  color: var(--accent);
-  margin-bottom: 1rem;
-  text-shadow: 0 0 8px rgba(0,191,255,0.4);
+/* FOOTER ------------------------------------------------*/
+footer{
+  border-top:1px solid var(--border);
+  text-align:center;
+  padding:2.5rem 5%;
+  font-size:.9rem;
+  color:var(--fg-muted);
+  background:rgba(5,8,15,0.5);
 }
-h1 {
-  font-size: 2.2rem;
-  margin-top: 1rem;
+footer a{
+  color:var(--accent);
+  text-decoration:none;
+  font-weight:600;
 }
-h2 {
-  margin-top: 2.5rem;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 0.25rem;
-}
-
-p {
-  color: var(--fg-muted);
-  margin-bottom: 1rem;
-  font-size: 1rem;
+footer a:hover{
+  color:var(--accent-light);
+  text-shadow:0 0 10px var(--accent-light);
 }
 
-ul {
-  list-style: none;
-  display: grid;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-}
-ul li {
-  padding: 0.6rem 1rem;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  transition: all 0.3s ease;
-}
-ul li:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-neon);
-}
-
-/* ========== SEARCH BAR ========== */
-
-.search {
-  display: block;
-  width: 100%;
-  max-width: 420px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.8rem 1.1rem;
-  color: var(--fg-0);
-  font-size: 1rem;
-  margin: 2rem auto 2rem;
-  transition: all 0.3s ease;
-}
-.search:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: var(--shadow-neon);
-}
-
-/* ========== FOOTER ========== */
-
-footer {
-  text-align: center;
-  padding: 2.5rem var(--gutter);
-  border-top: 1px solid var(--border);
-  background: var(--bg-1);
-  color: var(--fg-muted);
-  font-size: 0.9rem;
-}
-footer a {
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 600;
-}
-footer a:hover {
-  color: var(--accent-glow);
-  text-shadow: 0 0 10px var(--accent-glow);
-}
-
-/* ========== EFFECTS ========== */
-
-.gradient-border {
-  border: 2px solid transparent;
-  background-image: linear-gradient(var(--bg-2), var(--bg-2)),
-                    linear-gradient(90deg, var(--accent), #00ffaa);
-  background-origin: border-box;
-  background-clip: content-box, border-box;
-  border-radius: var(--radius);
-}
-
-/* subtle fade in */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.wrapper { animation: fadeInUp 0.5s ease; }
+/* SCROLLBAR for elegance */
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:var(--bg-card);border-radius:5px;}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);}
