@@ -1,0 +1,85 @@
+/* alucard documentation - blue on black aesthetic */
+
+:root {
+  --bg: #000;
+  --fg: #d8f2ff;
+  --link: #3dabff;
+  --link-hover: #00bfff;
+  --panel: #0a0a12;
+  --border: #14203a;
+  --accent: #00bfff;
+  --mono: "Courier New", monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: "Inter", Sans-Serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+}
+
+nav {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:1rem 3%;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-weight:700;
+  font-size:1.2rem;
+  letter-spacing:-0.5px;
+  color:var(--fg);
+  text-decoration:none;
+}
+.logo span { color:var(--accent); }
+
+.nav-links a {
+  color: var(--fg);
+  opacity:.75;
+  text-decoration:none;
+  margin-left:1.5rem;
+  font-size:.95rem;
+}
+.nav-links a:hover { color:var(--link-hover); opacity:1; }
+
+.wrapper { max-width: 1100px; margin:auto; padding:3rem 5%; }
+
+h1,h2,h3 { font-weight:600; color:var(--accent); margin-bottom:1rem; }
+p { margin-bottom:1rem; }
+
+code, pre {
+  font-family: var(--mono);
+  background: #050509;
+  padding: 0 .3rem;
+  border-radius:4px;
+  color:#86ceff;
+}
+
+footer {
+  text-align:center;
+  border-top:1px solid var(--border);
+  padding:2rem 0;
+  color:#779;
+  font-size:.85rem;
+}
+footer a { color:var(--link); text-decoration:none; }
+footer a:hover { color:var(--link-hover); }
+
+.search {
+  display:block;
+  width:100%;
+  max-width:350px;
+  margin:2rem auto;
+  padding:.7rem 1rem;
+  background:#050509;
+  border:1px solid var(--border);
+  color:var(--fg);
+  border-radius:6px;
+  outline:none;
+}
+.search:focus { border-color:var(--link-hover); }
