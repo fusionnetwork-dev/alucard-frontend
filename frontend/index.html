@@ -3,47 +3,825 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>alucard • Luau Docs</title>
-<link rel="stylesheet" href="style.css">
+<title>alucard • Documentation</title>
+<style>
+:root {
+  --bg: #0f0303; /* deep background */
+  --bg-card: #1c0b0b; /* slightly lighter red tone */
+  --bg-glass: rgba(28, 12, 12, 0.6); /* red-tinted glass effect */
+  --fg: #fff4f4; /* soft white for text */
+  --fg-muted: #c49494; /* muted rose-gray text */
+  --accent: #ff3b3b; /* strong red accent */
+  --accent-light: #ff6b6b; /* lighter red accent */
+  --border: rgba(255, 255, 255, 0.08);
+  --radius: 12px;
+  --shadow: 0 0 30px rgba(255, 59, 59, 0.15); /* subtle red glow */
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+
+* { box-sizing:border-box; margin:0; padding:0; }
+html,body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Inter", "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height:1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  width: 150%;
+  height: 150%;
+  top: -25%;
+  left: -25%;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 59, 59, 0.25), transparent 30%),
+    radial-gradient(circle at 80% 70%, rgba(255, 100, 100, 0.15), transparent 40%);
+  animation: drift 20s infinite linear alternate;
+  z-index: -1;
+}
+@keyframes drift {from{transform:translate(0,0);}to{transform:translate(-50px, 50px);}}
+
+nav {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:1.2rem 5%;
+  backdrop-filter: blur(20px) saturate(180%);
+  background: var(--bg-glass);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0; z-index:100;
+}
+.logo{
+  text-decoration:none;
+  font-weight:800;
+  letter-spacing:-0.5px;
+  color:var(--fg);
+  font-size:1.4rem;
+  cursor: pointer;
+}
+.logo span{
+  color:var(--accent);
+  text-shadow:0 0 8px var(--accent-light);
+}
+.nav-links {
+  display: flex;
+  gap: 0;
+}
+.nav-links a{
+  text-decoration:none;
+  color:var(--fg-muted);
+  margin-left:2rem;
+  font-weight:500;
+  position:relative;
+  transition:0.3s;
+  cursor: pointer;
+}
+.nav-links a:hover,
+.nav-links a.active{
+  color:var(--accent-light);
+}
+.nav-links a.active::after{
+  content:"";
+  position:absolute;
+  bottom:-6px; left:0; width:100%; height:2px;
+  background:var(--accent);
+  border-radius:2px;
+  box-shadow:0 0 8px var(--accent-light);
+}
+
+.hero{
+  text-align:center;
+  padding:6rem 5% 3rem;
+}
+.hero h1{
+  font-size:3rem;
+  background:linear-gradient(90deg,var(--accent-light),#ffffff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 0 30px rgba(0,191,255,0.3);
+  font-weight:800;
+}
+.hero p{
+  color:var(--fg-muted);
+  max-width:600px;
+  margin:1rem auto 2rem;
+}
+.search{
+  width:100%;
+  max-width:400px;
+  border:none;
+  border-radius:var(--radius);
+  padding:.8rem 1rem;
+  font-size:1rem;
+  background:var(--bg-card);
+  color:var(--fg);
+  border:1px solid var(--border);
+  transition:.3s;
+}
+.search:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 10px rgba(0,191,255,0.4);
+}
+
+.wrapper{
+  max-width:1200px;
+  margin:auto;
+  padding:0 5% 4rem;
+  display:grid;
+  gap:2.5rem;
+  flex: 1;
+}
+.section{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:2rem;
+  animation:fadeUp .5s ease;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.section h2{
+  color:var(--accent);
+  margin-bottom:1rem;
+  font-size:1.4rem;
+}
+.section ul{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:.7rem;
+  list-style:none;
+}
+.section li{
+  background:var(--bg-glass);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:.7rem 1rem;
+  color:var(--fg-muted);
+  transition:.3s;
+  cursor: pointer;
+  position: relative;
+}
+.section li:hover{
+  color:var(--accent-light);
+  border-color:var(--accent);
+  box-shadow:0 0 15px rgba(0,191,255,0.2);
+  transform: translateY(-2px);
+}
+
+.item-details {
+  display: none;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(0, 191, 255, 0.08);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  animation: slideDown 0.3s ease;
+}
+
+.item-details.show {
+  display: block;
+}
+
+.item-details p {
+  margin: 0.5rem 0;
+  color: var(--fg-muted);
+  font-size: 0.95rem;
+}
+
+.item-details code {
+  display: block;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.item-wrapper {
+  position: relative;
+}
+
+footer{
+  border-top:1px solid var(--border);
+  text-align:center;
+  padding:2.5rem 5%;
+  font-size:.9rem;
+  color:var(--fg-muted);
+  background:rgba(5,8,15,0.5);
+  margin-top: auto;
+}
+footer a{
+  color:var(--accent);
+  text-decoration:none;
+  font-weight:600;
+  cursor: pointer;
+}
+footer a:hover{
+  color:var(--accent-light);
+  text-shadow:0 0 10px var(--accent-light);
+}
+
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:var(--bg-card);border-radius:5px;}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+code {
+  background: rgba(0, 191, 255, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: var(--accent);
+  font-family: 'Courier New', monospace;
+}
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2rem; }
+  nav { flex-direction: column; gap: 1rem; }
+  .nav-links { gap: 1rem; }
+  .nav-links a { margin-left: 0; }
+  .section ul { grid-template-columns: 1fr; }
+}
+
+.page { display: none; }
+.page.active { display: flex; flex-direction: column; }
+
+.home-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.typewriter-container {
+  font-size: 2.5rem;
+  font-weight: 800;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 90%;
+}
+
+@keyframes colorShift {
+  0% { background: linear-gradient(90deg, #ff3b3b, #ffffff); }
+  25% { background: linear-gradient(90deg, #ff6b6b, #ff3b3b); }
+  50% { background: linear-gradient(90deg, #ffffff, #ff6b6b); }
+  75% { background: linear-gradient(90deg, #ff3b3b, #ff0000); }
+  100% { background: linear-gradient(90deg, #ff3b3b, #ffffff); }
+}
+
+.typewriter {
+  background: linear-gradient(90deg, #ff3b3b, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation:
+    typing 2.2s steps(35, end),
+    blink .75s step-end infinite,
+    colorShift 5s linear infinite; /* new animation */
+}
+
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  0%, 49% {
+    border-right-color: var(--accent);
+  }
+  50%, 100% {
+    border-right-color: transparent;
+  }
+}
+
+.subtitle {
+  margin-top: 3rem;
+  font-size: 1.2rem;
+  color: var(--fg-muted);
+  opacity: 0;
+  animation: fadeInUp 1s ease 2.2s forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeInUp 1s ease 2.5s forwards;
+  flex-wrap: wrap;
+}
+
+.home-btn {
+  padding: 0.8rem 2rem;
+  background: rgba(0, 191, 255, 0.1);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.home-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+}
+  .orb-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -2;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 59, 59, 0.6), transparent 70%);
+  width: 150px;
+  height: 150px;
+  filter: blur(40px);
+  animation: floatOrb 15s infinite ease-in-out;
+}
+
+.orb:nth-child(1) { top: 10%; left: 15%; animation-delay: 0s; }
+.orb:nth-child(2) { top: 40%; left: 70%; animation-delay: 3s; width: 200px; height: 200px; }
+.orb:nth-child(3) { top: 70%; left: 30%; animation-delay: 6s; }
+.orb:nth-child(4) { top: 20%; left: 80%; animation-delay: 9s; }
+.orb:nth-child(5) { top: 80%; left: 50%; animation-delay: 12s; }
+
+@keyframes floatOrb {
+  0% { transform: translateY(0px) scale(1); opacity: 0.6; }
+  50% { transform: translateY(-40px) scale(1.1); opacity: 0.9; }
+  100% { transform: translateY(0px) scale(1); opacity: 0.6; }
+}
+
+</style>
 </head>
 <body>
+
 <nav>
-  <a href="index.html" class="logo">alu<span>card</span></a>
+  <a class="logo" id="logo-home">alu<span>card</span></a>
   <div class="nav-links">
-    <a href="classes.html">Classes</a>
-    <a href="services.html">Services</a>
-    <a href="libraries.html">Libraries</a>
-    <a href="enums.html">Enums</a>
+    <a id="nav-classes" class="nav-link" data-page="classes">Classes</a>
+    <a id="nav-services" class="nav-link" data-page="services">Services</a>
+    <a id="nav-libraries" class="nav-link" data-page="libraries">Libraries</a>
+    <a id="nav-enums" class="nav-link" data-page="enums">Enums</a>
   </div>
 </nav>
 
-<header class="hero">
-  <h1>Luau Documentation Hub</h1>
-  <p>The unified, blazing‑fast reference for Roblox’s scripting language. Designed by <strong>alucard</strong> for developers who crave perfection.</p>
-  <input class="search" placeholder="Search the documentation...">
-</header>
+<!-- HOME PAGE -->
+<div id="home" class="page active">
+  <div class="home-hero">
+    <div class="typewriter-container">
+      <div class="typewriter">alucard</div>
+      <div style="font-size: 1rem; color: var(--fg-muted); margin-top: 1rem;">lua documentation made by @hatedyves</div>
+    </div>
+    <p class="subtitle">The unified reference for Roblox's scripting language</p>
+    <div class="home-buttons">
+      <button class="home-btn" id="btn-classes">Classes</button>
+      <button class="home-btn" id="btn-services">Services</button>
+      <button class="home-btn" id="btn-libraries">Libraries</button>
+      <button class="home-btn" id="btn-enums">Enums</button>
+    </div>
+  </div>
+</div>
 
-<main class="wrapper">
-  <section class="section">
-    <h2>Explore the Documentation</h2>
-    <ul>
-      <li><a href="classes.html">Classes</a></li>
-      <li><a href="services.html">Services</a></li>
-      <li><a href="libraries.html">Libraries</a></li>
-      <li><a href="enums.html">Enums</a></li>
-    </ul>
-  </section>
+<!-- CLASSES PAGE -->
+<div id="classes" class="page">
+  <header class="hero">
+    <h1>Core Classes</h1>
+    <p>The complete list of Roblox object classes available in Luau.</p>
+    <input class="search" placeholder="Filter Classes...">
+  </header>
+  <main class="wrapper">
+    <section class="section">
+      <h2>3D Objects</h2>
+      <ul id="classes-3d"></ul>
+    </section>
+    <section class="section">
+      <h2>Characters & Animation</h2>
+      <ul id="classes-char"></ul>
+    </section>
+    <section class="section">
+      <h2>Gui</h2>
+      <ul id="classes-gui"></ul>
+    </section>
+    <section class="section">
+      <h2>Instance & Properties</h2>
+      <ul id="classes-instance"></ul>
+    </section>
+    <section class="section">
+      <h2>Physics & Mechanics</h2>
+      <ul id="classes-physics"></ul>
+    </section>
+  </main>
+</div>
 
-  <section class="section">
-    <h2>About Luau</h2>
-    <p>Luau is Roblox’s type‑enhanced, high‑performance dialect of Lua. It powers millions of concurrent experiences with predictable performance and safety.</p>
-    <p>This alucard documentation brings it all together in a single interface, with smooth lookup, instant filtering, and dark neon aesthetics.</p>
-  </section>
-</main>
+<!-- SERVICES PAGE -->
+<div id="services" class="page">
+  <header class="hero">
+    <h1>Core Services</h1>
+    <p>Central engine systems obtainable via <code>game:GetService()</code>.</p>
+    <input class="search" placeholder="Find a service...">
+  </header>
+  <main class="wrapper">
+    <section class="section">
+      <h2>Gameplay Core</h2>
+      <ul id="services-core"></ul>
+    </section>
+    <section class="section">
+      <h2>Backend Systems</h2>
+      <ul id="services-backend"></ul>
+    </section>
+    <section class="section">
+      <h2>Input & UI Services</h2>
+      <ul id="services-input"></ul>
+    </section>
+    <section class="section">
+      <h2>Data & Monetization</h2>
+      <ul id="services-data"></ul>
+    </section>
+  </main>
+</div>
+
+<!-- LIBRARIES PAGE -->
+<div id="libraries" class="page">
+  <header class="hero">
+    <h1>Built-in Libraries</h1>
+    <p>The global libraries bundled with Luau. Use them to perform math, text, task, and table operations efficiently.</p>
+    <input class="search" placeholder="Search library members...">
+  </header>
+  <main class="wrapper">
+    <section class="section">
+      <h2>math</h2>
+      <ul id="libraries-math"></ul>
+    </section>
+    <section class="section">
+      <h2>string</h2>
+      <ul id="libraries-string"></ul>
+    </section>
+    <section class="section">
+      <h2>table</h2>
+      <ul id="libraries-table"></ul>
+    </section>
+    <section class="section">
+      <h2>task</h2>
+      <ul id="libraries-task"></ul>
+    </section>
+    <section class="section">
+      <h2>bit32</h2>
+      <ul id="libraries-bit32"></ul>
+    </section>
+  </main>
+</div>
+
+<!-- ENUMS PAGE -->
+<div id="enums" class="page">
+  <header class="hero">
+    <h1>Roblox Enums</h1>
+    <p>Constant sets used across Luau APIs — unified within the alucard docs portal.</p>
+    <input class="search" placeholder="Search Enums...">
+  </header>
+  <main class="wrapper">
+    <section class="section">
+      <h2>Environment & Instance</h2>
+      <ul id="enums-env"></ul>
+    </section>
+    <section class="section">
+      <h2>Gameplay & Physics</h2>
+      <ul id="enums-gameplay"></ul>
+    </section>
+    <section class="section">
+      <h2>Rendering</h2>
+      <ul id="enums-render"></ul>
+    </section>
+    <section class="section">
+      <h2>UI / Input</h2>
+      <ul id="enums-ui"></ul>
+    </section>
+    <section class="section">
+      <h2>Networking & Studio</h2>
+      <ul id="enums-network"></ul>
+    </section>
+  </main>
+</div>
 
 <footer>
-  <p>© 2024 alucard • <a href="https://create.roblox.com/docs" target="_blank">Official Docs</a></p>
+  <p>© 2024 alucard • <a id="footer-home">home</a></p>
 </footer>
-<script src="scripts/main.js"></script>
+
+<script>
+const itemInfo = {
+  'Part': 'A basic 3D rectangular part. Use this as the foundation for most structures in your game. Parts can have colors, materials, and physical properties.',
+  'MeshPart': 'A part that can have a custom mesh applied to it. Allows for more complex 3D shapes without slowing down your game performance.',
+  'WedgePart': 'A triangular wedge-shaped part. Useful for ramps, slopes, and creating angular structures in your world.',
+  'UnionOperation': 'Created by using the union tool. Combines multiple parts into one solid shape, optimizing collision detection.',
+  'Model': 'A container that groups multiple parts together hierarchically. Essential for organizing complex structures and characters.',
+  'Attachment': 'An invisible point used for positioning objects, welds, and particle effects. Perfect for attaching accessories to characters.',
+  'Humanoid': 'Represents a player character. Handles health, movement, and animations. Monitor it to detect damage or death.',
+  'Animator': 'Plays animations on humanoids and other character models. Load animation IDs to create custom character movements.',
+  'Animation': 'An animation object that can be loaded and played by the Animator. Create smooth transitions between different states.',
+  'BodyVelocity': 'Applies constant velocity to a part. Deprecated. Use AssemblyLinearVelocity instead for better performance.',
+  'Motor6D': 'A joint that connects two parts with 6 degrees of freedom. Used for bones and realistic character rigging.',
+  'Weld': 'Rigidly connects two parts together. Used for building structures that move as one unit.',
+  'ScreenGui': 'The main container for UI elements displayed on a player\'s screen. Layer multiple GUIs for complex interfaces.',
+  'TextLabel': 'Displays text on the screen with customizable font and color. Supports text scaling and multi-line text.',
+  'Frame': 'A basic container for organizing other UI elements. Think of it as an invisible box for grouping UI components.',
+  'ImageLabel': 'Displays an image on the screen. Perfect for logos, icons, and custom textures in your UI.',
+  'ScrollingFrame': 'A container that can scroll through many child elements. Great for leaderboards and item lists.',
+  'TextButton': 'A clickable text button for user interactions. Fire events when clicked by players.',
+  'ImageButton': 'A clickable image button. Combines image display with button functionality.',
+  'UICorner': 'Rounds the corners of UI elements. Creates modern-looking interfaces.',
+  'UIStroke': 'Adds an outline or border to UI elements. Works with any GuiObject.',
+  'Instance': 'The base class for all Roblox objects. Every part, gui, and service inherits from this.',
+  'RangeValue': 'Stores a number with min and max constraints. Useful for bounded values like health or ammo.',
+  'StringValue': 'Stores a string value. Can be used for storing configuration or player data.',
+  'NumberValue': 'Stores a numeric value. Useful for storing scores, health, or other numbers.',
+  'BoolValue': 'Stores a boolean (true/false) value. Great for flags and states.',
+  'BodyGyro': 'Rotates a part to face a direction. Used for vehicle steering and camera focus.',
+  'BodyPosition': 'Moves a part to a target position. Deprecated in favor of modern physics.',
+  'HumanoidRootPart': 'The center point of a character. Controls movement and positioning.',
+  'Terrain': 'The environment terrain system. Add water, rock, grass, and other terrain materials.',
+  'LocalScript': 'Runs on the client side only. Used for player input and local visuals.',
+  'Script': 'Runs on the server side. Used for game logic and preventing exploits.',
+  'ModuleScript': 'A reusable code module. Can be required by other scripts.',
+  'Players': 'Manages all connected players and their data. Access player objects, detect joins/leaves.',
+  'RunService': 'Provides access to game update loops (heartbeat, stepping). Essential for smooth updates.',
+  'TweenService': 'Smoothly animates property changes over time. Create elegant transitions without complex math.',
+  'Lighting': 'Controls the lighting environment of the game. Adjust brightness, shadows, and ambient light colors.',
+  'Workspace': 'The 3D world where all parts and models exist. Everything you see in-game is here.',
+  'DataStoreService': 'Saves and loads persistent player data across sessions. Essential for RPGs and save systems.',
+  'HttpService': 'Makes HTTP requests to external web services. Get data from APIs and webhooks.',
+  'MessagingService': 'Sends messages between servers in a game. Communicate across multiple game instances.',
+  'AnalyticsService': 'Collects analytics data about game usage. Track player behavior and engagement metrics.',
+  'UserInputService': 'Detects user keyboard, mouse, and gamepad input. Essential for custom controls.',
+  'Debris': 'Service for removing instances after a delay. Useful for cleaning up temporary objects.',
+  'ContextActionService': 'Binds functions to user input and creates custom menus.',
+  'BadgeService': 'Awards badges to players for achievements. Track game milestones.',
+  'GamepadService': 'Manages gamepad/controller input. Get stick and button states.',
+  'MarketplaceService': 'Handles in-game purchases and game passes. Monetization system.',
+  'PushNotificationService': 'Sends push notifications to players. Keep players engaged.',
+  'ReplicatedStorage': 'Shared storage accessible from client and server. Great for storing shared scripts.',
+  'ServerStorage': 'Server-only storage. Client cannot access this.',
+  'StarterPlayer': 'Template for player characters. Customize default player setup.',
+  'math.abs': 'Returns the absolute value of a number. Always gives positive results.',
+  'math.ceil': 'Rounds a number up to the nearest integer. 2.1 becomes 3.',
+  'math.floor': 'Rounds a number down to the nearest integer. 2.9 becomes 2.',
+  'math.max': 'Returns the largest value from a set of numbers.',
+  'math.min': 'Returns the smallest value from a set of numbers.',
+  'math.random': 'Generates a random number. Use math.random(1, 10) for numbers 1-10.',
+  'math.sqrt': 'Returns the square root of a number.',
+  'math.sin': 'Returns sine of an angle in radians.',
+  'math.cos': 'Returns cosine of an angle in radians.',
+  'math.tan': 'Returns tangent of an angle in radians.',
+  'math.rad': 'Converts degrees to radians.',
+  'math.deg': 'Converts radians to degrees.',
+  'math.pi': 'The constant value of pi (3.14159...).',
+  'table.insert': 'Adds a value to a table at a specific position.',
+  'table.remove': 'Removes a value from a table at a specific position.',
+  'table.concat': 'Joins table values into a string with a separator.',
+  'table.sort': 'Sorts a table in place.',
+  'table.pack': 'Packs multiple values into a table.',
+  'table.unpack': 'Unpacks values from a table.',
+  'string.byte': 'Returns the ASCII value of a character.',
+  'string.char': 'Converts ASCII values back into characters.',
+  'string.find': 'Searches for a substring within a string.',
+  'string.format': 'Formats a string with placeholders.',
+  'string.sub': 'Extracts a substring from a string.',
+  'string.upper': 'Converts a string to uppercase.',
+  'string.lower': 'Converts a string to lowercase.',
+  'string.rep': 'Repeats a string multiple times.',
+  'string.reverse': 'Reverses a string.',
+  'string.len': 'Returns the length of a string.',
+  'string.split': 'Splits a string by a separator.',
+  'task.wait': 'Pauses execution for a specified number of seconds.',
+  'task.spawn': 'Runs a function asynchronously in a new thread.',
+  'task.defer': 'Defers a function to run on the next frame.',
+  'task.delay': 'Delays a function call by a specified time.',
+  'task.cancel': 'Cancels a spawned task.',
+  'bit32.band': 'Bitwise AND operation.',
+  'bit32.bor': 'Bitwise OR operation.',
+  'bit32.bxor': 'Bitwise XOR operation.',
+  'bit32.bnot': 'Bitwise NOT operation.',
+  'bit32.lshift': 'Left bit shift.',
+  'bit32.rshift': 'Right bit shift.',
+  'Enum.Archivable': 'Determines if an instance can be saved to a file.',
+  'Enum.ClassIcon': 'Specifies the icon to display for a class in Studio.',
+  'Enum.CreatorType': 'Indicates who created something (user or roblox).',
+  'Enum.SaveFilter': 'Determines what gets saved when exporting.',
+  'Enum.SortOrder': 'Defines how UI elements are sorted.',
+  'Enum.BodyPartR15': 'Names all the body parts in an R15 avatar.',
+  'Enum.CollisionGroupMode': 'Sets how collision groups interact.',
+  'Enum.HumanoidDisplayDistanceType': 'Controls how far humanoid info displays.',
+  'Enum.KeyCode': 'Maps keyboard keys to their codes.',
+  'Enum.Material': 'Defines surface materials for parts.',
+  'Enum.CameraType': 'Sets the camera behavior mode.',
+  'Enum.FillDirection': 'Determines UI fill direction.',
+  'Enum.Font': 'Lists available fonts for text.',
+  'Enum.VerticalAlignment': 'Aligns text vertically.',
+  'Enum.ZIndexBehavior': 'Controls layering of UI elements.',
+  'Enum.EasingDirection': 'Easing direction for animations.',
+  'Enum.EasingStyle': 'Animation easing styles.',
+  'Enum.TextXAlignment': 'Aligns text horizontally.',
+  'Enum.UserInputState': 'Input states (began, changed, ended).',
+  'Enum.UserInputType': 'Types of user input.',
+  'Enum.HttpError': 'HTTP error codes returned by requests.',
+  'Enum.Platform': 'Indicates the player\'s platform.',
+  'Enum.PlaybackState': 'States for music playback.',
+  'Enum.RunContext': 'Indicates if code runs on server, client, or both.',
+  'Enum.StudioStyleGuideColor': 'Colors used in the Studio theme.',
+};
+
+const itemExamples = {
+  'Part': 'local part = Instance.new("Part")\npart.Parent = workspace\npart.BrickColor = BrickColor.new("Bright red")',
+  'Humanoid': 'local humanoid = character:FindFirstChild("Humanoid")\nif humanoid then\n  humanoid.Health = 50\nend',
+  'Players': 'local players = game:GetService("Players")\nplayers.PlayerAdded:Connect(function(player)\n  print(player.Name .. " joined!")\nend)',
+  'RunService': 'local rs = game:GetService("RunService")\nrs.Heartbeat:Connect(function(deltaTime)\n  print("Frame update")\nend)',
+  'TweenService': 'local ts = game:GetService("TweenService")\nlocal info = TweenInfo.new(1)\nlocal tween = ts:Create(part, info, {Color = Color3.new(1,0,0)})\ntween:Play()',
+  'DataStoreService': 'local dss = game:GetService("DataStoreService")\nlocal store = dss:GetDataStore("PlayerData")\nstore:SetAsync("Player_123", 100)',
+  'HttpService': 'local http = game:GetService("HttpService")\nlocal response = http:GetAsync("https://api.example.com/data")',
+  'math.abs': 'print(math.abs(-5)) -- Output: 5',
+  'math.random': 'local randomNum = math.random(1, 10)\nprint("Random: " .. randomNum)',
+  'string.upper': 'local text = "hello"\nprint(string.upper(text)) -- Output: HELLO',
+  'string.sub': 'local text = "hello world"\nprint(string.sub(text, 1, 5)) -- Output: hello',
+  'TextLabel': 'local label = Instance.new("TextLabel")\nlabel.Parent = screenGui\nlabel.Text = "Hello!"\nlabel.BackgroundColor3 = Color3.new(0,0,1)',
+  'Frame': 'local frame = Instance.new("Frame")\nframe.Parent = screenGui\nframe.Size = UDim2.new(0, 200, 0, 100)',
+  'ScreenGui': 'local gui = Instance.new("ScreenGui")\ngui.Parent = player:WaitForChild("PlayerGui")',
+  'Animator': 'local animator = humanoid:FindFirstChild("Animator")\nlocal animation = Instance.new("Animation")\nanimation.AnimationId = "rbxassetid://123456789"\nlocal track = animator:LoadAnimation(animation)\ntrack:Play()',
+  'table.insert': 'local myTable = {1, 2, 3}\ntable.insert(myTable, 4)\nprint(myTable[4]) -- Output: 4',
+  'table.remove': 'local myTable = {"a", "b", "c"}\ntable.remove(myTable, 2)\nprint(myTable[2]) -- Output: c',
+  'Enum.Material': 'part.Material = Enum.Material.Neon\npart.Color = Color3.new(0, 1, 1)',
+  'Enum.KeyCode': 'local uis = game:GetService("UserInputService")\nlocal isWPressed = uis:IsKeyDown(Enum.KeyCode.W)',
+  'UserInputService': 'local uis = game:GetService("UserInputService")\nuis.InputBegan:Connect(function(input, gameProcessed)\n  if input.KeyCode == Enum.KeyCode.E then\n    print("E key pressed!")\n  end\nend)',
+  'Lighting': 'local lighting = game:GetService("Lighting")\nlighting.Brightness = 2\nlighting.ClockTime = 18',
+  'Workspace': 'local part = Instance.new("Part")\npart.Parent = workspace\nlocal allParts = workspace:GetChildren()',
+  'BadgeService': 'local badgeService = game:GetService("BadgeService")\nbadgeService:AwardBadge(player.UserId, badgeId)',
+  'Debris': 'local debris = game:GetService("Debris")\ndebris:AddItem(part, 5) -- Remove after 5 seconds',
+  'task.wait': 'task.wait(2)\nprint("Waited 2 seconds")',
+  'task.spawn': 'task.spawn(function()\n  print("Running async")\nend)',
+  'math.sin': 'local angle = math.sin(math.rad(90))\nprint(angle) -- Output: 1',
+  'math.sqrt': 'print(math.sqrt(16)) -- Output: 4',
+  'string.reverse': 'print(string.reverse("hello")) -- Output: olleh',
+  'string.len': 'print(string.len("hello")) -- Output: 5',
+};
+
+const dataMap = {
+  'classes-3d': ['Part', 'MeshPart', 'WedgePart', 'UnionOperation', 'Model', 'Attachment', 'Terrain'],
+  'classes-char': ['Humanoid', 'Animator', 'Animation', 'BodyVelocity', 'Motor6D', 'HumanoidRootPart'],
+  'classes-gui': ['ScreenGui', 'TextLabel', 'Frame', 'ImageLabel', 'ScrollingFrame', 'TextButton', 'ImageButton', 'UICorner', 'UIStroke'],
+  'classes-instance': ['Instance', 'RangeValue', 'StringValue', 'NumberValue', 'BoolValue', 'LocalScript', 'Script', 'ModuleScript'],
+  'classes-physics': ['Weld', 'BodyGyro', 'BodyPosition'],
+  'services-core': ['Players', 'RunService', 'TweenService', 'Lighting', 'Workspace', 'StarterPlayer'],
+  'services-backend': ['DataStoreService', 'HttpService', 'MessagingService', 'AnalyticsService', 'ReplicatedStorage', 'ServerStorage'],
+  'services-input': ['UserInputService', 'Debris', 'BadgeService', 'ContextActionService', 'GamepadService'],
+  'services-data': ['MarketplaceService', 'PushNotificationService'],
+  'libraries-math': ['math.abs', 'math.ceil', 'math.floor', 'math.max', 'math.min', 'math.random', 'math.sqrt', 'math.sin', 'math.cos', 'math.tan', 'math.rad', 'math.deg', 'math.pi'],
+  'libraries-string': ['string.byte', 'string.char', 'string.find', 'string.format', 'string.sub', 'string.upper', 'string.lower', 'string.rep', 'string.reverse', 'string.len', 'string.split'],
+  'libraries-table': ['table.insert', 'table.remove', 'table.concat', 'table.sort', 'table.pack', 'table.unpack'],
+  'libraries-task': ['task.wait', 'task.spawn', 'task.defer', 'task.delay', 'task.cancel'],
+  'libraries-bit32': ['bit32.band', 'bit32.bor', 'bit32.bxor', 'bit32.bnot', 'bit32.lshift', 'bit32.rshift'],
+  'enums-env': ['Enum.Archivable', 'Enum.ClassIcon', 'Enum.CreatorType', 'Enum.SaveFilter', 'Enum.SortOrder'],
+  'enums-gameplay': ['Enum.BodyPartR15', 'Enum.CollisionGroupMode', 'Enum.HumanoidDisplayDistanceType', 'Enum.KeyCode', 'Enum.Material'],
+  'enums-render': ['Enum.CameraType', 'Enum.FillDirection', 'Enum.Font', 'Enum.VerticalAlignment', 'Enum.ZIndexBehavior'],
+  'enums-ui': ['Enum.EasingDirection', 'Enum.EasingStyle', 'Enum.TextXAlignment', 'Enum.UserInputState', 'Enum.UserInputType'],
+  'enums-network': ['Enum.HttpError', 'Enum.Platform', 'Enum.PlaybackState', 'Enum.RunContext', 'Enum.StudioStyleGuideColor']
+};
+
+function populateItems() {
+  Object.entries(dataMap).forEach(([id, items]) => {
+    const ul = document.getElementById(id);
+    if (!ul) return;
+    ul.innerHTML = items.map(item => {
+      const exampleCode = itemExamples[item] ? itemExamples[item].replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+      return `
+      <div class="item-wrapper">
+        <li onclick="toggleDetails(this, '${item}')">${item}</li>
+        <div class="item-details">
+          <strong>${item}</strong>
+          <p style="margin-top: 0.5rem;">${itemInfo[item] || 'No description available.'}</p>
+          ${exampleCode ? `<p style="color: var(--accent); font-weight: 600; margin-top: 0.75rem;">Example:</p><code>${exampleCode}</code>` : ''}
+        </div>
+      </div>
+    `;
+    }).join('');
+  });
+}
+
+function toggleDetails(element, itemName) {
+  const details = element.nextElementSibling;
+  const allDetails = document.querySelectorAll('.item-details.show');
+  
+  allDetails.forEach(d => {
+    if (d !== details) {
+      d.classList.remove('show');
+    }
+  });
+  
+  details.classList.toggle('show');
+  navigator.clipboard.writeText(itemName);
+}
+
+function showPage(pageName) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageName).classList.add('active');
+  
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+    if (link.dataset.page === pageName) {
+      link.classList.add('active');
+    }
+  });
+  
+  setupSearch();
+}
+
+function setupSearch() {
+  const search = document.querySelector('.search');
+  if (!search) return;
+  search.value = '';
+  
+  search.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    document.querySelectorAll('.item-wrapper').forEach(wrapper => {
+      const item = wrapper.querySelector('li');
+      const text = item.textContent.toLowerCase();
+      wrapper.style.display = text.includes(query) ? 'block' : 'none';
+    });
+  }, { once: false });
+}
+
+// Event Listeners
+document.getElementById('logo-home').addEventListener('click', () => showPage('home'));
+document.getElementById('btn-classes')?.addEventListener('click', () => showPage('classes'));
+document.getElementById('btn-services')?.addEventListener('click', () => showPage('services'));
+document.getElementById('btn-libraries')?.addEventListener('click', () => showPage('libraries'));
+document.getElementById('btn-enums')?.addEventListener('click', () => showPage('enums'));
+document.getElementById('nav-classes').addEventListener('click', () => showPage('classes'));
+document.getElementById('nav-services').addEventListener('click', () => showPage('services'));
+document.getElementById('nav-libraries').addEventListener('click', () => showPage('libraries'));
+document.getElementById('nav-enums').addEventListener('click', () => showPage('enums'));
+document.getElementById('footer-home').addEventListener('click', () => showPage('home'));
+
+populateItems();
+showPage('home');
+</script>
+<div class="orb-container">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
+
 </body>
 </html>
